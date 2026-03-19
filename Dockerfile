@@ -4,6 +4,7 @@ RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         libzip-dev \
         unzip \
+        curl \
     && docker-php-ext-install -j"$(nproc)" mysqli pdo pdo_mysql \
     && a2enmod rewrite headers \
     && apt-get clean \
@@ -20,5 +21,8 @@ RUN chmod +x /usr/local/bin/entrypoint.sh \
 ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
 
 EXPOSE 8080
+
+HEALTHCHECK --interval=30s --timeout=5s --start-period=20s --retries=5 \
+  CMD curl --fail --silent --show-error http://127.0.0.1:${PORT:-8080}/healthz || exit 1
 
 CMD ["/usr/local/bin/entrypoint.sh"]

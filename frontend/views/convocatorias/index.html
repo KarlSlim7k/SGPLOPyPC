@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Convocatorias - Administrador | SGPLOPyPC</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#eff6ff', 100: '#dbeafe', 500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8', 800: '#1e40af', 900: '#1e3a8a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+<body class="bg-slate-50 text-slate-900 font-sans antialiased flex h-screen overflow-hidden">
+
+    <!-- Sidebar -->
+    <aside class="w-64 bg-white border-r border-slate-200 flex flex-col hidden md:flex h-full shrink-0">
+        <div class="p-6 border-b border-slate-200">
+            <div class="flex items-center gap-3">
+                <div class="w-8 h-8 rounded bg-primary-700 flex items-center justify-center text-white font-bold">SG</div>
+                <div>
+                    <h1 class="font-bold text-slate-800 text-sm leading-tight">SGPLOPyPC</h1>
+                    <p class="text-xs text-slate-500">Gestión Licitaciones</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="flex-1 overflow-y-auto py-4 px-3">
+            <p class="px-3 text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Principal</p>
+            <nav class="space-y-1 mb-6">
+                <a href="/frontend/public/dashboard.html" class="flex items-center gap-3 px-3 py-2 text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-md font-medium transition-colors duration-200">
+                    <i class="ph ph-squares-four text-lg text-slate-400"></i> Dashboard
+                </a>
+            </nav>
+
+            <p class="px-3 text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Módulos</p>
+            <nav class="space-y-1">
+                <a href="/frontend/views/convocatorias/index.html" class="flex items-center gap-3 px-3 py-2 bg-primary-50 text-primary-700 rounded-md font-medium transition-colors duration-200">
+                    <i class="ph ph-megaphone text-lg"></i> Convocatorias
+                </a>
+                <a href="/frontend/views/proveedores/index.html" class="flex items-center gap-3 px-3 py-2 text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-md font-medium transition-colors duration-200">
+                    <i class="ph ph-users text-lg text-slate-400"></i> Proveedores
+                </a>
+                <a href="/frontend/views/propuestas/index.html" class="flex items-center gap-3 px-3 py-2 text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-md font-medium transition-colors duration-200">
+                    <i class="ph ph-file-text text-lg text-slate-400"></i> Propuestas
+                </a>
+                <a href="/frontend/views/evaluacion/index.html" class="flex items-center gap-3 px-3 py-2 text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-md font-medium transition-colors duration-200">
+                    <i class="ph ph-check-square text-lg text-slate-400"></i> Evaluación
+                </a>
+                <a href="/frontend/views/adjudicaciones/index.html" class="flex items-center gap-3 px-3 py-2 text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-md font-medium transition-colors duration-200">
+                    <i class="ph ph-handshake text-lg text-slate-400"></i> Adjudicaciones
+                </a>
+            </nav>
+        </div>
+    </aside>
+
+    <!-- Main Content -->
+    <div class="flex-1 flex flex-col h-full bg-slate-50 overflow-hidden">
+        
+        <!-- Header -->
+        <header class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-6 z-10 shrink-0">
+            <div class="flex items-center gap-4">
+                <h2 class="text-xl font-semibold text-slate-800">Convocatorias de Licitación</h2>
+            </div>
+            
+            <div class="flex items-center gap-4">
+                <div class="flex items-center gap-3 border-l border-slate-200 pl-4">
+                    <div class="text-right hidden sm:block">
+                        <p class="text-sm font-medium text-slate-700 leading-none">Admin Usuario</p>
+                    </div>
+                </div>
+            </div>
+        </header>
+
+        <!-- Page Content -->
+        <main class="flex-1 overflow-x-hidden overflow-y-auto bg-slate-50 p-6">
+            <div class="max-w-7xl mx-auto">
+                
+                <!-- Page Header with Actions -->
+                <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
+                    <div>
+                        <p class="text-slate-600 text-sm">Gestiona y publica nuevas convocatorias de obra pública y servicios.</p>
+                    </div>
+                    <div class="flex items-center gap-3">
+                        <a href="/frontend/views/convocatorias/create.html" class="inline-flex items-center justify-center gap-2 bg-primary-600 hover:bg-primary-700 text-white font-medium px-4 py-2 rounded-lg transition-colors duration-200 shadow-sm cursor-pointer">
+                            <i class="ph ph-plus-circle text-lg"></i>
+                            Nueva Convocatoria
+                        </a>
+                    </div>
+                </div>
+
+                <!-- Filters Strip -->
+                <div class="bg-white rounded-xl border border-slate-200 p-4 shadow-sm mb-6 flex flex-wrap gap-4 items-center justify-between">
+                    <div class="flex gap-4 flex-wrap">
+                        <div class="relative">
+                            <i class="ph ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                            <input type="text" placeholder="Buscar por clave..." class="pl-10 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:bg-white transition-all w-64">
+                        </div>
+                        <select class="px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-primary-500 hover:cursor-pointer hover:bg-slate-100">
+                            <option value="">Todos los Estados</option>
+                            <option value="publicada">Publicada</option>
+                            <option value="evaluacion">En Evaluación</option>
+                            <option value="adjudicada">Adjudicada</option>
+                        </select>
+                        <select class="px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-primary-500 hover:cursor-pointer hover:bg-slate-100">
+                            <option value="">Tipo Procedimiento</option>
+                            <option value="lp">Licitación Pública</option>
+                            <option value="ir">Invitación Restringida</option>
+                            <option value="ad">Adjudicación Directa</option>
+                        </select>
+                    </div>
+                    <button class="inline-flex items-center justify-center gap-2 bg-white border border-slate-200 hover:bg-slate-50 text-slate-700 font-medium px-4 py-2 rounded-lg transition-colors duration-200 shadow-sm">
+                        <i class="ph ph-funnel text-lg"></i> Filtrar
+                    </button>
+                </div>
+
+                <!-- Data Table -->
+                <div class="bg-white border border-slate-200 rounded-xl shadow-sm overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm whitespace-nowrap">
+                            <thead>
+                                <tr class="bg-slate-50 border-b border-slate-200">
+                                    <th class="px-6 py-4 font-semibold text-slate-600">Clave de Licitación</th>
+                                    <th class="px-6 py-4 font-semibold text-slate-600">Objeto del Proyecto</th>
+                                    <th class="px-6 py-4 font-semibold text-slate-600">Tipo</th>
+                                    <th class="px-6 py-4 font-semibold text-slate-600">Recepción Prop.</th>
+                                    <th class="px-6 py-4 font-semibold text-slate-600">Estado</th>
+                                    <th class="px-6 py-4 font-semibold text-slate-600 text-right">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100">
+                                <!-- Row 1 -->
+                                <tr class="hover:bg-slate-50 transition-colors group">
+                                    <td class="px-6 py-4">
+                                        <p class="font-bold text-slate-800">LO-902002994-E1-2026</p>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-normal min-w-[250px]">
+                                        <p class="text-slate-600 line-clamp-2">Construcción de infraestructura educativa especializada nivel superior fase II.</p>
+                                    </td>
+                                    <td class="px-6 py-4">Licitación Pública</td>
+                                    <td class="px-6 py-4 text-slate-600">12 May 2026</td>
+                                    <td class="px-6 py-4">
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-emerald-100 text-emerald-800 border border-emerald-200">
+                                            Publicada
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 text-right">
+                                        <div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <button class="p-1.5 text-slate-400 hover:text-primary-600 hover:bg-primary-50 rounded-md transition-colors" title="Ver Detalles">
+                                                <i class="ph ph-eye text-lg"></i>
+                                            </button>
+                                            <button class="p-1.5 text-slate-400 hover:text-primary-600 hover:bg-primary-50 rounded-md transition-colors" title="Editar">
+                                                <i class="ph ph-pencil-simple text-lg"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <!-- Row 2 -->
+                                <tr class="hover:bg-slate-50 transition-colors group">
+                                    <td class="px-6 py-4">
+                                        <p class="font-bold text-slate-800">IR-902002994-E2-2026</p>
+                                    </td>
+                                    <td class="px-6 py-4 whitespace-normal min-w-[250px]">
+                                        <p class="text-slate-600 line-clamp-2">Mantenimiento preventivo a vialidades y obra civil exterior en zona norte.</p>
+                                    </td>
+                                    <td class="px-6 py-4">Inv. Restringida</td>
+                                    <td class="px-6 py-4 text-slate-600">28 Abr 2026</td>
+                                    <td class="px-6 py-4">
+                                        <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800 border border-blue-200">
+                                            Recibiendo Prop.
+                                        </span>
+                                    </td>
+                                    <td class="px-6 py-4 text-right">
+                                        <div class="flex items-center justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <button class="p-1.5 text-slate-400 hover:text-primary-600 hover:bg-primary-50 rounded-md transition-colors" title="Ver Detalles">
+                                                <i class="ph ph-eye text-lg"></i>
+                                            </button>
+                                            <button class="p-1.5 text-slate-400 hover:text-primary-600 hover:bg-primary-50 rounded-md transition-colors" title="Editar">
+                                                <i class="ph ph-pencil-simple text-lg"></i>
+                                            </button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <!-- Pagination -->
+                    <div class="px-6 py-4 border-t border-slate-200 bg-slate-50 flex items-center justify-between">
+                        <span class="text-sm text-slate-500">Mostrando <span class="font-medium text-slate-900">1</span> a <span class="font-medium text-slate-900">2</span> de <span class="font-medium text-slate-900">12</span> resultados</span>
+                        <div class="flex border border-slate-200 rounded-lg overflow-hidden shrink-0">
+                            <button class="px-3 py-1 bg-white hover:bg-slate-50 text-slate-400 text-sm font-medium border-r border-slate-200 transition-colors pointer-events-none opacity-50">Anterior</button>
+                            <button class="px-3 py-1 bg-primary-50 text-primary-600 text-sm font-medium border-r border-slate-200">1</button>
+                            <button class="px-3 py-1 bg-white hover:bg-slate-50 text-slate-600 text-sm font-medium border-r border-slate-200 transition-colors">2</button>
+                            <button class="px-3 py-1 bg-white hover:bg-slate-50 text-slate-600 text-sm font-medium transition-colors">Siguiente</button>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+</body>
+</html>
