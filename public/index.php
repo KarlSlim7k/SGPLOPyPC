@@ -553,7 +553,7 @@
                         </li>
                         <li class="flex items-start gap-2">
                             <i class="ph ph-map-pin mt-0.5 shrink-0" aria-hidden="true"></i>
-                            <span>Blvd. Insurgentes 101, Guanajuato, Gto.</span>
+                            <span>Palacio Municipal SN, Centro, 91500 Coatepec, Ver.</span>
                         </li>
                     </ul>
                 </div>
