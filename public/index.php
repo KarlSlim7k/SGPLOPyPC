@@ -54,7 +54,7 @@
                 </div>
 
                 <div class="flex items-center gap-3">
-                    <a href="/frontend/public/login.html" class="inline-flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white font-semibold px-4 py-2 rounded-lg transition-colors duration-200 text-sm shadow-sm cursor-pointer">
+                    <a href="/frontend/auth/login.html" class="inline-flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white font-semibold px-4 py-2 rounded-lg transition-colors duration-200 text-sm shadow-sm cursor-pointer">
                         <i class="ph ph-sign-in text-base" aria-hidden="true"></i>
                         <span class="hidden sm:inline">Ventanilla de Acceso</span>
                         <span class="sm:hidden">Acceso</span>
@@ -267,7 +267,7 @@
                     <h2 class="text-3xl font-bold text-slate-900">Convocatorias Vigentes</h2>
                     <p class="text-slate-500 mt-1 text-sm">Licitaciones abiertas disponibles para participar</p>
                 </div>
-                <a href="/frontend/views/convocatorias/index.html" class="inline-flex items-center gap-2 text-primary-600 hover:text-primary-700 font-semibold text-sm border border-primary-200 hover:border-primary-300 px-4 py-2 rounded-lg hover:bg-primary-50 transition-all cursor-pointer">
+                <a href="/frontend/admin/convocatorias/index.html" class="inline-flex items-center gap-2 text-primary-600 hover:text-primary-700 font-semibold text-sm border border-primary-200 hover:border-primary-300 px-4 py-2 rounded-lg hover:bg-primary-50 transition-all cursor-pointer">
                     Ver todas <i class="ph ph-arrow-right" aria-hidden="true"></i>
                 </a>
             </div>
@@ -365,7 +365,7 @@
             </div>
 
             <div class="mt-8 text-center">
-                <a href="/frontend/views/convocatorias/index.html" class="inline-flex items-center gap-2 bg-slate-900 hover:bg-slate-700 text-white font-semibold px-6 py-3 rounded-xl transition-colors duration-200 text-sm cursor-pointer">
+                <a href="/frontend/admin/convocatorias/index.html" class="inline-flex items-center gap-2 bg-slate-900 hover:bg-slate-700 text-white font-semibold px-6 py-3 rounded-xl transition-colors duration-200 text-sm cursor-pointer">
                     Ver todas las convocatorias
                     <i class="ph ph-arrow-right" aria-hidden="true"></i>
                 </a>

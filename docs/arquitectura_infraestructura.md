@@ -200,6 +200,9 @@ Esta organización permite separar responsabilidades sin depender de frameworks,
 
 ```text
 /frontend
+  /admin
+  /auth
+  /proveedor
   /public
     index.html
     login.html
