@@ -54,7 +54,7 @@
                 </div>
 
                 <div class="flex items-center gap-3">
-                    <a href="/frontend/public/dashboard.html" class="inline-flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white font-semibold px-4 py-2 rounded-lg transition-colors duration-200 text-sm shadow-sm cursor-pointer">
+                    <a href="/frontend/public/login.html" class="inline-flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white font-semibold px-4 py-2 rounded-lg transition-colors duration-200 text-sm shadow-sm cursor-pointer">
                         <i class="ph ph-sign-in text-base" aria-hidden="true"></i>
                         <span class="hidden sm:inline">Ventanilla de Acceso</span>
                         <span class="sm:hidden">Acceso</span>
