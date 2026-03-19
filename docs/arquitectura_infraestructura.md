@@ -154,80 +154,75 @@ Dado que se mantiene enfoque vanilla, se recomienda incorporar librerías puntua
 
 ---
 
-## 8. Estructura sugerida de componentes backend (PHP puro)
+## 8. Estructura actual de componentes backend (PHP puro)
 
 ```text
 /public
-  index.php
+  index.php                        ← Punto de entrada principal (API router)
 /app
-  /controllers
-  /services
-  /repositories
-  /models
-  /middlewares
-  /helpers
+  /controllers                     ← Controladores por módulo
+  /services                        ← Lógica de negocio
+  /repositories                    ← Acceso a datos (consultas SQL)
+  /models                          ← Modelos de datos
+  /middlewares                     ← Middleware (auth, CORS, etc.)
+  /helpers                         ← Funciones auxiliares
+/config                            ← Configuración de la aplicación (BD, entorno)
+/database
+  /sql
+    if0_39815580_sgplopypc.sql     ← Dump SQL de la base de datos
 /storage
   /documents
     /uploads
-      /2026
-        /enero /febrero /marzo /abril /mayo /junio /julio /agosto /septiembre /octubre /noviembre /diciembre
-      /2025
-        /enero /febrero /marzo /abril /mayo /junio /julio /agosto /septiembre /octubre /noviembre /diciembre
-      ...
-      /2020
-        /enero /febrero /marzo /abril /mayo /junio /julio /agosto /septiembre /octubre /noviembre /diciembre
+      /2020 … /2026
+        /enero /febrero … /diciembre
     /exports
-      /2026
-        /enero /febrero /marzo /abril /mayo /junio /julio /agosto /septiembre /octubre /noviembre /diciembre
-      /2025
-        /enero /febrero /marzo /abril /mayo /junio /julio /agosto /septiembre /octubre /noviembre /diciembre
-      ...
-      /2020
-        /enero /febrero /marzo /abril /mayo /junio /julio /agosto /septiembre /octubre /noviembre /diciembre
-/config
-  database.php
-  app.php
+      /2020 … /2026
+        /enero /febrero … /diciembre
+/docker
+  apache-site.conf                 ← Configuración de Apache para el contenedor
+  entrypoint.sh                    ← Script de inicio del contenedor
+Dockerfile                         ← Definición de imagen Docker (raíz)
+railway.toml                       ← Configuración de despliegue Railway (raíz)
 ```
 
 Donde:
-- `uploads/` almacenará documentos cargados al sistema (PDF, Excel, CSV, etc.).
-- `exports/` almacenará documentos generados por el sistema (reportes PDF, archivos Excel/CSV, etc.).
-- En ambos casos, la organización será histórica por tiempo: **año/mes** (de 2020 en adelante), para facilitar trazabilidad, búsquedas y respaldo.
+- `uploads/` almacena documentos cargados al sistema (PDF, Excel, CSV, etc.).
+- `exports/` almacena documentos generados por el sistema (reportes PDF, archivos Excel/CSV, etc.).
+- En ambos casos, la organización es histórica por tiempo: **año/mes** (de 2020 a 2026), para facilitar trazabilidad, búsquedas y respaldo.
+- `database/sql/` contiene el dump SQL de la base de datos para inicialización y respaldo.
+- `docker/` contiene la configuración de Apache y el script de entrada para el contenedor Docker.
 
 Esta organización permite separar responsabilidades sin depender de frameworks, facilitando pruebas, mantenimiento y crecimiento del sistema.
 
-### 8.1 Estructura sugerida de componentes frontend (HTML/CSS/JS puro)
+### 8.1 Estructura actual de componentes frontend (HTML/CSS/JS puro)
 
 ```text
 /frontend
   /admin
-  /auth
-  /proveedor
-  /public
-    index.html
-    login.html
-    dashboard.html
-  /assets
-    /css
-      styles.css
-      components.css
-    /js
-      app.js
-      api-client.js
-      auth.js
-      validators.js
-      charts.js
-    /img
-  /views
+    dashboard.html                 ← Panel principal del administrador
     /convocatorias
-    /proveedores
+      index.html                   ← Listado de convocatorias
+      create.html                  ← Crear nueva convocatoria
     /propuestas
+      index.html                   ← Gestión de propuestas
     /evaluacion
+      index.html                   ← Evaluación de propuestas
     /adjudicaciones
+      index.html                   ← Adjudicaciones
+    /proveedores
+      index.html                   ← Gestión de proveedores
     /reportes
+      index.html                   ← Reportes y tablero
+  /auth
+    login.html                     ← Inicio de sesión
+  /proveedor                       ← Vistas del rol proveedor (en desarrollo)
+  /assets
+    /css                           ← Estilos CSS
+    /js                            ← Lógica JavaScript
+    /img                           ← Imágenes y recursos gráficos
 ```
 
-Esta estructura separa recursos estáticos, lógica JavaScript y vistas por módulo, manteniendo orden y mantenibilidad en un enfoque vanilla.
+Esta estructura organiza las vistas por rol (`admin`, `auth`, `proveedor`) y por módulo dentro de cada rol, manteniendo orden y mantenibilidad en un enfoque vanilla. Los recursos estáticos compartidos se ubican en `/assets`.
 
 ---
 
