@@ -8,7 +8,7 @@ Definir una arquitectura web clara, escalable y mantenible para soportar los mó
 - Backend: **PHP puro** (Railway)
 - Base de datos: **MySQL/MariaDB** (Railway)
 - Administración de BD: **phpMyAdmin** (Railway)
-- Despliegue y operación: **Railway** (sin dependencia de Vercel)
+- Despliegue y operación: **Railway**
 
 ## 1.1 ¿Qué es Railway y por qué se eligió?
 Railway es una plataforma cloud de despliegue que permite ejecutar y administrar servicios web, bases de datos y herramientas operativas desde un mismo entorno. Se eligió para este proyecto porque centraliza frontend, backend, MySQL/MariaDB y phpMyAdmin en una sola plataforma, reduciendo problemas de sincronización entre proveedores, simplificando la colaboración entre varios programadores y facilitando la operación diaria (configuración, despliegues y mantenimiento) en un flujo único.
@@ -101,8 +101,6 @@ flowchart LR
 ### 4.2 Operación colaborativa y control de cambios
 - Flujo recomendado por ramas (`main`, `develop`, `feature/*`) para múltiples programadores.
 - Integración de repositorio GitHub con Railway para despliegues consistentes desde ramas definidas.
-- Evita desalineación entre proveedores de hosting (antes Railway + Vercel), reduciendo fricción operativa.
-- Elimina la restricción práctica de colaboración asociada al esquema de usuarios de Vercel para este proyecto.
 
 ### 4.3 Herramientas de administración
 - phpMyAdmin para operación de base de datos:
