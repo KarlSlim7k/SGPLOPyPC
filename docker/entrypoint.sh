@@ -6,6 +6,12 @@ DOCROOT="${APACHE_DOCUMENT_ROOT:-/var/www/html/public}"
 
 mkdir -p "${DOCROOT}"
 
+# Static healthcheck endpoint served directly by Apache.
+# This avoids relying on PHP execution for platform liveness checks.
+cat > "${DOCROOT}/healthz" <<'TXT'
+ok
+TXT
+
 if [ ! -f "${DOCROOT}/index.php" ]; then
   cat > "${DOCROOT}/index.php" <<'PHP'
 <?php
