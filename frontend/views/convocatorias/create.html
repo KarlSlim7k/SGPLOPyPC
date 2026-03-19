@@ -3,191 +3,223 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nueva Convocatoria - Administrador | SGPLOPyPC</title>
-    <!-- Tailwind CSS -->
+    <title>Nueva Convocatoria — SGPLOPyPC</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
         tailwind.config = {
             theme: {
                 extend: {
-                    colors: {
-                        primary: {
-                            50: '#eff6ff', 100: '#dbeafe', 500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8', 800: '#1e40af', 900: '#1e3a8a',
-                        }
-                    }
+                    fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] },
+                    colors: { primary: { 50:'#eff6ff',100:'#dbeafe',500:'#3b82f6',600:'#2563eb',700:'#1d4ed8',800:'#1e40af',900:'#1e3a8a' } }
                 }
             }
         }
     </script>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
 </head>
-<body class="bg-slate-50 text-slate-900 font-sans antialiased flex h-screen overflow-hidden">
+<body class="bg-slate-100 text-slate-900 font-sans antialiased flex h-screen overflow-hidden">
 
     <!-- Sidebar -->
-    <aside class="w-64 bg-white border-r border-slate-200 flex flex-col hidden md:flex h-full shrink-0">
-        <div class="p-6 border-b border-slate-200">
-            <div class="flex items-center gap-3">
-                <div class="w-8 h-8 rounded bg-primary-700 flex items-center justify-center text-white font-bold">SG</div>
+    <aside class="w-64 bg-slate-900 flex flex-col hidden md:flex h-full shrink-0">
+        <div class="p-5 border-b border-slate-800">
+            <a href="/" class="flex items-center gap-3 cursor-pointer">
+                <div class="w-9 h-9 rounded-lg bg-blue-600 flex items-center justify-center text-white font-bold text-sm shrink-0" aria-hidden="true">SG</div>
                 <div>
-                    <h1 class="font-bold text-slate-800 text-sm leading-tight">SGPLOPyPC</h1>
-                    <p class="text-xs text-slate-500">Gestión Licitaciones</p>
+                    <p class="font-bold text-white text-sm leading-tight">SGPLOPyPC</p>
+                    <p class="text-xs text-slate-500">Panel Administrativo</p>
+                </div>
+            </a>
+        </div>
+        <nav class="flex-1 overflow-y-auto py-5 px-3 flex flex-col gap-5">
+            <div>
+                <p class="px-3 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Principal</p>
+                <a href="/frontend/public/dashboard.html" class="flex items-center gap-3 px-3 py-2 text-slate-400 hover:bg-slate-800 hover:text-white rounded-lg font-medium transition-all duration-200 text-sm cursor-pointer">
+                    <i class="ph ph-squares-four text-lg shrink-0" aria-hidden="true"></i> Dashboard
+                </a>
+            </div>
+            <div>
+                <p class="px-3 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Módulos</p>
+                <div class="space-y-0.5">
+                    <a href="/frontend/views/convocatorias/index.html" class="flex items-center gap-3 px-3 py-2 bg-slate-800 text-white rounded-lg font-semibold transition-all duration-200 text-sm cursor-pointer">
+                        <i class="ph ph-megaphone text-lg shrink-0" aria-hidden="true"></i> Convocatorias
+                    </a>
+                    <a href="/frontend/views/proveedores/index.html" class="flex items-center gap-3 px-3 py-2 text-slate-400 hover:bg-slate-800 hover:text-white rounded-lg font-medium transition-all duration-200 text-sm cursor-pointer">
+                        <i class="ph ph-users text-lg shrink-0" aria-hidden="true"></i> Proveedores
+                    </a>
+                    <a href="/frontend/views/propuestas/index.html" class="flex items-center gap-3 px-3 py-2 text-slate-400 hover:bg-slate-800 hover:text-white rounded-lg font-medium transition-all duration-200 text-sm cursor-pointer">
+                        <i class="ph ph-file-text text-lg shrink-0" aria-hidden="true"></i> Propuestas
+                    </a>
+                    <a href="/frontend/views/evaluacion/index.html" class="flex items-center gap-3 px-3 py-2 text-slate-400 hover:bg-slate-800 hover:text-white rounded-lg font-medium transition-all duration-200 text-sm cursor-pointer">
+                        <i class="ph ph-check-square text-lg shrink-0" aria-hidden="true"></i> Evaluación
+                    </a>
+                    <a href="/frontend/views/adjudicaciones/index.html" class="flex items-center gap-3 px-3 py-2 text-slate-400 hover:bg-slate-800 hover:text-white rounded-lg font-medium transition-all duration-200 text-sm cursor-pointer">
+                        <i class="ph ph-handshake text-lg shrink-0" aria-hidden="true"></i> Adjudicaciones
+                    </a>
                 </div>
             </div>
-        </div>
-        
-        <div class="flex-1 overflow-y-auto py-4 px-3">
-            <p class="px-3 text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Principal</p>
-            <nav class="space-y-1 mb-6">
-                <a href="/frontend/public/dashboard.html" class="flex items-center gap-3 px-3 py-2 text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-md font-medium transition-colors duration-200">
-                    <i class="ph ph-squares-four text-lg text-slate-400"></i> Dashboard
-                </a>
-            </nav>
-
-            <p class="px-3 text-xs font-semibold text-slate-400 uppercase tracking-wider mb-2">Módulos</p>
-            <nav class="space-y-1">
-                <a href="/frontend/views/convocatorias/index.html" class="flex items-center gap-3 px-3 py-2 bg-primary-50 text-primary-700 rounded-md font-medium transition-colors duration-200">
-                    <i class="ph ph-megaphone text-lg"></i> Convocatorias
-                </a>
-                <a href="/frontend/views/proveedores/index.html" class="flex items-center gap-3 px-3 py-2 text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-md font-medium transition-colors duration-200">
-                    <i class="ph ph-users text-lg text-slate-400"></i> Proveedores
-                </a>
-                <a href="/frontend/views/propuestas/index.html" class="flex items-center gap-3 px-3 py-2 text-slate-600 hover:bg-slate-50 hover:text-slate-900 rounded-md font-medium transition-colors duration-200">
-                    <i class="ph ph-file-text text-lg text-slate-400"></i> Propuestas
-                </a>
-            </nav>
+            <div>
+                <p class="px-3 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Sistema</p>
+                <div class="space-y-0.5">
+                    <a href="/frontend/views/reportes/index.html" class="flex items-center gap-3 px-3 py-2 text-slate-400 hover:bg-slate-800 hover:text-white rounded-lg font-medium transition-all duration-200 text-sm cursor-pointer">
+                        <i class="ph ph-chart-bar text-lg shrink-0" aria-hidden="true"></i> Reportes
+                    </a>
+                    <a href="#" class="flex items-center gap-3 px-3 py-2 text-slate-400 hover:bg-slate-800 hover:text-white rounded-lg font-medium transition-all duration-200 text-sm cursor-pointer">
+                        <i class="ph ph-gear text-lg shrink-0" aria-hidden="true"></i> Configuración
+                    </a>
+                </div>
+            </div>
+        </nav>
+        <div class="p-4 border-t border-slate-800 space-y-0.5">
+            <a href="/" class="flex items-center gap-3 px-3 py-2 text-slate-400 hover:bg-slate-800 hover:text-white rounded-lg transition-all text-sm font-medium cursor-pointer">
+                <i class="ph ph-arrow-square-out text-lg shrink-0" aria-hidden="true"></i> Ver Sitio Público
+            </a>
+            <button class="flex items-center gap-3 w-full px-3 py-2 text-slate-400 hover:bg-red-950 hover:text-red-400 rounded-lg font-medium transition-all text-sm cursor-pointer">
+                <i class="ph ph-sign-out text-lg shrink-0" aria-hidden="true"></i> Cerrar Sesión
+            </button>
         </div>
     </aside>
 
     <!-- Main Content -->
-    <div class="flex-1 flex flex-col h-full bg-slate-50 overflow-hidden">
-        
-        <!-- Header -->
+    <div class="flex-1 flex flex-col h-full overflow-hidden">
         <header class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-6 z-10 shrink-0">
-            <div class="flex items-center gap-4">
-                <a href="/frontend/views/convocatorias/index.html" class="text-slate-400 hover:text-primary-600 transition-colors">
-                    <i class="ph ph-arrow-left text-xl"></i>
+            <div class="flex items-center gap-3">
+                <a href="/frontend/views/convocatorias/index.html" class="p-2 text-slate-400 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer" aria-label="Volver a convocatorias">
+                    <i class="ph ph-arrow-left text-lg" aria-hidden="true"></i>
                 </a>
-                <h2 class="text-xl font-semibold text-slate-800">Crear Licitación</h2>
-            </div>
-            
-            <div class="flex items-center gap-4">
-                <div class="flex items-center gap-3 border-l border-slate-200 pl-4">
-                    <div class="text-right hidden sm:block">
-                        <p class="text-sm font-medium text-slate-700 leading-none">Admin Usuario</p>
-                    </div>
+                <div>
+                    <h1 class="text-base font-bold text-slate-800">Nueva Convocatoria</h1>
+                    <p class="text-xs text-slate-500">Completa todos los campos requeridos para publicar</p>
                 </div>
             </div>
+            <img src="https://ui-avatars.com/api/?name=Admin+Usuario&background=1e40af&color=ffffff&size=80" alt="Admin" class="w-9 h-9 rounded-full border-2 border-slate-200">
         </header>
 
-        <!-- Page Content -->
-        <main class="flex-1 overflow-x-hidden overflow-y-auto bg-slate-50 p-6">
+        <main class="flex-1 overflow-x-hidden overflow-y-auto p-6">
             <div class="max-w-4xl mx-auto">
-                
-                <form class="space-y-6">
-                    <!-- General Information Card -->
-                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-                        <div class="px-6 py-4 border-b border-slate-200 bg-slate-50">
-                            <h3 class="text-base font-semibold text-slate-800 flex items-center gap-2">
-                                <i class="ph ph-info text-primary-600"></i> Información General
-                            </h3>
+
+                <!-- Step Indicator -->
+                <div class="flex items-center gap-0 mb-8" aria-label="Pasos del formulario">
+                    <div class="flex items-center gap-2">
+                        <div class="w-7 h-7 rounded-full bg-primary-600 text-white flex items-center justify-center text-xs font-bold" aria-current="step">1</div>
+                        <span class="text-sm font-semibold text-primary-600">Información General</span>
+                    </div>
+                    <div class="flex-1 h-px bg-slate-200 mx-3"></div>
+                    <div class="flex items-center gap-2">
+                        <div class="w-7 h-7 rounded-full bg-slate-200 text-slate-500 flex items-center justify-center text-xs font-semibold">2</div>
+                        <span class="text-sm font-medium text-slate-400">Calendario</span>
+                    </div>
+                    <div class="flex-1 h-px bg-slate-200 mx-3"></div>
+                    <div class="flex items-center gap-2">
+                        <div class="w-7 h-7 rounded-full bg-slate-200 text-slate-500 flex items-center justify-center text-xs font-semibold">3</div>
+                        <span class="text-sm font-medium text-slate-400">Documentos</span>
+                    </div>
+                </div>
+
+                <form class="space-y-5" novalidate>
+                    <!-- General Information -->
+                    <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden">
+                        <div class="px-6 py-4 border-b border-slate-100 bg-slate-50/70 flex items-center gap-2">
+                            <div class="w-7 h-7 rounded-lg bg-primary-50 text-primary-600 flex items-center justify-center" aria-hidden="true"><i class="ph ph-info text-sm"></i></div>
+                            <h2 class="font-bold text-slate-800 text-sm">Información General</h2>
                         </div>
-                        <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-                            
-                            <div class="space-y-1 md:col-span-2">
-                                <label class="text-sm font-medium text-slate-700">Objeto del Proyecto <span class="text-red-500">*</span></label>
-                                <textarea rows="3" class="w-full px-4 py-2 border border-slate-300 rounded-lg text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all"></textarea>
+                        <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <div class="md:col-span-2 space-y-1.5">
+                                <label for="objeto" class="text-sm font-semibold text-slate-700">Objeto del Proyecto <span class="text-red-500" aria-label="requerido">*</span></label>
+                                <textarea id="objeto" name="objeto" rows="3" required placeholder="Describe el objeto de la obra o servicio a contratar..." class="w-full px-4 py-2.5 border border-slate-300 rounded-xl text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all resize-none placeholder:text-slate-400"></textarea>
                             </div>
-
-                            <div class="space-y-1">
-                                <label class="text-sm font-medium text-slate-700">Clave de Licitación <span class="text-red-500">*</span></label>
-                                <input type="text" placeholder="Ej. LO-902..." class="w-full px-4 py-2 border border-slate-300 rounded-lg text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all">
+                            <div class="space-y-1.5">
+                                <label for="clave" class="text-sm font-semibold text-slate-700">Clave de Licitación <span class="text-red-500" aria-label="requerido">*</span></label>
+                                <input id="clave" name="clave" type="text" required placeholder="Ej. LO-902002994-E8-2026" class="w-full px-4 py-2.5 border border-slate-300 rounded-xl text-sm font-mono text-slate-800 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all placeholder:text-slate-400 placeholder:font-sans">
                             </div>
-
-                            <div class="space-y-1">
-                                <label class="text-sm font-medium text-slate-700">Tipo de Procedimiento <span class="text-red-500">*</span></label>
-                                <select class="w-full px-4 py-2 border border-slate-300 rounded-lg text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all cursor-pointer">
-                                    <option value="">Seleccione...</option>
-                                    <option value="lp">Licitación Pública</option>
-                                    <option value="ir">Invitación Restringida</option>
+                            <div class="space-y-1.5">
+                                <label for="tipo" class="text-sm font-semibold text-slate-700">Tipo de Procedimiento <span class="text-red-500" aria-label="requerido">*</span></label>
+                                <select id="tipo" name="tipo" required class="w-full px-4 py-2.5 border border-slate-300 rounded-xl text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all cursor-pointer">
+                                    <option value="">Selecciona un tipo...</option>
+                                    <option value="lp">Licitación Pública Nacional</option>
+                                    <option value="li">Licitación Pública Internacional</option>
+                                    <option value="ir">Invitación Restringida (3+ proveedores)</option>
                                     <option value="ad">Adjudicación Directa</option>
                                 </select>
                             </div>
-
-                            <div class="space-y-1">
-                                <label class="text-sm font-medium text-slate-700">Presupuesto Estimado (MXN)</label>
+                            <div class="space-y-1.5">
+                                <label for="presupuesto" class="text-sm font-semibold text-slate-700">Presupuesto Estimado (MXN)</label>
                                 <div class="relative">
-                                    <span class="absolute left-3 top-1/2 -translate-y-1/2 text-slate-500">$</span>
-                                    <input type="number" class="w-full pl-8 pr-4 py-2 border border-slate-300 rounded-lg text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all">
+                                    <span class="absolute left-4 top-1/2 -translate-y-1/2 text-slate-500 text-sm font-semibold" aria-hidden="true">$</span>
+                                    <input id="presupuesto" name="presupuesto" type="number" min="0" step="1000" placeholder="0.00" class="w-full pl-8 pr-4 py-2.5 border border-slate-300 rounded-xl text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all">
                                 </div>
                             </div>
-                            
-                            <div class="space-y-1">
-                                <label class="text-sm font-medium text-slate-700">Ubicación de la obra</label>
-                                <input type="text" class="w-full px-4 py-2 border border-slate-300 rounded-lg text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all">
+                            <div class="space-y-1.5">
+                                <label for="ubicacion" class="text-sm font-semibold text-slate-700">Ubicación de la Obra</label>
+                                <div class="relative">
+                                    <i class="ph ph-map-pin absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-base" aria-hidden="true"></i>
+                                    <input id="ubicacion" name="ubicacion" type="text" placeholder="Municipio, Estado" class="w-full pl-9 pr-4 py-2.5 border border-slate-300 rounded-xl text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all placeholder:text-slate-400">
+                                </div>
                             </div>
                         </div>
                     </div>
 
-                    <!-- Dates Card -->
-                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-                        <div class="px-6 py-4 border-b border-slate-200 bg-slate-50">
-                            <h3 class="text-base font-semibold text-slate-800 flex items-center gap-2">
-                                <i class="ph ph-calendar text-primary-600"></i> Calendario del Proceso
-                            </h3>
+                    <!-- Calendar -->
+                    <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden">
+                        <div class="px-6 py-4 border-b border-slate-100 bg-slate-50/70 flex items-center gap-2">
+                            <div class="w-7 h-7 rounded-lg bg-primary-50 text-primary-600 flex items-center justify-center" aria-hidden="true"><i class="ph ph-calendar text-sm"></i></div>
+                            <h2 class="font-bold text-slate-800 text-sm">Calendario del Proceso</h2>
                         </div>
-                        <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-                            
-                            <div class="space-y-1">
-                                <label class="text-sm font-medium text-slate-700">Junta de Aclaraciones</label>
-                                <input type="date" class="w-full px-4 py-2 border border-slate-300 rounded-lg text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all cursor-pointer">
+                        <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-5">
+                            <div class="space-y-1.5">
+                                <label for="junta" class="text-sm font-semibold text-slate-700">Junta de Aclaraciones</label>
+                                <input id="junta" name="junta" type="date" class="w-full px-4 py-2.5 border border-slate-300 rounded-xl text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all cursor-pointer">
                             </div>
-
-                            <div class="space-y-1">
-                                <label class="text-sm font-medium text-slate-700">Recepción de Propuestas <span class="text-red-500">*</span></label>
-                                <input type="date" class="w-full px-4 py-2 border border-slate-300 rounded-lg text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all cursor-pointer">
+                            <div class="space-y-1.5">
+                                <label for="recepcion" class="text-sm font-semibold text-slate-700">Recepción de Propuestas <span class="text-red-500" aria-label="requerido">*</span></label>
+                                <input id="recepcion" name="recepcion" type="date" required class="w-full px-4 py-2.5 border border-slate-300 rounded-xl text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all cursor-pointer">
                             </div>
-
-                            <div class="space-y-1">
-                                <label class="text-sm font-medium text-slate-700">Apertura de Propuestas</label>
-                                <input type="date" class="w-full px-4 py-2 border border-slate-300 rounded-lg text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all cursor-pointer">
+                            <div class="space-y-1.5">
+                                <label for="apertura" class="text-sm font-semibold text-slate-700">Apertura de Propuestas</label>
+                                <input id="apertura" name="apertura" type="date" class="w-full px-4 py-2.5 border border-slate-300 rounded-xl text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all cursor-pointer">
                             </div>
-
-                            <div class="space-y-1">
-                                <label class="text-sm font-medium text-slate-700">Fallo o Adjudicación</label>
-                                <input type="date" class="w-full px-4 py-2 border border-slate-300 rounded-lg text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all cursor-pointer">
+                            <div class="space-y-1.5">
+                                <label for="fallo" class="text-sm font-semibold text-slate-700">Fallo o Adjudicación</label>
+                                <input id="fallo" name="fallo" type="date" class="w-full px-4 py-2.5 border border-slate-300 rounded-xl text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all cursor-pointer">
                             </div>
                         </div>
                     </div>
 
-                    <!-- Documents upload -->
-                    <div class="bg-white rounded-xl border border-slate-200 shadow-sm overflow-hidden">
-                        <div class="px-6 py-4 border-b border-slate-200 bg-slate-50">
-                            <h3 class="text-base font-semibold text-slate-800 flex items-center gap-2">
-                                <i class="ph ph-file-pdf text-primary-600"></i> Documentos Adjuntos (Bases y Anexos)
-                            </h3>
+                    <!-- Documents -->
+                    <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden">
+                        <div class="px-6 py-4 border-b border-slate-100 bg-slate-50/70 flex items-center gap-2">
+                            <div class="w-7 h-7 rounded-lg bg-primary-50 text-primary-600 flex items-center justify-center" aria-hidden="true"><i class="ph ph-file-pdf text-sm"></i></div>
+                            <h2 class="font-bold text-slate-800 text-sm">Documentos Adjuntos <span class="text-slate-400 font-normal">(Bases y Anexos)</span></h2>
                         </div>
                         <div class="p-6">
-                            <div class="border-2 border-dashed border-slate-300 rounded-lg p-10 text-center hover:bg-slate-50 hover:border-primary-400 transition-colors cursor-pointer group">
-                                <div class="w-12 h-12 rounded-full bg-primary-50 text-primary-600 flex items-center justify-center mx-auto mb-3 group-hover:scale-110 transition-transform">
+                            <label for="file-upload" class="block border-2 border-dashed border-slate-300 rounded-2xl p-10 text-center hover:bg-slate-50 hover:border-primary-400 transition-all cursor-pointer group">
+                                <div class="w-12 h-12 rounded-full bg-primary-50 text-primary-600 flex items-center justify-center mx-auto mb-3 group-hover:bg-primary-600 group-hover:text-white transition-colors" aria-hidden="true">
                                     <i class="ph ph-upload-simple text-xl"></i>
                                 </div>
-                                <p class="text-sm font-medium text-slate-700 mb-1">Haz clic para subir archivos o arrástralos aquí</p>
-                                <p class="text-xs text-slate-400">Archivos permitidos: PDF, DOCX, XLSX (Max 10MB)</p>
-                            </div>
+                                <p class="text-sm font-semibold text-slate-700 mb-1">Haz clic para seleccionar archivos o arrástralos aquí</p>
+                                <p class="text-xs text-slate-400">PDF, DOCX, XLSX — Máx. 10 MB por archivo</p>
+                                <input id="file-upload" type="file" multiple accept=".pdf,.docx,.xlsx" class="sr-only" aria-label="Subir documentos adjuntos">
+                            </label>
                         </div>
                     </div>
 
                     <!-- Actions -->
-                    <div class="flex justify-end gap-3 pt-4 border-t border-slate-200">
-                        <a href="/frontend/views/convocatorias/index.html" class="px-6 py-2 border border-slate-300 text-slate-700 text-sm font-medium rounded-lg hover:bg-slate-50 transition-colors">
+                    <div class="flex items-center justify-between pt-2 pb-6">
+                        <a href="/frontend/views/convocatorias/index.html" class="px-6 py-2.5 border border-slate-300 text-slate-600 text-sm font-semibold rounded-xl hover:bg-slate-50 transition-colors cursor-pointer">
                             Cancelar
                         </a>
-                        <button type="button" class="px-6 py-2 bg-primary-600 text-white text-sm font-medium rounded-lg hover:bg-primary-700 transition-colors shadow-sm">
-                            Guardar y Publicar
-                        </button>
+                        <div class="flex gap-3">
+                            <button type="button" class="px-6 py-2.5 border border-slate-300 text-slate-600 text-sm font-semibold rounded-xl hover:bg-slate-50 transition-colors cursor-pointer">
+                                Guardar borrador
+                            </button>
+                            <button type="submit" class="px-6 py-2.5 bg-primary-600 text-white text-sm font-bold rounded-xl hover:bg-primary-700 transition-colors shadow-sm cursor-pointer inline-flex items-center gap-2">
+                                <i class="ph ph-paper-plane-tilt text-base" aria-hidden="true"></i>
+                                Guardar y Publicar
+                            </button>
+                        </div>
                     </div>
                 </form>
-
             </div>
         </main>
     </div>

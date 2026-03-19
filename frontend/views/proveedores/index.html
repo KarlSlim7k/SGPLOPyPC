@@ -1,0 +1,285 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Proveedores — SGPLOPyPC</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] },
+                    colors: { primary: { 50:'#eff6ff',100:'#dbeafe',500:'#3b82f6',600:'#2563eb',700:'#1d4ed8',800:'#1e40af',900:'#1e3a8a' } }
+                }
+            }
+        }
+    </script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+<body class="bg-slate-100 text-slate-900 font-sans antialiased flex h-screen overflow-hidden">
+
+    <!-- Sidebar -->
+    <aside class="w-64 bg-slate-900 flex flex-col hidden md:flex h-full shrink-0">
+        <div class="p-5 border-b border-slate-800">
+            <a href="/" class="flex items-center gap-3 cursor-pointer">
+                <div class="w-9 h-9 rounded-lg bg-blue-600 flex items-center justify-center text-white font-bold text-sm shrink-0" aria-hidden="true">SG</div>
+                <div>
+                    <p class="font-bold text-white text-sm leading-tight">SGPLOPyPC</p>
+                    <p class="text-xs text-slate-500">Panel Administrativo</p>
+                </div>
+            </a>
+        </div>
+        <nav class="flex-1 overflow-y-auto py-5 px-3 flex flex-col gap-5">
+            <div>
+                <p class="px-3 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Principal</p>
+                <a href="/frontend/public/dashboard.html" class="flex items-center gap-3 px-3 py-2 text-slate-400 hover:bg-slate-800 hover:text-white rounded-lg font-medium transition-all duration-200 text-sm cursor-pointer">
+                    <i class="ph ph-squares-four text-lg shrink-0" aria-hidden="true"></i> Dashboard
+                </a>
+            </div>
+            <div>
+                <p class="px-3 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Módulos</p>
+                <div class="space-y-0.5">
+                    <a href="/frontend/views/convocatorias/index.html" class="flex items-center gap-3 px-3 py-2 text-slate-400 hover:bg-slate-800 hover:text-white rounded-lg font-medium transition-all duration-200 text-sm cursor-pointer">
+                        <i class="ph ph-megaphone text-lg shrink-0" aria-hidden="true"></i> Convocatorias
+                    </a>
+                    <a href="/frontend/views/proveedores/index.html" class="flex items-center gap-3 px-3 py-2 bg-slate-800 text-white rounded-lg font-semibold transition-all duration-200 text-sm cursor-pointer">
+                        <i class="ph ph-users text-lg shrink-0" aria-hidden="true"></i> Proveedores
+                    </a>
+                    <a href="/frontend/views/propuestas/index.html" class="flex items-center gap-3 px-3 py-2 text-slate-400 hover:bg-slate-800 hover:text-white rounded-lg font-medium transition-all duration-200 text-sm cursor-pointer">
+                        <i class="ph ph-file-text text-lg shrink-0" aria-hidden="true"></i> Propuestas
+                    </a>
+                    <a href="/frontend/views/evaluacion/index.html" class="flex items-center gap-3 px-3 py-2 text-slate-400 hover:bg-slate-800 hover:text-white rounded-lg font-medium transition-all duration-200 text-sm cursor-pointer">
+                        <i class="ph ph-check-square text-lg shrink-0" aria-hidden="true"></i> Evaluación
+                    </a>
+                    <a href="/frontend/views/adjudicaciones/index.html" class="flex items-center gap-3 px-3 py-2 text-slate-400 hover:bg-slate-800 hover:text-white rounded-lg font-medium transition-all duration-200 text-sm cursor-pointer">
+                        <i class="ph ph-handshake text-lg shrink-0" aria-hidden="true"></i> Adjudicaciones
+                    </a>
+                </div>
+            </div>
+            <div>
+                <p class="px-3 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Sistema</p>
+                <div class="space-y-0.5">
+                    <a href="/frontend/views/reportes/index.html" class="flex items-center gap-3 px-3 py-2 text-slate-400 hover:bg-slate-800 hover:text-white rounded-lg font-medium transition-all duration-200 text-sm cursor-pointer">
+                        <i class="ph ph-chart-bar text-lg shrink-0" aria-hidden="true"></i> Reportes
+                    </a>
+                    <a href="#" class="flex items-center gap-3 px-3 py-2 text-slate-400 hover:bg-slate-800 hover:text-white rounded-lg font-medium transition-all duration-200 text-sm cursor-pointer">
+                        <i class="ph ph-gear text-lg shrink-0" aria-hidden="true"></i> Configuración
+                    </a>
+                </div>
+            </div>
+        </nav>
+        <div class="p-4 border-t border-slate-800 space-y-0.5">
+            <a href="/" class="flex items-center gap-3 px-3 py-2 text-slate-400 hover:bg-slate-800 hover:text-white rounded-lg transition-all text-sm font-medium cursor-pointer">
+                <i class="ph ph-arrow-square-out text-lg shrink-0" aria-hidden="true"></i> Ver Sitio Público
+            </a>
+            <button class="flex items-center gap-3 w-full px-3 py-2 text-slate-400 hover:bg-red-950 hover:text-red-400 rounded-lg font-medium transition-all text-sm cursor-pointer">
+                <i class="ph ph-sign-out text-lg shrink-0" aria-hidden="true"></i> Cerrar Sesión
+            </button>
+        </div>
+    </aside>
+
+    <!-- Main -->
+    <div class="flex-1 flex flex-col h-full overflow-hidden">
+        <header class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-6 z-10 shrink-0">
+            <div>
+                <h1 class="text-base font-bold text-slate-800">Proveedores Registrados</h1>
+                <p class="text-xs text-slate-500">Gestión de empresas participantes en licitaciones</p>
+            </div>
+            <div class="flex items-center gap-3">
+                <button class="inline-flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white font-semibold px-4 py-2 rounded-lg text-sm cursor-pointer transition-colors shadow-sm">
+                    <i class="ph ph-plus-circle text-base" aria-hidden="true"></i>
+                    Registrar Proveedor
+                </button>
+                <img src="https://ui-avatars.com/api/?name=Admin+Usuario&background=1e40af&color=ffffff&size=80" alt="Admin" class="w-9 h-9 rounded-full border-2 border-slate-200">
+            </div>
+        </header>
+
+        <main class="flex-1 overflow-x-hidden overflow-y-auto p-6">
+            <div class="max-w-7xl mx-auto space-y-5">
+
+                <!-- Stats -->
+                <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="bg-white rounded-2xl border border-slate-200 p-4">
+                        <p class="text-2xl font-extrabold text-slate-800">84</p>
+                        <p class="text-xs text-slate-500 mt-0.5 font-medium">Total registrados</p>
+                    </div>
+                    <div class="bg-white rounded-2xl border border-slate-200 p-4">
+                        <p class="text-2xl font-extrabold text-emerald-600">71</p>
+                        <p class="text-xs text-slate-500 mt-0.5 font-medium">Validados</p>
+                    </div>
+                    <div class="bg-white rounded-2xl border border-slate-200 p-4">
+                        <p class="text-2xl font-extrabold text-amber-600">9</p>
+                        <p class="text-xs text-slate-500 mt-0.5 font-medium">Pendiente revisión</p>
+                    </div>
+                    <div class="bg-white rounded-2xl border border-slate-200 p-4">
+                        <p class="text-2xl font-extrabold text-red-500">4</p>
+                        <p class="text-xs text-slate-500 mt-0.5 font-medium">Suspendidos</p>
+                    </div>
+                </div>
+
+                <!-- Filters -->
+                <div class="bg-white rounded-2xl border border-slate-200 p-4 flex flex-wrap gap-3 items-center justify-between">
+                    <div class="flex gap-3 flex-wrap">
+                        <div class="relative">
+                            <i class="ph ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm" aria-hidden="true"></i>
+                            <input type="search" placeholder="Buscar por razón social o RFC..." aria-label="Buscar proveedor" class="pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:bg-white transition-all w-72">
+                        </div>
+                        <select aria-label="Filtrar por estatus" class="px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-primary-500 cursor-pointer hover:bg-slate-100 transition-colors">
+                            <option value="">Todos los estatus</option>
+                            <option value="validado">Validado</option>
+                            <option value="pendiente">Pendiente</option>
+                            <option value="suspendido">Suspendido</option>
+                        </select>
+                        <select aria-label="Filtrar por clasificación" class="px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-primary-500 cursor-pointer hover:bg-slate-100 transition-colors">
+                            <option value="">Clasificación de obra</option>
+                            <option value="civil">Obra Civil</option>
+                            <option value="hidro">Hidráulica</option>
+                            <option value="elect">Eléctrica</option>
+                            <option value="mant">Mantenimiento</option>
+                        </select>
+                    </div>
+                    <button class="inline-flex items-center gap-2 border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-medium px-4 py-2 rounded-lg text-sm cursor-pointer transition-colors">
+                        <i class="ph ph-download-simple text-base" aria-hidden="true"></i> Exportar
+                    </button>
+                </div>
+
+                <!-- Table -->
+                <div class="bg-white border border-slate-200 rounded-2xl overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left text-sm" aria-label="Lista de proveedores">
+                            <thead>
+                                <tr class="border-b border-slate-100 bg-slate-50">
+                                    <th class="px-6 py-3.5 font-semibold text-slate-500 text-xs uppercase tracking-wide">Razón Social</th>
+                                    <th class="px-6 py-3.5 font-semibold text-slate-500 text-xs uppercase tracking-wide">RFC</th>
+                                    <th class="px-6 py-3.5 font-semibold text-slate-500 text-xs uppercase tracking-wide">Clasificación</th>
+                                    <th class="px-6 py-3.5 font-semibold text-slate-500 text-xs uppercase tracking-wide">Licitaciones</th>
+                                    <th class="px-6 py-3.5 font-semibold text-slate-500 text-xs uppercase tracking-wide">Registro</th>
+                                    <th class="px-6 py-3.5 font-semibold text-slate-500 text-xs uppercase tracking-wide">Estatus</th>
+                                    <th class="px-6 py-3.5 font-semibold text-slate-500 text-xs uppercase tracking-wide text-right">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100">
+                                <tr class="hover:bg-slate-50 transition-colors group">
+                                    <td class="px-6 py-4">
+                                        <p class="font-semibold text-slate-800 text-sm">Construcciones Norte S.A. de C.V.</p>
+                                        <p class="text-xs text-slate-400 mt-0.5">Rep: Ing. Roberto Méndez Torres</p>
+                                    </td>
+                                    <td class="px-6 py-4 font-mono text-slate-600 text-xs whitespace-nowrap">CNO890314AB1</td>
+                                    <td class="px-6 py-4 text-slate-600 text-xs whitespace-nowrap">Obra Civil</td>
+                                    <td class="px-6 py-4 text-slate-800 font-bold text-sm">8</td>
+                                    <td class="px-6 py-4 text-slate-500 text-xs whitespace-nowrap">12 Ene 2024</td>
+                                    <td class="px-6 py-4 whitespace-nowrap"><span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700 border border-emerald-200">Validado</span></td>
+                                    <td class="px-6 py-4 text-right">
+                                        <div class="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <button class="p-2 text-slate-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors cursor-pointer" aria-label="Ver proveedor"><i class="ph ph-eye text-base" aria-hidden="true"></i></button>
+                                            <button class="p-2 text-slate-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors cursor-pointer" aria-label="Editar proveedor"><i class="ph ph-pencil-simple text-base" aria-hidden="true"></i></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-slate-50 transition-colors group">
+                                    <td class="px-6 py-4">
+                                        <p class="font-semibold text-slate-800 text-sm">GEO Construcciones y Diseño S.A.</p>
+                                        <p class="text-xs text-slate-400 mt-0.5">Rep: Arq. Patricia Valenzuela López</p>
+                                    </td>
+                                    <td class="px-6 py-4 font-mono text-slate-600 text-xs whitespace-nowrap">GCD950820BC2</td>
+                                    <td class="px-6 py-4 text-slate-600 text-xs whitespace-nowrap">Obra Civil</td>
+                                    <td class="px-6 py-4 text-slate-800 font-bold text-sm">3</td>
+                                    <td class="px-6 py-4 text-slate-500 text-xs whitespace-nowrap">05 Mar 2026</td>
+                                    <td class="px-6 py-4 whitespace-nowrap"><span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700 border border-emerald-200">Validado</span></td>
+                                    <td class="px-6 py-4 text-right">
+                                        <div class="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <button class="p-2 text-slate-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors cursor-pointer" aria-label="Ver proveedor"><i class="ph ph-eye text-base" aria-hidden="true"></i></button>
+                                            <button class="p-2 text-slate-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors cursor-pointer" aria-label="Editar"><i class="ph ph-pencil-simple text-base" aria-hidden="true"></i></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-slate-50 transition-colors group">
+                                    <td class="px-6 py-4">
+                                        <p class="font-semibold text-slate-800 text-sm">Ingeniería Hidráulica ABC S.C.</p>
+                                        <p class="text-xs text-slate-400 mt-0.5">Rep: Dr. Arturo Fuentes Ramírez</p>
+                                    </td>
+                                    <td class="px-6 py-4 font-mono text-slate-600 text-xs whitespace-nowrap">IHA010509CD3</td>
+                                    <td class="px-6 py-4 text-slate-600 text-xs whitespace-nowrap">Hidráulica</td>
+                                    <td class="px-6 py-4 text-slate-800 font-bold text-sm">12</td>
+                                    <td class="px-6 py-4 text-slate-500 text-xs whitespace-nowrap">18 Feb 2022</td>
+                                    <td class="px-6 py-4 whitespace-nowrap"><span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700 border border-emerald-200">Validado</span></td>
+                                    <td class="px-6 py-4 text-right">
+                                        <div class="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <button class="p-2 text-slate-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors cursor-pointer" aria-label="Ver proveedor"><i class="ph ph-eye text-base" aria-hidden="true"></i></button>
+                                            <button class="p-2 text-slate-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors cursor-pointer" aria-label="Editar"><i class="ph ph-pencil-simple text-base" aria-hidden="true"></i></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-slate-50 transition-colors group">
+                                    <td class="px-6 py-4">
+                                        <p class="font-semibold text-slate-800 text-sm">Electrotecnia del Bajío S.A. de C.V.</p>
+                                        <p class="text-xs text-slate-400 mt-0.5">Rep: Ing. Sandra Morales Gutiérrez</p>
+                                    </td>
+                                    <td class="px-6 py-4 font-mono text-slate-600 text-xs whitespace-nowrap">EBA120314EF4</td>
+                                    <td class="px-6 py-4 text-slate-600 text-xs whitespace-nowrap">Eléctrica</td>
+                                    <td class="px-6 py-4 text-slate-800 font-bold text-sm">5</td>
+                                    <td class="px-6 py-4 text-slate-500 text-xs whitespace-nowrap">30 Nov 2023</td>
+                                    <td class="px-6 py-4 whitespace-nowrap"><span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-700 border border-amber-200">Pendiente</span></td>
+                                    <td class="px-6 py-4 text-right">
+                                        <div class="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <button class="p-2 text-slate-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors cursor-pointer" aria-label="Ver proveedor"><i class="ph ph-eye text-base" aria-hidden="true"></i></button>
+                                            <button class="p-2 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-colors cursor-pointer" aria-label="Validar"><i class="ph ph-check-circle text-base" aria-hidden="true"></i></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-slate-50 transition-colors group">
+                                    <td class="px-6 py-4">
+                                        <p class="font-semibold text-slate-800 text-sm">Vialidades y Pavimentos del Centro S.A.</p>
+                                        <p class="text-xs text-slate-400 mt-0.5">Rep: Ing. Jorge Espinoza Vega</p>
+                                    </td>
+                                    <td class="px-6 py-4 font-mono text-slate-600 text-xs whitespace-nowrap">VPC080712GH5</td>
+                                    <td class="px-6 py-4 text-slate-600 text-xs whitespace-nowrap">Mantenimiento</td>
+                                    <td class="px-6 py-4 text-slate-800 font-bold text-sm">0</td>
+                                    <td class="px-6 py-4 text-slate-500 text-xs whitespace-nowrap">14 Mar 2026</td>
+                                    <td class="px-6 py-4 whitespace-nowrap"><span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-700 border border-amber-200">Pendiente</span></td>
+                                    <td class="px-6 py-4 text-right">
+                                        <div class="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <button class="p-2 text-slate-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors cursor-pointer" aria-label="Ver proveedor"><i class="ph ph-eye text-base" aria-hidden="true"></i></button>
+                                            <button class="p-2 text-slate-400 hover:text-amber-600 hover:bg-amber-50 rounded-lg transition-colors cursor-pointer" aria-label="Validar"><i class="ph ph-check-circle text-base" aria-hidden="true"></i></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-slate-50 transition-colors group">
+                                    <td class="px-6 py-4">
+                                        <p class="font-semibold text-slate-800 text-sm">Obras y Proyectos Guanajuato S.A.</p>
+                                        <p class="text-xs text-slate-400 mt-0.5">Rep: Lic. María Cruz Hernández</p>
+                                    </td>
+                                    <td class="px-6 py-4 font-mono text-slate-600 text-xs whitespace-nowrap">OPG031105IJ6</td>
+                                    <td class="px-6 py-4 text-slate-600 text-xs whitespace-nowrap">Obra Civil</td>
+                                    <td class="px-6 py-4 text-slate-800 font-bold text-sm">2</td>
+                                    <td class="px-6 py-4 text-slate-500 text-xs whitespace-nowrap">08 Jul 2021</td>
+                                    <td class="px-6 py-4 whitespace-nowrap"><span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-700 border border-red-200">Suspendido</span></td>
+                                    <td class="px-6 py-4 text-right">
+                                        <div class="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
+                                            <button class="p-2 text-slate-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors cursor-pointer" aria-label="Ver proveedor"><i class="ph ph-eye text-base" aria-hidden="true"></i></button>
+                                            <button class="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition-colors cursor-pointer" aria-label="Ver motivo"><i class="ph ph-warning text-base" aria-hidden="true"></i></button>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="px-6 py-4 border-t border-slate-100 bg-slate-50/50 flex items-center justify-between">
+                        <p class="text-sm text-slate-500">Mostrando <span class="font-semibold text-slate-800">1–6</span> de <span class="font-semibold text-slate-800">84</span> proveedores</p>
+                        <div class="flex items-center gap-1">
+                            <button class="px-3 py-1.5 text-slate-400 text-sm rounded-lg border border-slate-200 bg-white opacity-50 cursor-not-allowed" disabled>Anterior</button>
+                            <button class="px-3 py-1.5 bg-primary-600 text-white text-sm font-semibold rounded-lg">1</button>
+                            <button class="px-3 py-1.5 text-slate-600 text-sm rounded-lg border border-slate-200 bg-white hover:bg-slate-50 transition-colors cursor-pointer">2</button>
+                            <button class="px-3 py-1.5 text-slate-600 text-sm rounded-lg border border-slate-200 bg-white hover:bg-slate-50 transition-colors cursor-pointer">Siguiente</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+</body>
+</html>

@@ -1,0 +1,209 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evaluación — SGPLOPyPC</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] },
+                    colors: { primary: { 50:'#eff6ff',100:'#dbeafe',500:'#3b82f6',600:'#2563eb',700:'#1d4ed8',800:'#1e40af',900:'#1e3a8a' } }
+                }
+            }
+        }
+    </script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+<body class="bg-slate-100 text-slate-900 font-sans antialiased flex h-screen overflow-hidden">
+
+    <!-- Sidebar -->
+    <aside class="w-64 bg-slate-900 flex flex-col hidden md:flex h-full shrink-0">
+        <div class="p-5 border-b border-slate-800">
+            <a href="/" class="flex items-center gap-3 cursor-pointer">
+                <div class="w-9 h-9 rounded-lg bg-blue-600 flex items-center justify-center text-white font-bold text-sm shrink-0" aria-hidden="true">SG</div>
+                <div>
+                    <p class="font-bold text-white text-sm leading-tight">SGPLOPyPC</p>
+                    <p class="text-xs text-slate-500">Panel Administrativo</p>
+                </div>
+            </a>
+        </div>
+        <nav class="flex-1 overflow-y-auto py-5 px-3 flex flex-col gap-5">
+            <div>
+                <p class="px-3 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Principal</p>
+                <a href="/frontend/public/dashboard.html" class="flex items-center gap-3 px-3 py-2 text-slate-400 hover:bg-slate-800 hover:text-white rounded-lg font-medium transition-all duration-200 text-sm cursor-pointer">
+                    <i class="ph ph-squares-four text-lg shrink-0" aria-hidden="true"></i> Dashboard
+                </a>
+            </div>
+            <div>
+                <p class="px-3 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Módulos</p>
+                <div class="space-y-0.5">
+                    <a href="/frontend/views/convocatorias/index.html" class="flex items-center gap-3 px-3 py-2 text-slate-400 hover:bg-slate-800 hover:text-white rounded-lg font-medium transition-all duration-200 text-sm cursor-pointer"><i class="ph ph-megaphone text-lg shrink-0" aria-hidden="true"></i> Convocatorias</a>
+                    <a href="/frontend/views/proveedores/index.html" class="flex items-center gap-3 px-3 py-2 text-slate-400 hover:bg-slate-800 hover:text-white rounded-lg font-medium transition-all duration-200 text-sm cursor-pointer"><i class="ph ph-users text-lg shrink-0" aria-hidden="true"></i> Proveedores</a>
+                    <a href="/frontend/views/propuestas/index.html" class="flex items-center gap-3 px-3 py-2 text-slate-400 hover:bg-slate-800 hover:text-white rounded-lg font-medium transition-all duration-200 text-sm cursor-pointer"><i class="ph ph-file-text text-lg shrink-0" aria-hidden="true"></i> Propuestas</a>
+                    <a href="/frontend/views/evaluacion/index.html" class="flex items-center gap-3 px-3 py-2 bg-slate-800 text-white rounded-lg font-semibold transition-all duration-200 text-sm cursor-pointer"><i class="ph ph-check-square text-lg shrink-0" aria-hidden="true"></i> Evaluación</a>
+                    <a href="/frontend/views/adjudicaciones/index.html" class="flex items-center gap-3 px-3 py-2 text-slate-400 hover:bg-slate-800 hover:text-white rounded-lg font-medium transition-all duration-200 text-sm cursor-pointer"><i class="ph ph-handshake text-lg shrink-0" aria-hidden="true"></i> Adjudicaciones</a>
+                </div>
+            </div>
+            <div>
+                <p class="px-3 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Sistema</p>
+                <div class="space-y-0.5">
+                    <a href="/frontend/views/reportes/index.html" class="flex items-center gap-3 px-3 py-2 text-slate-400 hover:bg-slate-800 hover:text-white rounded-lg font-medium transition-all duration-200 text-sm cursor-pointer"><i class="ph ph-chart-bar text-lg shrink-0" aria-hidden="true"></i> Reportes</a>
+                    <a href="#" class="flex items-center gap-3 px-3 py-2 text-slate-400 hover:bg-slate-800 hover:text-white rounded-lg font-medium transition-all duration-200 text-sm cursor-pointer"><i class="ph ph-gear text-lg shrink-0" aria-hidden="true"></i> Configuración</a>
+                </div>
+            </div>
+        </nav>
+        <div class="p-4 border-t border-slate-800 space-y-0.5">
+            <a href="/" class="flex items-center gap-3 px-3 py-2 text-slate-400 hover:bg-slate-800 hover:text-white rounded-lg transition-all text-sm font-medium cursor-pointer"><i class="ph ph-arrow-square-out text-lg shrink-0" aria-hidden="true"></i> Ver Sitio Público</a>
+            <button class="flex items-center gap-3 w-full px-3 py-2 text-slate-400 hover:bg-red-950 hover:text-red-400 rounded-lg font-medium transition-all text-sm cursor-pointer"><i class="ph ph-sign-out text-lg shrink-0" aria-hidden="true"></i> Cerrar Sesión</button>
+        </div>
+    </aside>
+
+    <!-- Main -->
+    <div class="flex-1 flex flex-col h-full overflow-hidden">
+        <header class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-6 z-10 shrink-0">
+            <div>
+                <h1 class="text-base font-bold text-slate-800">Evaluación de Propuestas</h1>
+                <p class="text-xs text-slate-500">Comparativo técnico-económico y dictamen</p>
+            </div>
+            <img src="https://ui-avatars.com/api/?name=Admin+Usuario&background=1e40af&color=ffffff&size=80" alt="Admin" class="w-9 h-9 rounded-full border-2 border-slate-200">
+        </header>
+
+        <main class="flex-1 overflow-x-hidden overflow-y-auto p-6">
+            <div class="max-w-7xl mx-auto space-y-6">
+
+                <!-- Alert: procesos por evaluar -->
+                <div class="bg-amber-50 border border-amber-200 rounded-2xl p-4 flex items-start gap-3" role="alert">
+                    <i class="ph ph-warning-circle text-amber-500 text-xl shrink-0 mt-0.5" aria-hidden="true"></i>
+                    <div>
+                        <p class="font-semibold text-amber-800 text-sm">Procesos pendientes de evaluación</p>
+                        <p class="text-amber-700 text-xs mt-0.5">Hay <strong>3 licitaciones</strong> con propuestas recibidas que requieren evaluación. Los plazos normativos están próximos a vencer.</p>
+                    </div>
+                </div>
+
+                <!-- Licitación selector card -->
+                <div class="bg-white rounded-2xl border border-slate-200 p-5">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                        <div>
+                            <p class="text-xs text-slate-400 font-medium uppercase tracking-wide mb-1">Licitación en evaluación</p>
+                            <h2 class="text-lg font-bold text-slate-800">LO-902002994-E1-2026</h2>
+                            <p class="text-sm text-slate-500 mt-0.5">Construcción de infraestructura educativa especializada nivel superior fase II</p>
+                        </div>
+                        <select aria-label="Seleccionar licitación" class="px-4 py-2.5 bg-slate-50 border border-slate-200 rounded-xl text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-primary-500 cursor-pointer min-w-[200px]">
+                            <option>LO-902002994-E1-2026</option>
+                            <option>IR-902002994-E2-2026</option>
+                            <option>LO-902002994-E5-2026</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Comparison Table -->
+                <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden">
+                    <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+                        <h3 class="font-bold text-slate-800">Cuadro Comparativo de Propuestas</h3>
+                        <button class="inline-flex items-center gap-2 border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-medium px-4 py-2 rounded-lg text-sm cursor-pointer transition-colors">
+                            <i class="ph ph-download-simple text-base" aria-hidden="true"></i> Descargar PDF
+                        </button>
+                    </div>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-sm" aria-label="Cuadro comparativo de propuestas">
+                            <thead>
+                                <tr class="border-b border-slate-100 bg-slate-50">
+                                    <th class="px-6 py-3.5 text-left font-semibold text-slate-500 text-xs uppercase tracking-wide">Criterio de Evaluación</th>
+                                    <th class="px-6 py-3.5 text-center font-semibold text-slate-500 text-xs uppercase tracking-wide">Pond. (%)</th>
+                                    <th class="px-6 py-3.5 text-center font-semibold text-slate-500 text-xs uppercase tracking-wide">Construcciones Norte S.A.</th>
+                                    <th class="px-6 py-3.5 text-center font-semibold text-slate-500 text-xs uppercase tracking-wide">Ingeniería Hidráulica ABC</th>
+                                    <th class="px-6 py-3.5 text-center font-semibold text-slate-500 text-xs uppercase tracking-wide">GEO Construcciones</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y divide-slate-100">
+                                <!-- Técnico section -->
+                                <tr class="bg-blue-50/50">
+                                    <td colspan="5" class="px-6 py-2 text-xs font-bold text-blue-700 uppercase tracking-wide">Evaluación Técnica</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50 transition-colors">
+                                    <td class="px-6 py-3.5 text-slate-700">Experiencia y capacidad técnica</td>
+                                    <td class="px-6 py-3.5 text-center text-slate-500 text-xs font-medium">25%</td>
+                                    <td class="px-6 py-3.5 text-center"><span class="font-bold text-slate-800">23.5</span><span class="text-xs text-slate-400">/25</span></td>
+                                    <td class="px-6 py-3.5 text-center"><span class="font-bold text-slate-800">22.0</span><span class="text-xs text-slate-400">/25</span></td>
+                                    <td class="px-6 py-3.5 text-center"><span class="font-bold text-slate-800">20.5</span><span class="text-xs text-slate-400">/25</span></td>
+                                </tr>
+                                <tr class="hover:bg-slate-50 transition-colors">
+                                    <td class="px-6 py-3.5 text-slate-700">Metodología de ejecución</td>
+                                    <td class="px-6 py-3.5 text-center text-slate-500 text-xs font-medium">20%</td>
+                                    <td class="px-6 py-3.5 text-center"><span class="font-bold text-slate-800">18.0</span><span class="text-xs text-slate-400">/20</span></td>
+                                    <td class="px-6 py-3.5 text-center"><span class="font-bold text-slate-800">19.5</span><span class="text-xs text-slate-400">/20</span></td>
+                                    <td class="px-6 py-3.5 text-center"><span class="font-bold text-slate-800">17.0</span><span class="text-xs text-slate-400">/20</span></td>
+                                </tr>
+                                <tr class="hover:bg-slate-50 transition-colors">
+                                    <td class="px-6 py-3.5 text-slate-700">Recursos humanos y equipamiento</td>
+                                    <td class="px-6 py-3.5 text-center text-slate-500 text-xs font-medium">15%</td>
+                                    <td class="px-6 py-3.5 text-center"><span class="font-bold text-slate-800">14.0</span><span class="text-xs text-slate-400">/15</span></td>
+                                    <td class="px-6 py-3.5 text-center"><span class="font-bold text-slate-800">13.5</span><span class="text-xs text-slate-400">/15</span></td>
+                                    <td class="px-6 py-3.5 text-center"><span class="font-bold text-slate-800">12.0</span><span class="text-xs text-slate-400">/15</span></td>
+                                </tr>
+                                <!-- Económico section -->
+                                <tr class="bg-emerald-50/50">
+                                    <td colspan="5" class="px-6 py-2 text-xs font-bold text-emerald-700 uppercase tracking-wide">Evaluación Económica</td>
+                                </tr>
+                                <tr class="hover:bg-slate-50 transition-colors">
+                                    <td class="px-6 py-3.5 text-slate-700">Monto total de propuesta</td>
+                                    <td class="px-6 py-3.5 text-center text-slate-500 text-xs font-medium">30%</td>
+                                    <td class="px-6 py-3.5 text-center"><span class="font-bold text-emerald-600">29.0</span><span class="text-xs text-slate-400">/30</span></td>
+                                    <td class="px-6 py-3.5 text-center"><span class="font-bold text-slate-800">27.5</span><span class="text-xs text-slate-400">/30</span></td>
+                                    <td class="px-6 py-3.5 text-center"><span class="font-bold text-slate-800">28.0</span><span class="text-xs text-slate-400">/30</span></td>
+                                </tr>
+                                <tr class="hover:bg-slate-50 transition-colors">
+                                    <td class="px-6 py-3.5 text-slate-700">Programa de erogaciones</td>
+                                    <td class="px-6 py-3.5 text-center text-slate-500 text-xs font-medium">10%</td>
+                                    <td class="px-6 py-3.5 text-center"><span class="font-bold text-slate-800">9.5</span><span class="text-xs text-slate-400">/10</span></td>
+                                    <td class="px-6 py-3.5 text-center"><span class="font-bold text-slate-800">9.0</span><span class="text-xs text-slate-400">/10</span></td>
+                                    <td class="px-6 py-3.5 text-center"><span class="font-bold text-slate-800">8.5</span><span class="text-xs text-slate-400">/10</span></td>
+                                </tr>
+                                <!-- Total -->
+                                <tr class="bg-slate-900 text-white">
+                                    <td class="px-6 py-4 font-bold text-sm">PUNTAJE TOTAL</td>
+                                    <td class="px-6 py-4 text-center font-bold text-sm">100%</td>
+                                    <td class="px-6 py-4 text-center">
+                                        <div class="flex flex-col items-center">
+                                            <span class="text-xl font-extrabold text-emerald-400">94.0</span>
+                                            <span class="text-xs text-slate-400">1er lugar</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 text-center">
+                                        <div class="flex flex-col items-center">
+                                            <span class="text-xl font-extrabold text-slate-200">91.5</span>
+                                            <span class="text-xs text-slate-400">2do lugar</span>
+                                        </div>
+                                    </td>
+                                    <td class="px-6 py-4 text-center">
+                                        <div class="flex flex-col items-center">
+                                            <span class="text-xl font-extrabold text-slate-200">86.0</span>
+                                            <span class="text-xs text-slate-400">3er lugar</span>
+                                        </div>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                    <div class="px-6 py-4 border-t border-slate-100 bg-emerald-50 flex items-center justify-between">
+                        <div class="flex items-center gap-3">
+                            <i class="ph ph-check-circle text-emerald-600 text-xl" aria-hidden="true"></i>
+                            <p class="text-sm font-semibold text-emerald-800">Ganador propuesto: <span class="text-emerald-900">Construcciones Norte S.A. de C.V.</span> — $17,820,000 MXN</p>
+                        </div>
+                        <button class="inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-5 py-2 rounded-xl text-sm cursor-pointer transition-colors shadow-sm">
+                            <i class="ph ph-gavel text-base" aria-hidden="true"></i> Emitir Dictamen
+                        </button>
+                    </div>
+                </div>
+
+            </div>
+        </main>
+    </div>
+
+</body>
+</html>
