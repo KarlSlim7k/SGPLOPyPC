@@ -1,24 +1,28 @@
 FROM php:8.2-apache
 
+# ── System deps + PHP extensions ──────────────────────
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
         libzip-dev \
         unzip \
         curl \
     && docker-php-ext-install -j"$(nproc)" mysqli pdo pdo_mysql \
-    && a2enmod rewrite headers \
+    && a2enmod rewrite headers alias \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
 WORKDIR /var/www/html
 
+# ── Copy application code ────────────────────────────
 COPY . /var/www/html
-COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
 
+# ── Apache virtual-host (replaces default site) ──────
+COPY docker/apache-site.conf /etc/apache2/sites-available/000-default.conf
+
+# ── Entrypoint ────────────────────────────────────────
+COPY docker/entrypoint.sh /usr/local/bin/entrypoint.sh
 RUN chmod +x /usr/local/bin/entrypoint.sh \
     && chown -R www-data:www-data /var/www/html
-
-ENV APACHE_DOCUMENT_ROOT=/var/www/html/public
 
 EXPOSE 8080
 
