@@ -1,9 +1,19 @@
+# Railway configuration for SGPLOPyPC
+
 [build]
+# Usar Dockerfile para el build
 builder = "DOCKERFILE"
+# Dockerfile ubicación (raíz del proyecto)
 dockerfilePath = "Dockerfile"
 
 [deploy]
+# Healthcheck para que Railway valide que el servicio está activo
 healthcheckPath = "/healthz"
 healthcheckTimeout = 120
+# Número de réplicas
+numReplicas = 1
+# Tiempo máximo de inicio
+startCommand = ""
+# Reiniciar en caso de falla
 restartPolicyType = "ON_FAILURE"
-restartPolicyMaxRetries = 10
+restartPolicyMaxRetries = 3
