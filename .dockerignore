@@ -1,0 +1,11 @@
+.git
+.gitignore
+.agent
+.claude
+.codex
+.gemini
+.opencode
+.github
+phpmyadmin-railway
+storage
+docs
