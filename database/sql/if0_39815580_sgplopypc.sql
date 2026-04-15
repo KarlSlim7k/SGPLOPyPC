@@ -1,29 +1,22 @@
 -- SQL Schema - SGPLOPyPC
--- Compatible con Railway (MariaDB 11+) y phpMyAdmin
+-- Compatible con phpMyAdmin y MariaDB
 
-SET SQL_MODE = "NO_AUTO_VALUE_ON_ZERO";
-SET AUTOCOMMIT = 0;
-START TRANSACTION;
-SET time_zone = "+00:00";
-SET NAMES utf8mb4;
+/*!40101 SET @OLD_CHARACTER_SET_CLIENT=@@CHARACTER_SET_CLIENT */;
+/*!40101 SET @OLD_CHARACTER_SET_RESULTS=@@CHARACTER_SET_RESULTS */;
+/*!40101 SET @OLD_COLLATION_CONNECTION=@@COLLATION_CONNECTION */;
+/*!40101 SET NAMES utf8mb4 */;
+/*!40103 SET @OLD_TIME_ZONE=@@TIME_ZONE */;
+/*!40103 SET TIME_ZONE='+00:00' */;
+/*!40014 SET @OLD_UNIQUE_CHECKS=@@UNIQUE_CHECKS, UNIQUE_CHECKS=0 */;
+/*!40014 SET @OLD_FOREIGN_KEY_CHECKS=@@FOREIGN_KEY_CHECKS, FOREIGN_KEY_CHECKS=0 */;
+/*!40101 SET @OLD_SQL_MODE=@@SQL_MODE, SQL_MODE='NO_AUTO_VALUE_ON_ZERO' */;
+/*!40111 SET @OLD_SQL_NOTES=@@SQL_NOTES, SQL_NOTES=0 */;
 
-SET FOREIGN_KEY_CHECKS = 0;
+--
+-- Table structure for table `usuario`
+--
 
-DROP TABLE IF EXISTS `documento`;
-DROP TABLE IF EXISTS `notificacion`;
-DROP TABLE IF EXISTS `historial_cambio`;
-DROP TABLE IF EXISTS `evaluacion`;
-DROP TABLE IF EXISTS `propuesta`;
-DROP TABLE IF EXISTS `participacion`;
-DROP TABLE IF EXISTS `contrato`;
-DROP TABLE IF EXISTS `fecha_proceso`;
-DROP TABLE IF EXISTS `licitacion`;
-DROP TABLE IF EXISTS `proveedor`;
-DROP TABLE IF EXISTS `dependencia`;
 DROP TABLE IF EXISTS `usuario`;
-
-SET FOREIGN_KEY_CHECKS = 1;
-
 CREATE TABLE `usuario` (
   `id_usuario` int(11) NOT NULL AUTO_INCREMENT,
   `nombre` varchar(150) NOT NULL,
@@ -37,6 +30,11 @@ CREATE TABLE `usuario` (
   UNIQUE KEY `uq_usuario_email` (`email`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Table structure for table `dependencia`
+--
+
+DROP TABLE IF EXISTS `dependencia`;
 CREATE TABLE `dependencia` (
   `id_dependencia` int(11) NOT NULL AUTO_INCREMENT,
   `nombre` varchar(250) NOT NULL,
@@ -48,6 +46,11 @@ CREATE TABLE `dependencia` (
   PRIMARY KEY (`id_dependencia`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Table structure for table `proveedor`
+--
+
+DROP TABLE IF EXISTS `proveedor`;
 CREATE TABLE `proveedor` (
   `id_proveedor` int(11) NOT NULL AUTO_INCREMENT,
   `id_usuario` int(11) NOT NULL,
@@ -64,6 +67,11 @@ CREATE TABLE `proveedor` (
   UNIQUE KEY `uq_proveedor_registro_fiscal` (`registro_fiscal`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Table structure for table `licitacion`
+--
+
+DROP TABLE IF EXISTS `licitacion`;
 CREATE TABLE `licitacion` (
   `id_licitacion` int(11) NOT NULL AUTO_INCREMENT,
   `numero_licitacion` varchar(50) NOT NULL,
@@ -85,6 +93,11 @@ CREATE TABLE `licitacion` (
   CONSTRAINT `ck_licitacion_presupuesto` CHECK (`presupuesto_estimado` > 0)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Table structure for table `fecha_proceso`
+--
+
+DROP TABLE IF EXISTS `fecha_proceso`;
 CREATE TABLE `fecha_proceso` (
   `id_fecha_proceso` int(11) NOT NULL AUTO_INCREMENT,
   `id_licitacion` int(11) NOT NULL,
@@ -96,6 +109,11 @@ CREATE TABLE `fecha_proceso` (
   UNIQUE KEY `uq_fecha_proceso_licitacion_tipo` (`id_licitacion`,`tipo_fecha`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Table structure for table `participacion`
+--
+
+DROP TABLE IF EXISTS `participacion`;
 CREATE TABLE `participacion` (
   `id_participacion` int(11) NOT NULL AUTO_INCREMENT,
   `id_proveedor` int(11) NOT NULL,
@@ -108,6 +126,11 @@ CREATE TABLE `participacion` (
   KEY `idx_participacion_proveedor` (`id_proveedor`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Table structure for table `propuesta`
+--
+
+DROP TABLE IF EXISTS `propuesta`;
 CREATE TABLE `propuesta` (
   `id_propuesta` int(11) NOT NULL AUTO_INCREMENT,
   `id_participacion` int(11) NOT NULL,
@@ -120,6 +143,11 @@ CREATE TABLE `propuesta` (
   UNIQUE KEY `uq_propuesta_participacion` (`id_participacion`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Table structure for table `evaluacion`
+--
+
+DROP TABLE IF EXISTS `evaluacion`;
 CREATE TABLE `evaluacion` (
   `id_evaluacion` int(11) NOT NULL AUTO_INCREMENT,
   `id_propuesta` int(11) NOT NULL,
@@ -137,6 +165,11 @@ CREATE TABLE `evaluacion` (
   CONSTRAINT `ck_evaluacion_puntaje_economico` CHECK (`puntaje_economico` IS NULL OR `puntaje_economico` >= 0)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Table structure for table `contrato`
+--
+
+DROP TABLE IF EXISTS `contrato`;
 CREATE TABLE `contrato` (
   `id_contrato` int(11) NOT NULL AUTO_INCREMENT,
   `id_licitacion` int(11) NOT NULL,
@@ -156,6 +189,11 @@ CREATE TABLE `contrato` (
   CONSTRAINT `ck_contrato_fechas` CHECK (`fecha_inicio` IS NULL OR `fecha_fin` IS NULL OR `fecha_fin` >= `fecha_inicio`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Table structure for table `notificacion`
+--
+
+DROP TABLE IF EXISTS `notificacion`;
 CREATE TABLE `notificacion` (
   `id_notificacion` int(11) NOT NULL AUTO_INCREMENT,
   `id_usuario_destino` int(11) NOT NULL,
@@ -171,6 +209,11 @@ CREATE TABLE `notificacion` (
   KEY `idx_notificacion_usuario_leida` (`id_usuario_destino`,`leida`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Table structure for table `historial_cambio`
+--
+
+DROP TABLE IF EXISTS `historial_cambio`;
 CREATE TABLE `historial_cambio` (
   `id_historial` int(11) NOT NULL AUTO_INCREMENT,
   `id_usuario` int(11) NOT NULL,
@@ -187,6 +230,11 @@ CREATE TABLE `historial_cambio` (
   KEY `idx_historial_usuario` (`id_usuario`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
+--
+-- Table structure for table `documento`
+--
+
+DROP TABLE IF EXISTS `documento`;
 CREATE TABLE `documento` (
   `id_documento` int(11) NOT NULL AUTO_INCREMENT,
   `nombre_archivo` varchar(300) NOT NULL,
@@ -212,7 +260,11 @@ CREATE TABLE `documento` (
   CONSTRAINT `ck_documento_version` CHECK (`version` >= 1)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
-DELIMITER $$
+--
+-- Triggers `documento`
+--
+
+DROP TRIGGER IF EXISTS `trg_documento_contexto_bi`;
 CREATE TRIGGER `trg_documento_contexto_bi`
 BEFORE INSERT ON `documento`
 FOR EACH ROW
@@ -225,8 +277,9 @@ BEGIN
     SIGNAL SQLSTATE '45000'
       SET MESSAGE_TEXT = 'documento requiere al menos un contexto relacionado';
   END IF;
-END$$
+END;
 
+DROP TRIGGER IF EXISTS `trg_documento_contexto_bu`;
 CREATE TRIGGER `trg_documento_contexto_bu`
 BEFORE UPDATE ON `documento`
 FOR EACH ROW
@@ -239,13 +292,24 @@ BEGIN
     SIGNAL SQLSTATE '45000'
       SET MESSAGE_TEXT = 'documento requiere al menos un contexto relacionado';
   END IF;
-END$$
-DELIMITER ;
+END;
+
+--
+-- Constraints for dumped tables
+--
+
+--
+-- Constraints for table `proveedor`
+--
 
 ALTER TABLE `proveedor`
   ADD CONSTRAINT `fk_proveedor_usuario`
     FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id_usuario`)
     ON UPDATE CASCADE ON DELETE RESTRICT;
+
+--
+-- Constraints for table `licitacion`
+--
 
 ALTER TABLE `licitacion`
   ADD CONSTRAINT `fk_licitacion_dependencia`
@@ -255,10 +319,18 @@ ALTER TABLE `licitacion`
     FOREIGN KEY (`id_usuario_responsable`) REFERENCES `usuario` (`id_usuario`)
     ON UPDATE CASCADE ON DELETE RESTRICT;
 
+--
+-- Constraints for table `fecha_proceso`
+--
+
 ALTER TABLE `fecha_proceso`
   ADD CONSTRAINT `fk_fecha_proceso_licitacion`
     FOREIGN KEY (`id_licitacion`) REFERENCES `licitacion` (`id_licitacion`)
     ON UPDATE CASCADE ON DELETE CASCADE;
+
+--
+-- Constraints for table `participacion`
+--
 
 ALTER TABLE `participacion`
   ADD CONSTRAINT `fk_participacion_proveedor`
@@ -268,10 +340,18 @@ ALTER TABLE `participacion`
     FOREIGN KEY (`id_licitacion`) REFERENCES `licitacion` (`id_licitacion`)
     ON UPDATE CASCADE ON DELETE CASCADE;
 
+--
+-- Constraints for table `propuesta`
+--
+
 ALTER TABLE `propuesta`
   ADD CONSTRAINT `fk_propuesta_participacion`
     FOREIGN KEY (`id_participacion`) REFERENCES `participacion` (`id_participacion`)
     ON UPDATE CASCADE ON DELETE CASCADE;
+
+--
+-- Constraints for table `evaluacion`
+--
 
 ALTER TABLE `evaluacion`
   ADD CONSTRAINT `fk_evaluacion_propuesta`
@@ -281,6 +361,10 @@ ALTER TABLE `evaluacion`
     FOREIGN KEY (`id_evaluador`) REFERENCES `usuario` (`id_usuario`)
     ON UPDATE CASCADE ON DELETE RESTRICT;
 
+--
+-- Constraints for table `contrato`
+--
+
 ALTER TABLE `contrato`
   ADD CONSTRAINT `fk_contrato_licitacion`
     FOREIGN KEY (`id_licitacion`) REFERENCES `licitacion` (`id_licitacion`)
@@ -288,6 +372,10 @@ ALTER TABLE `contrato`
   ADD CONSTRAINT `fk_contrato_proveedor`
     FOREIGN KEY (`id_proveedor`) REFERENCES `proveedor` (`id_proveedor`)
     ON UPDATE CASCADE ON DELETE RESTRICT;
+
+--
+-- Constraints for table `notificacion`
+--
 
 ALTER TABLE `notificacion`
   ADD CONSTRAINT `fk_notificacion_usuario`
@@ -297,10 +385,18 @@ ALTER TABLE `notificacion`
     FOREIGN KEY (`id_licitacion`) REFERENCES `licitacion` (`id_licitacion`)
     ON UPDATE CASCADE ON DELETE SET NULL;
 
+--
+-- Constraints for table `historial_cambio`
+--
+
 ALTER TABLE `historial_cambio`
   ADD CONSTRAINT `fk_historial_usuario`
     FOREIGN KEY (`id_usuario`) REFERENCES `usuario` (`id_usuario`)
     ON UPDATE CASCADE ON DELETE RESTRICT;
+
+--
+-- Constraints for table `documento`
+--
 
 ALTER TABLE `documento`
   ADD CONSTRAINT `fk_documento_licitacion`
@@ -322,9 +418,23 @@ ALTER TABLE `documento`
     FOREIGN KEY (`subido_por`) REFERENCES `usuario` (`id_usuario`)
     ON UPDATE CASCADE ON DELETE RESTRICT;
 
+--
+-- Dumping data for table `usuario`
+--
+
 INSERT INTO `usuario` (`id_usuario`, `nombre`, `email`, `contrasena_hash`, `rol`, `activo`, `fecha_registro`, `ultimo_acceso`) VALUES
 (1, 'Joaquin Hernandez', 'joaqher@gmail.com', 'joaq1234', 'PUBLICO', 1, '2026-03-18 00:00:00', '2026-03-18 00:00:00');
 
 ALTER TABLE `usuario` AUTO_INCREMENT = 2;
 
-COMMIT;
+--
+-- AUTO_INCREMENT for table `usuario`
+--
+
+/*!40101 SET SQL_MODE=@OLD_SQL_MODE */;
+/*!40014 SET FOREIGN_KEY_CHECKS=@OLD_FOREIGN_KEY_CHECKS */;
+/*!40014 SET UNIQUE_CHECKS=@OLD_UNIQUE_CHECKS */;
+/*!40101 SET CHARACTER_SET_CLIENT=@OLD_CHARACTER_SET_CLIENT */;
+/*!40101 SET CHARACTER_SET_RESULTS=@OLD_CHARACTER_SET_RESULTS */;
+/*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
+/*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
