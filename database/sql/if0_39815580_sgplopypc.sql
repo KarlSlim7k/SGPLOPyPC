@@ -220,8 +220,8 @@ CREATE TABLE `historial_cambio` (
   `tabla_afectada` varchar(50) NOT NULL,
   `id_registro_afectado` int(11) NOT NULL,
   `accion` enum('CREAR','ACTUALIZAR','ELIMINAR') NOT NULL,
-  `valores_anteriores` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`valores_anteriores`)),
-  `valores_nuevos` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`valores_nuevos`)),
+  `valores_anteriores` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL,
+  `valores_nuevos` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL,
   `ip_origen` varchar(45) DEFAULT NULL,
   `fecha_accion` datetime NOT NULL DEFAULT current_timestamp(),
   PRIMARY KEY (`id_historial`),
@@ -264,7 +264,10 @@ CREATE TABLE `documento` (
 -- Triggers `documento`
 --
 
+/*!50003 SET @OLD_SQL_MODE=@@SQL_MODE */;
+/*!50003 SET SQL_MODE='' */;
 DROP TRIGGER IF EXISTS `trg_documento_contexto_bi`;
+DELIMITER $$
 CREATE TRIGGER `trg_documento_contexto_bi`
 BEFORE INSERT ON `documento`
 FOR EACH ROW
@@ -277,9 +280,14 @@ BEGIN
     SIGNAL SQLSTATE '45000'
       SET MESSAGE_TEXT = 'documento requiere al menos un contexto relacionado';
   END IF;
-END;
+END$$
+DELIMITER ;
+/*!50003 SET SQL_MODE=@OLD_SQL_MODE */;
 
+/*!50003 SET @OLD_SQL_MODE=@@SQL_MODE */;
+/*!50003 SET SQL_MODE='' */;
 DROP TRIGGER IF EXISTS `trg_documento_contexto_bu`;
+DELIMITER $$
 CREATE TRIGGER `trg_documento_contexto_bu`
 BEFORE UPDATE ON `documento`
 FOR EACH ROW
@@ -292,7 +300,9 @@ BEGIN
     SIGNAL SQLSTATE '45000'
       SET MESSAGE_TEXT = 'documento requiere al menos un contexto relacionado';
   END IF;
-END;
+END$$
+DELIMITER ;
+/*!50003 SET SQL_MODE=@OLD_SQL_MODE */;
 
 --
 -- Constraints for dumped tables
