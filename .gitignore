@@ -1,0 +1,68 @@
+# Environment & Secrets
+.env
+.env.*
+!.env.example
+*.key
+*.pem
+*.secret
+
+# Database
+*.dump
+*.bak
+database/*.sql.backup
+database/*_backup.sql
+
+# IDE & Editor
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+.project
+.settings/
+
+# OS Files
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Logs
+*.log
+logs/
+storage/logs/
+
+# Uploads & User Files (if any)
+storage/uploads/
+storage/exports/
+public/uploads/
+
+# Dependencies (if added later)
+vendor/
+node_modules/
+composer.lock
+package-lock.json
+yarn.lock
+
+# Docker/Container
+docker-compose.override.yml
+*.pid
+
+# Build/Artifacts
+build/
+dist/
+*.tar.gz
+
+# Worktrees (managed by git)
+.worktrees/
+
+
+# PHPUnit / Testing
+.phpunit.cache/
+coverage/
+.phpunit.result.cache
+
+# Temporary files
+tmp/
+temp/
+*.tmp
+*.cache
