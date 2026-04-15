@@ -526,18 +526,18 @@
                     <h4 class="text-white font-semibold text-sm mb-4">Convocatorias</h4>
                     <ul class="space-y-2.5 text-sm">
                         <li><a href="#convocatorias" class="hover:text-primary-400 transition-colors">Convocatorias Vigentes</a></li>
-                        <li><a href="#" class="hover:text-primary-400 transition-colors">Procesos en Evaluación</a></li>
-                        <li><a href="#" class="hover:text-primary-400 transition-colors">Contratos Adjudicados</a></li>
-                        <li><a href="#" class="hover:text-primary-400 transition-colors">Historial de Licitaciones</a></li>
+                        <li><a href="/evaluacion.php" class="hover:text-primary-400 transition-colors">Procesos en Evaluación</a></li>
+                        <li><a href="/contratos.php" class="hover:text-primary-400 transition-colors">Contratos Adjudicados</a></li>
+                        <li><a href="/historial.php" class="hover:text-primary-400 transition-colors">Historial de Licitaciones</a></li>
                     </ul>
                 </div>
                 <div>
                     <h4 class="text-white font-semibold text-sm mb-4">Proveedores</h4>
                     <ul class="space-y-2.5 text-sm">
-                        <li><a href="#registro" class="hover:text-primary-400 transition-colors">Registro de Empresa</a></li>
+                        <li><a href="/registro.php" class="hover:text-primary-400 transition-colors">Registro de Empresa</a></li>
                         <li><a href="#como-participar" class="hover:text-primary-400 transition-colors">Cómo Participar</a></li>
-                        <li><a href="#" class="hover:text-primary-400 transition-colors">Requisitos de Documentación</a></li>
-                        <li><a href="#" class="hover:text-primary-400 transition-colors">Preguntas Frecuentes</a></li>
+                        <li><a href="/requisitos.php" class="hover:text-primary-400 transition-colors">Requisitos de Documentación</a></li>
+                        <li><a href="/faq.php" class="hover:text-primary-400 transition-colors">Preguntas Frecuentes</a></li>
                     </ul>
                 </div>
                 <div>
