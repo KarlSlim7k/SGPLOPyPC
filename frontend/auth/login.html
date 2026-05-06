@@ -114,7 +114,7 @@
                 <i class="ph ph-info text-blue-500 text-lg shrink-0 mt-0.5" aria-hidden="true"></i>
                 <div class="flex-1">
                     <p class="text-sm font-semibold text-blue-800">Credenciales de demostración</p>
-                    <p class="text-xs text-blue-600 mt-0.5 font-mono">admin@admin.com &nbsp;/&nbsp; admin123</p>
+                    <p class="text-xs text-blue-600 mt-0.5 font-mono">admin@sgplopypc.gob.mx &nbsp;/&nbsp; admin123</p>
                     <button id="autofill-btn" type="button" class="mt-2 text-xs font-semibold text-blue-700 hover:text-blue-900 underline underline-offset-2 cursor-pointer transition-colors">
                         Autocompletar credenciales
                     </button>
@@ -219,9 +219,14 @@
     </div>
 
     <script>
-        const VALID_EMAIL = 'admin@admin.com';
-        const VALID_PASSWORD = 'admin123';
-        const DASHBOARD_URL = '/frontend/admin/dashboard.html';
+        const DEMO_EMAIL = 'admin@sgplopypc.gob.mx';
+        const DEMO_PASSWORD = 'admin123';
+        const API_LOGIN_URL = '/api/v1/auth/login';
+        const DASHBOARD_URL_BY_ROLE = {
+            ADMINISTRADOR: '/frontend/admin/dashboard.html',
+            PROVEEDOR: '/',
+            PUBLICO: '/'
+        };
 
         const form = document.getElementById('login-form');
         const emailInput = document.getElementById('email');
@@ -235,10 +240,16 @@
         const eyeIcon = document.getElementById('eye-icon');
         const autofillBtn = document.getElementById('autofill-btn');
 
+        // Ajustar aviso de credenciales demo con la cuenta real seed
+        const demoNoticeCredential = document.querySelector('#demo-notice p.font-mono');
+        if (demoNoticeCredential) {
+            demoNoticeCredential.textContent = `${DEMO_EMAIL} / ${DEMO_PASSWORD}`;
+        }
+
         // Autofill demo credentials
         autofillBtn.addEventListener('click', () => {
-            emailInput.value = VALID_EMAIL;
-            passwordInput.value = VALID_PASSWORD;
+            emailInput.value = DEMO_EMAIL;
+            passwordInput.value = DEMO_PASSWORD;
             emailInput.dispatchEvent(new Event('input'));
             passwordInput.dispatchEvent(new Event('input'));
             emailInput.focus();
@@ -262,7 +273,7 @@
         });
 
         // Form submission
-        form.addEventListener('submit', (e) => {
+        form.addEventListener('submit', async (e) => {
             e.preventDefault();
 
             const email = emailInput.value.trim().toLowerCase();
@@ -276,38 +287,72 @@
                 return;
             }
 
-            // Loading state
-            submitBtn.disabled = true;
-            btnIcon.className = 'ph ph-circle-notch text-base animate-spin';
-            btnText.textContent = 'Verificando...';
+            setLoadingState(true);
 
-            // Simulate async check
-            setTimeout(() => {
-                if (email === VALID_EMAIL && password === VALID_PASSWORD) {
-                    btnIcon.className = 'ph ph-check text-base';
-                    btnText.textContent = 'Acceso concedido';
-                    submitBtn.classList.replace('bg-primary-600', 'bg-emerald-600');
-                    submitBtn.classList.replace('hover:bg-primary-700', 'hover:bg-emerald-700');
-                    setTimeout(() => {
-                        window.location.href = DASHBOARD_URL;
-                    }, 600);
-                } else {
-                    submitBtn.disabled = false;
-                    btnIcon.className = 'ph ph-sign-in text-base';
-                    btnText.textContent = 'Iniciar Sesión';
-                    showError('Correo o contraseña incorrectos. Verifica tus datos.');
-                    emailInput.classList.add('border-red-400');
-                    passwordInput.classList.add('border-red-400');
-                    passwordInput.value = '';
-                    passwordInput.focus();
+            try {
+                const response = await fetch(API_LOGIN_URL, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ email, password })
+                });
+
+                const payload = await response.json();
+
+                if (!response.ok || !payload.success || !payload.data?.token) {
+                    const message = payload?.errors?.[0] || payload?.message || 'No se pudo iniciar sesión.';
+                    handleLoginError(message);
+                    return;
                 }
-            }, 900);
+
+                const token = payload.data.token;
+                const user = payload.data.usuario ?? {};
+                const role = user.rol ?? '';
+
+                localStorage.setItem('sgplopypc_token', token);
+                localStorage.setItem('sgplopypc_user', JSON.stringify(user));
+
+                btnIcon.className = 'ph ph-check text-base';
+                btnText.textContent = 'Acceso concedido';
+                submitBtn.classList.replace('bg-primary-600', 'bg-emerald-600');
+                submitBtn.classList.replace('hover:bg-primary-700', 'hover:bg-emerald-700');
+
+                const targetUrl = DASHBOARD_URL_BY_ROLE[role] || DASHBOARD_URL_BY_ROLE.PUBLICO;
+                setTimeout(() => {
+                    window.location.href = targetUrl;
+                }, 450);
+            } catch (error) {
+                handleLoginError('Error de conexión con el servidor. Intenta nuevamente.');
+            }
         });
 
         function showError(msg) {
             errorText.textContent = msg;
             errorMsg.classList.remove('hidden');
             errorMsg.classList.add('flex');
+        }
+
+        function handleLoginError(message) {
+            setLoadingState(false);
+            showError(message);
+            emailInput.classList.add('border-red-400');
+            passwordInput.classList.add('border-red-400');
+            passwordInput.value = '';
+            passwordInput.focus();
+        }
+
+        function setLoadingState(isLoading) {
+            submitBtn.disabled = isLoading;
+            if (isLoading) {
+                btnIcon.className = 'ph ph-circle-notch text-base animate-spin';
+                btnText.textContent = 'Verificando...';
+                return;
+            }
+            btnIcon.className = 'ph ph-sign-in text-base';
+            btnText.textContent = 'Iniciar Sesión';
+            submitBtn.classList.remove('bg-emerald-600', 'hover:bg-emerald-700');
+            submitBtn.classList.add('bg-primary-600', 'hover:bg-primary-700');
         }
     </script>
 
