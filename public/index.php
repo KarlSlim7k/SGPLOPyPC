@@ -1,6 +1,9 @@
 <?php
 declare(strict_types=1);
 
+require_once __DIR__ . '/../app/helpers/env_loader.php';
+loadEnv(__DIR__ . '/../.env');
+
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../app/helpers/jwt.php';
 
@@ -28,6 +31,10 @@ require_once __DIR__ . '/../app/controllers/HealthController.php';
 require_once __DIR__ . '/../app/controllers/AuthController.php';
 require_once __DIR__ . '/../app/controllers/UserController.php';
 require_once __DIR__ . '/../app/controllers/AdminController.php';
+require_once __DIR__ . '/../app/controllers/LicitacionController.php';
+require_once __DIR__ . '/../app/controllers/ProveedorController.php';
+require_once __DIR__ . '/../app/controllers/ParticipacionController.php';
+require_once __DIR__ . '/../app/controllers/DocumentoController.php';
 
 // Middlewares
 require_once __DIR__ . '/../app/middlewares/AuthMiddleware.php';
@@ -52,6 +59,74 @@ try {
             AuthMiddleware::handle();
             RoleMiddleware::handle('ADMINISTRADOR');
             (new AdminController())->dashboard();
+            break;
+
+        // Licitaciones
+        case $route === '/licitaciones' && $requestMethod === 'GET':
+            (new LicitacionController())->list();
+            break;
+
+        case preg_match('#^/licitaciones/(\d+)$#', $route, $m) && $requestMethod === 'GET':
+            (new LicitacionController())->get((int) $m[1]);
+            break;
+
+        case $route === '/licitaciones' && $requestMethod === 'POST':
+            (new LicitacionController())->create();
+            break;
+
+        case preg_match('#^/licitaciones/(\d+)$#', $route, $m) && $requestMethod === 'PUT':
+            (new LicitacionController())->update((int) $m[1]);
+            break;
+
+        case preg_match('#^/licitaciones/(\d+)/estado$#', $route, $m) && $requestMethod === 'PATCH':
+            (new LicitacionController())->cambiarEstado((int) $m[1]);
+            break;
+
+        // Proveedores
+        case $route === '/proveedores' && $requestMethod === 'GET':
+            (new ProveedorController())->list();
+            break;
+
+        case preg_match('#^/proveedores/(\d+)$#', $route, $m) && $requestMethod === 'GET':
+            (new ProveedorController())->get((int) $m[1]);
+            break;
+
+        case $route === '/proveedores' && $requestMethod === 'POST':
+            (new ProveedorController())->create();
+            break;
+
+        case preg_match('#^/proveedores/(\d+)$#', $route, $m) && $requestMethod === 'PUT':
+            (new ProveedorController())->update((int) $m[1]);
+            break;
+
+        case preg_match('#^/proveedores/(\d+)/estatus$#', $route, $m) && $requestMethod === 'PATCH':
+            (new ProveedorController())->cambiarEstatus((int) $m[1]);
+            break;
+
+        // Participaciones y propuestas
+        case preg_match('#^/licitaciones/(\d+)/participaciones$#', $route, $m) && $requestMethod === 'GET':
+            (new ParticipacionController())->listByLicitacion((int) $m[1]);
+            break;
+
+        case preg_match('#^/licitaciones/(\d+)/participaciones$#', $route, $m) && $requestMethod === 'POST':
+            (new ParticipacionController())->inscribir((int) $m[1]);
+            break;
+
+        case preg_match('#^/participaciones/(\d+)/propuesta$#', $route, $m) && $requestMethod === 'POST':
+            (new ParticipacionController())->enviarPropuesta((int) $m[1]);
+            break;
+
+        case preg_match('#^/propuestas/(\d+)$#', $route, $m) && $requestMethod === 'GET':
+            (new ParticipacionController())->getPropuesta((int) $m[1]);
+            break;
+
+        // Documentos
+        case $route === '/documentos/upload' && $requestMethod === 'POST':
+            (new DocumentoController())->upload();
+            break;
+
+        case preg_match('#^/documentos/(\d+)$#', $route, $m) && $requestMethod === 'GET':
+            (new DocumentoController())->get((int) $m[1]);
             break;
 
         default:

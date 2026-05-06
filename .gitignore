@@ -34,6 +34,8 @@ storage/logs/
 # Uploads & User Files (if any)
 storage/uploads/
 storage/exports/
+storage/documents/uploads/
+storage/documents/exports/
 public/uploads/
 
 # Dependencies (if added later)
