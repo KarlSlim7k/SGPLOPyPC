@@ -16,16 +16,17 @@ class AuthController {
             jsonResponse(false, 'Cuerpo de solicitud inválido', null, null, 400);
         }
 
-        $email = trim($input['email'] ?? '');
-        $password = $input['password'] ?? '';
-
-        $errors = [];
-        if ($email === '') $errors[] = 'El correo electrónico es obligatorio.';
-        if ($password === '') $errors[] = 'La contraseña es obligatoria.';
+        $errors = Validator::validateInput([
+            'email' => 'required|email|max:200',
+            'password' => 'required|max:255',
+        ], $input);
 
         if (!empty($errors)) {
             jsonResponse(false, 'Validación fallida', null, $errors, 400);
         }
+
+        $email = trim($input['email']);
+        $password = $input['password'];
 
         $result = $this->authService->authenticate($email, $password);
 

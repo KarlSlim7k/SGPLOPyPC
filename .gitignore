@@ -30,6 +30,8 @@ desktop.ini
 *.log
 logs/
 storage/logs/
+storage/ratelimit/
+storage/backups/
 
 # Uploads & User Files (if any)
 storage/uploads/

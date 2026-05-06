@@ -19,8 +19,8 @@ class LicitacionService {
         $this->propRepo = new PropuestaRepository();
     }
 
-    public function list(?string $estado, ?string $tipo, ?int $dependencia): array {
-        return $this->repo->findAll($estado, $tipo, $dependencia);
+    public function list(?string $estado, ?string $tipo, ?int $dependencia, ?array $estadosPermitidos = null): array {
+        return $this->repo->findAll($estado, $tipo, $dependencia, $estadosPermitidos);
     }
 
     public function get(int $id): ?array {

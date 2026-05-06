@@ -14,16 +14,25 @@ class LicitacionController {
     }
 
     public function list(): never {
+        $user = AuthMiddleware::getAuthenticatedUser();
         $estado = $_GET['estado'] ?? null;
         $tipo = $_GET['tipo'] ?? null;
         $dependencia = isset($_GET['dependencia']) ? (int) $_GET['dependencia'] : null;
-        $data = $this->service->list($estado, $tipo, $dependencia);
+        $estadosPermitidos = null;
+        if ($user['rol'] === 'PROVEEDOR') {
+            $estadosPermitidos = ['PUBLICADA','EN_ACLARACIONES','RECEPCION_PROPUESTAS','EN_EVALUACION','ADJUDICADA','DESIERTA'];
+        }
+        $data = $this->service->list($estado, $tipo, $dependencia, $estadosPermitidos);
         jsonResponse(true, 'Listado de licitaciones', $data, null, 200);
     }
 
     public function get(int $id): never {
+        $user = AuthMiddleware::getAuthenticatedUser();
         $item = $this->service->get($id);
         if (!$item) {
+            jsonResponse(false, 'Licitación no encontrada', null, null, 404);
+        }
+        if ($user['rol'] === 'PROVEEDOR' && in_array($item['estado_proceso'], ['BORRADOR','CANCELADA'], true)) {
             jsonResponse(false, 'Licitación no encontrada', null, null, 404);
         }
         jsonResponse(true, 'Licitación obtenida', $item, null, 200);

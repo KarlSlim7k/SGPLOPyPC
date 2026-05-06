@@ -22,9 +22,13 @@ class ProveedorController {
 
     public function get(int $id): never {
         AuthMiddleware::handle();
+        $user = AuthMiddleware::getAuthenticatedUser();
         $item = $this->service->get($id);
         if (!$item) {
             jsonResponse(false, 'Proveedor no encontrado', null, null, 404);
+        }
+        if ($user['rol'] === 'PROVEEDOR' && (int) $item['id_usuario'] !== (int) $user['id_usuario']) {
+            jsonResponse(false, 'No tienes permisos para ver este proveedor.', null, null, 403);
         }
         jsonResponse(true, 'Proveedor obtenido', $item, null, 200);
     }

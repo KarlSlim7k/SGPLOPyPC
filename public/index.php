@@ -6,6 +6,12 @@ loadEnv(__DIR__ . '/../.env');
 
 require_once __DIR__ . '/../config/database.php';
 require_once __DIR__ . '/../app/helpers/jwt.php';
+require_once __DIR__ . '/../app/helpers/security.php';
+require_once __DIR__ . '/../app/helpers/response.php';
+require_once __DIR__ . '/../app/helpers/RateLimiter.php';
+require_once __DIR__ . '/../app/helpers/Validator.php';
+require_once __DIR__ . '/../app/helpers/Logger.php';
+require_once __DIR__ . '/../app/helpers/Metrics.php';
 
 $requestUri = parse_url($_SERVER['REQUEST_URI'], PHP_URL_PATH);
 $requestMethod = $_SERVER['REQUEST_METHOD'];
@@ -16,7 +22,6 @@ if (strpos($requestUri, '/api/v1/') !== 0) {
         require_once __DIR__ . '/landing.php';
         exit;
     }
-    // For any other non-API path, let Apache handle (404 or existing files)
     http_response_code(404);
     echo '<h1>404 Not Found</h1>';
     exit;
@@ -25,6 +30,8 @@ if (strpos($requestUri, '/api/v1/') !== 0) {
 // API routing
 $route = substr($requestUri, strlen('/api/v1'));
 $route = rtrim($route, '/');
+
+setSecurityHeaders();
 
 // Controllers
 require_once __DIR__ . '/../app/controllers/HealthController.php';
@@ -45,6 +52,18 @@ require_once __DIR__ . '/../app/controllers/NotificacionController.php';
 require_once __DIR__ . '/../app/middlewares/AuthMiddleware.php';
 require_once __DIR__ . '/../app/middlewares/RoleMiddleware.php';
 
+$logger = new Logger();
+$metrics = new Metrics();
+$currentRouteForMetrics = $route;
+register_shutdown_function(function () use ($metrics, $currentRouteForMetrics) {
+    $status = http_response_code() ?: 200;
+    $metrics->record($currentRouteForMetrics, $status);
+});
+
+function getClientIp(): string {
+    return $_SERVER['HTTP_X_FORWARDED_FOR'] ?? $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
+}
+
 try {
     switch (true) {
         case $route === '/health' && $requestMethod === 'GET':
@@ -52,6 +71,12 @@ try {
             break;
 
         case $route === '/auth/login' && $requestMethod === 'POST':
+            $rl = new RateLimiter(5, 60);
+            $ip = getClientIp();
+            if (!$rl->isAllowed('login:' . $ip)) {
+                $logger->security('Rate limit exceeded on login', ['ip' => $ip]);
+                jsonResponse(false, 'Demasiados intentos de inicio de sesión. Intente más tarde.', null, null, 429);
+            }
             (new AuthController())->login();
             break;
 
@@ -68,108 +93,156 @@ try {
 
         // Licitaciones
         case $route === '/licitaciones' && $requestMethod === 'GET':
+            AuthMiddleware::handle();
             (new LicitacionController())->list();
             break;
 
         case preg_match('#^/licitaciones/(\d+)$#', $route, $m) && $requestMethod === 'GET':
+            AuthMiddleware::handle();
             (new LicitacionController())->get((int) $m[1]);
             break;
 
         case $route === '/licitaciones' && $requestMethod === 'POST':
+            AuthMiddleware::handle();
+            RoleMiddleware::handle('ADMINISTRADOR');
             (new LicitacionController())->create();
             break;
 
         case preg_match('#^/licitaciones/(\d+)$#', $route, $m) && $requestMethod === 'PUT':
+            AuthMiddleware::handle();
+            RoleMiddleware::handle('ADMINISTRADOR');
             (new LicitacionController())->update((int) $m[1]);
             break;
 
         case preg_match('#^/licitaciones/(\d+)/estado$#', $route, $m) && $requestMethod === 'PATCH':
+            AuthMiddleware::handle();
+            RoleMiddleware::handle('ADMINISTRADOR');
             (new LicitacionController())->cambiarEstado((int) $m[1]);
             break;
 
         // Proveedores
         case $route === '/proveedores' && $requestMethod === 'GET':
+            AuthMiddleware::handle();
+            RoleMiddleware::handle('ADMINISTRADOR');
             (new ProveedorController())->list();
             break;
 
         case preg_match('#^/proveedores/(\d+)$#', $route, $m) && $requestMethod === 'GET':
+            AuthMiddleware::handle();
             (new ProveedorController())->get((int) $m[1]);
             break;
 
         case $route === '/proveedores' && $requestMethod === 'POST':
+            AuthMiddleware::handle();
             (new ProveedorController())->create();
             break;
 
         case preg_match('#^/proveedores/(\d+)$#', $route, $m) && $requestMethod === 'PUT':
+            AuthMiddleware::handle();
             (new ProveedorController())->update((int) $m[1]);
             break;
 
         case preg_match('#^/proveedores/(\d+)/estatus$#', $route, $m) && $requestMethod === 'PATCH':
+            AuthMiddleware::handle();
+            RoleMiddleware::handle('ADMINISTRADOR');
             (new ProveedorController())->cambiarEstatus((int) $m[1]);
             break;
 
         // Participaciones y propuestas
         case preg_match('#^/licitaciones/(\d+)/participaciones$#', $route, $m) && $requestMethod === 'GET':
+            AuthMiddleware::handle();
+            RoleMiddleware::handle('ADMINISTRADOR');
             (new ParticipacionController())->listByLicitacion((int) $m[1]);
             break;
 
         case preg_match('#^/licitaciones/(\d+)/participaciones$#', $route, $m) && $requestMethod === 'POST':
+            AuthMiddleware::handle();
+            RoleMiddleware::handle('PROVEEDOR');
             (new ParticipacionController())->inscribir((int) $m[1]);
             break;
 
         case preg_match('#^/participaciones/(\d+)/propuesta$#', $route, $m) && $requestMethod === 'POST':
+            AuthMiddleware::handle();
+            RoleMiddleware::handle('PROVEEDOR');
             (new ParticipacionController())->enviarPropuesta((int) $m[1]);
             break;
 
         case preg_match('#^/propuestas/(\d+)$#', $route, $m) && $requestMethod === 'GET':
+            AuthMiddleware::handle();
             (new ParticipacionController())->getPropuesta((int) $m[1]);
             break;
 
         // Documentos
         case $route === '/documentos/upload' && $requestMethod === 'POST':
+            AuthMiddleware::handle();
+            $rl = new RateLimiter(10, 60);
+            $ip = getClientIp();
+            if (!$rl->isAllowed('upload:' . $ip)) {
+                $logger->security('Rate limit exceeded on upload', ['ip' => $ip]);
+                jsonResponse(false, 'Demasiadas cargas de documentos. Intente más tarde.', null, null, 429);
+            }
             (new DocumentoController())->upload();
             break;
 
         case preg_match('#^/documentos/(\d+)$#', $route, $m) && $requestMethod === 'GET':
+            AuthMiddleware::handle();
             (new DocumentoController())->get((int) $m[1]);
             break;
 
         // Evaluaciones
         case $route === '/evaluaciones' && $requestMethod === 'POST':
+            AuthMiddleware::handle();
+            RoleMiddleware::handle('ADMINISTRADOR');
             (new EvaluacionController())->create();
             break;
 
         case preg_match('#^/evaluaciones/(\d+)$#', $route, $m) && $requestMethod === 'GET':
+            AuthMiddleware::handle();
+            RoleMiddleware::handle('ADMINISTRADOR');
             (new EvaluacionController())->get((int) $m[1]);
             break;
 
         case preg_match('#^/evaluaciones/(\d+)$#', $route, $m) && $requestMethod === 'PUT':
+            AuthMiddleware::handle();
+            RoleMiddleware::handle('ADMINISTRADOR');
             (new EvaluacionController())->update((int) $m[1]);
             break;
 
         case preg_match('#^/evaluaciones/(\d+)/dictamen$#', $route, $m) && $requestMethod === 'POST':
+            AuthMiddleware::handle();
+            RoleMiddleware::handle('ADMINISTRADOR');
             (new EvaluacionController())->dictamen((int) $m[1]);
             break;
 
         // Contratos
         case $route === '/contratos' && $requestMethod === 'POST':
+            AuthMiddleware::handle();
+            RoleMiddleware::handle('ADMINISTRADOR');
             (new ContratoController())->create();
             break;
 
         case preg_match('#^/contratos/(\d+)$#', $route, $m) && $requestMethod === 'GET':
+            AuthMiddleware::handle();
+            RoleMiddleware::handle('ADMINISTRADOR');
             (new ContratoController())->get((int) $m[1]);
             break;
 
         case preg_match('#^/contratos/(\d+)$#', $route, $m) && $requestMethod === 'PUT':
+            AuthMiddleware::handle();
+            RoleMiddleware::handle('ADMINISTRADOR');
             (new ContratoController())->update((int) $m[1]);
             break;
 
         case preg_match('#^/contratos/(\d+)/estatus$#', $route, $m) && $requestMethod === 'PATCH':
+            AuthMiddleware::handle();
+            RoleMiddleware::handle('ADMINISTRADOR');
             (new ContratoController())->cambiarEstatus((int) $m[1]);
             break;
 
         // Adjudicación
         case preg_match('#^/licitaciones/(\d+)/adjudicar$#', $route, $m) && $requestMethod === 'POST':
+            AuthMiddleware::handle();
+            RoleMiddleware::handle('ADMINISTRADOR');
             (new LicitacionController())->adjudicar((int) $m[1]);
             break;
 
@@ -202,6 +275,12 @@ try {
         case $route === '/reportes/export/licitaciones.csv' && $requestMethod === 'GET':
             AuthMiddleware::handle();
             RoleMiddleware::handle('ADMINISTRADOR');
+            $rl = new RateLimiter(5, 60);
+            $ip = getClientIp();
+            if (!$rl->isAllowed('export:' . $ip)) {
+                $logger->security('Rate limit exceeded on export', ['ip' => $ip]);
+                jsonResponse(false, 'Demasiadas exportaciones. Intente más tarde.', null, null, 429);
+            }
             (new ReporteController())->exportarLicitacionesCsv();
             break;
 
@@ -225,6 +304,7 @@ try {
         // Historial de licitación
         case preg_match('#^/licitaciones/(\d+)/historial$#', $route, $m) && $requestMethod === 'GET':
             AuthMiddleware::handle();
+            RoleMiddleware::handle('ADMINISTRADOR');
             (new ReporteController())->historialLicitacion((int) $m[1]);
             break;
 
@@ -249,6 +329,13 @@ try {
             jsonResponse(false, 'Ruta no encontrada', null, null, 404);
     }
 } catch (Throwable $e) {
-    error_log($e->getMessage());
-    jsonResponse(false, 'Error interno del servidor', null, [$e->getMessage()], 500);
+    $logger->error('Unhandled exception', [
+        'message' => $e->getMessage(),
+        'file' => $e->getFile(),
+        'line' => $e->getLine(),
+        'trace' => $e->getTraceAsString(),
+    ]);
+    $isDev = (env('APP_ENV', 'production') === 'development');
+    $errors = $isDev ? [$e->getMessage()] : null;
+    jsonResponse(false, 'Error interno del servidor', null, $errors, 500);
 }

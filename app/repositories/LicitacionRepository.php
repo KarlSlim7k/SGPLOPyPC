@@ -10,10 +10,14 @@ class LicitacionRepository {
         $this->db = getDbConnection();
     }
 
-    public function findAll(?string $estado = null, ?string $tipo = null, ?int $dependencia = null): array {
+    public function findAll(?string $estado = null, ?string $tipo = null, ?int $dependencia = null, ?array $estadosPermitidos = null): array {
         $where = [];
         $params = [];
-        if ($estado !== null && $estado !== '') {
+        if ($estadosPermitidos !== null && !empty($estadosPermitidos)) {
+            $placeholders = implode(',', array_fill(0, count($estadosPermitidos), '?'));
+            $where[] = "l.estado_proceso IN ($placeholders)";
+            $params = array_values($estadosPermitidos);
+        } elseif ($estado !== null && $estado !== '') {
             $where[] = 'l.estado_proceso = :estado';
             $params['estado'] = $estado;
         }
