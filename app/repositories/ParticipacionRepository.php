@@ -54,6 +54,17 @@ class ParticipacionRepository {
         $stmt = $this->db->prepare('UPDATE participacion SET estatus = :estatus WHERE id_participacion = :id');
         $stmt->execute(['id' => $id, 'estatus' => $estatus]);
     }
+
+    public function updateEstatusByLicitacion(int $idLicitacion, string $estatus, ?int $excludeParticipacionId = null): void {
+        $sql = 'UPDATE participacion SET estatus = :estatus WHERE id_licitacion = :id_licitacion';
+        $params = ['estatus' => $estatus, 'id_licitacion' => $idLicitacion];
+        if ($excludeParticipacionId !== null) {
+            $sql .= ' AND id_participacion != :exclude';
+            $params['exclude'] = $excludeParticipacionId;
+        }
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($params);
+    }
 }
 
 class PropuestaRepository {
@@ -88,5 +99,32 @@ class PropuestaRepository {
         );
         $stmt->execute($data);
         return (int) $this->db->lastInsertId();
+    }
+
+    public function findByLicitacion(int $idLicitacion): array {
+        $stmt = $this->db->prepare(
+            'SELECT pr.*, pa.id_licitacion, pa.id_proveedor '
+            . 'FROM propuesta pr '
+            . 'JOIN participacion pa ON pr.id_participacion = pa.id_participacion '
+            . 'WHERE pa.id_licitacion = :id_licitacion'
+        );
+        $stmt->execute(['id_licitacion' => $idLicitacion]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function updateEstatus(int $id, string $estatus): void {
+        $stmt = $this->db->prepare('UPDATE propuesta SET estatus = :estatus WHERE id_propuesta = :id');
+        $stmt->execute(['id' => $id, 'estatus' => $estatus]);
+    }
+
+    public function updateEstatusByLicitacion(int $idLicitacion, string $estatus, ?int $excludePropuestaId = null): void {
+        $sql = 'UPDATE propuesta SET estatus = :estatus WHERE id_participacion IN (SELECT id_participacion FROM participacion WHERE id_licitacion = :id_licitacion)';
+        $params = ['estatus' => $estatus, 'id_licitacion' => $idLicitacion];
+        if ($excludePropuestaId !== null) {
+            $sql .= ' AND id_propuesta != :exclude';
+            $params['exclude'] = $excludePropuestaId;
+        }
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($params);
     }
 }

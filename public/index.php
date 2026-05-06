@@ -35,6 +35,8 @@ require_once __DIR__ . '/../app/controllers/LicitacionController.php';
 require_once __DIR__ . '/../app/controllers/ProveedorController.php';
 require_once __DIR__ . '/../app/controllers/ParticipacionController.php';
 require_once __DIR__ . '/../app/controllers/DocumentoController.php';
+require_once __DIR__ . '/../app/controllers/EvaluacionController.php';
+require_once __DIR__ . '/../app/controllers/ContratoController.php';
 
 // Middlewares
 require_once __DIR__ . '/../app/middlewares/AuthMiddleware.php';
@@ -127,6 +129,45 @@ try {
 
         case preg_match('#^/documentos/(\d+)$#', $route, $m) && $requestMethod === 'GET':
             (new DocumentoController())->get((int) $m[1]);
+            break;
+
+        // Evaluaciones
+        case $route === '/evaluaciones' && $requestMethod === 'POST':
+            (new EvaluacionController())->create();
+            break;
+
+        case preg_match('#^/evaluaciones/(\d+)$#', $route, $m) && $requestMethod === 'GET':
+            (new EvaluacionController())->get((int) $m[1]);
+            break;
+
+        case preg_match('#^/evaluaciones/(\d+)$#', $route, $m) && $requestMethod === 'PUT':
+            (new EvaluacionController())->update((int) $m[1]);
+            break;
+
+        case preg_match('#^/evaluaciones/(\d+)/dictamen$#', $route, $m) && $requestMethod === 'POST':
+            (new EvaluacionController())->dictamen((int) $m[1]);
+            break;
+
+        // Contratos
+        case $route === '/contratos' && $requestMethod === 'POST':
+            (new ContratoController())->create();
+            break;
+
+        case preg_match('#^/contratos/(\d+)$#', $route, $m) && $requestMethod === 'GET':
+            (new ContratoController())->get((int) $m[1]);
+            break;
+
+        case preg_match('#^/contratos/(\d+)$#', $route, $m) && $requestMethod === 'PUT':
+            (new ContratoController())->update((int) $m[1]);
+            break;
+
+        case preg_match('#^/contratos/(\d+)/estatus$#', $route, $m) && $requestMethod === 'PATCH':
+            (new ContratoController())->cambiarEstatus((int) $m[1]);
+            break;
+
+        // Adjudicación
+        case preg_match('#^/licitaciones/(\d+)/adjudicar$#', $route, $m) && $requestMethod === 'POST':
+            (new LicitacionController())->adjudicar((int) $m[1]);
             break;
 
         default:

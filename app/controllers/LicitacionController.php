@@ -79,4 +79,18 @@ class LicitacionController {
         }
         jsonResponse(true, 'Estado actualizado exitosamente', null, null, 200);
     }
+
+    public function adjudicar(int $id): never {
+        AuthMiddleware::handle();
+        RoleMiddleware::handle('ADMINISTRADOR');
+        $user = AuthMiddleware::getAuthenticatedUser();
+        $result = $this->service->adjudicar($id, (int) $user['id_usuario']);
+        if (!$result['ok']) {
+            if (in_array('Licitación no encontrada.', $result['errors'])) {
+                jsonResponse(false, 'Licitación no encontrada', null, $result['errors'], 404);
+            }
+            jsonResponse(false, 'Error de validación', null, $result['errors'], 409);
+        }
+        jsonResponse(true, 'Licitación adjudicada exitosamente', ['id_propuesta_ganadora' => $result['id_propuesta_ganadora']], null, 200);
+    }
 }

@@ -2,13 +2,21 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/../repositories/LicitacionRepository.php';
+require_once __DIR__ . '/../repositories/EvaluacionRepository.php';
+require_once __DIR__ . '/../repositories/ParticipacionRepository.php';
 require_once __DIR__ . '/../helpers/audit.php';
 
 class LicitacionService {
     private LicitacionRepository $repo;
+    private EvaluacionRepository $evalRepo;
+    private ParticipacionRepository $partRepo;
+    private PropuestaRepository $propRepo;
 
     public function __construct() {
         $this->repo = new LicitacionRepository();
+        $this->evalRepo = new EvaluacionRepository();
+        $this->partRepo = new ParticipacionRepository();
+        $this->propRepo = new PropuestaRepository();
     }
 
     public function list(?string $estado, ?string $tipo, ?int $dependencia): array {
@@ -95,6 +103,32 @@ class LicitacionService {
         $this->repo->update($id, ['estado_proceso' => $nuevoEstado]);
         auditLog($idUsuario, 'licitacion', $id, 'ACTUALIZAR', ['estado_proceso' => $actual], ['estado_proceso' => $nuevoEstado]);
         return ['ok' => true];
+    }
+
+    public function adjudicar(int $id, int $idUsuario): array {
+        $existing = $this->repo->findById($id);
+        if (!$existing) {
+            return ['ok' => false, 'errors' => ['Licitación no encontrada.']];
+        }
+        if ($existing['estado_proceso'] !== 'EN_EVALUACION') {
+            return ['ok' => false, 'errors' => ['La licitación debe estar en estado EN_EVALUACION para adjudicarse.']];
+        }
+        $ganadora = $this->evalRepo->findGanadoraByLicitacion($id);
+        if (!$ganadora) {
+            return ['ok' => false, 'errors' => ['No existe una propuesta solvente para adjudicar.']];
+        }
+        $idPropuestaGanadora = (int) $ganadora['id_propuesta'];
+        $idParticipacionGanadora = (int) $ganadora['id_participacion'];
+
+        $this->repo->update($id, ['estado_proceso' => 'ADJUDICADA']);
+        $this->partRepo->updateEstatus($idParticipacionGanadora, 'GANADOR');
+        $this->partRepo->updateEstatusByLicitacion($id, 'NO_GANADOR', $idParticipacionGanadora);
+        $this->propRepo->updateEstatus($idPropuestaGanadora, 'ACEPTADA');
+        $this->propRepo->updateEstatusByLicitacion($id, 'RECHAZADA', $idPropuestaGanadora);
+
+        auditLog($idUsuario, 'licitacion', $id, 'ACTUALIZAR', ['estado_proceso' => 'EN_EVALUACION'], ['estado_proceso' => 'ADJUDICADA']);
+        auditLog($idUsuario, 'participacion', $idParticipacionGanadora, 'ACTUALIZAR', ['estatus' => 'PROPUESTA_ENVIADA'], ['estatus' => 'GANADOR']);
+        return ['ok' => true, 'id_propuesta_ganadora' => $idPropuestaGanadora];
     }
 
     private function validate(array $input, bool $isUpdate = false): array {
