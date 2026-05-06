@@ -295,3 +295,213 @@ Todas las operaciones críticas generan registros en `historial_cambio`:
 - Adjudicación del proveedor ganador.
 
 Campos registrados: actor (`id_usuario`), acción (`CREAR`/`ACTUALIZAR`), tabla, id del registro, timestamp, snapshot antes/después, IP origen.
+
+---
+
+## Reportes y Dashboard (ADMINISTRADOR)
+
+### GET /api/v1/reportes/dashboard/resumen
+Devuelve métricas clave del sistema.
+
+**Headers:** `Authorization: Bearer <token>`
+
+**Response 200:**
+```json
+{
+  "success": true,
+  "message": "Resumen del dashboard",
+  "data": {
+    "total_licitaciones": 50,
+    "total_adjudicadas": 12,
+    "total_publicadas": 8,
+    "total_proveedores": 30,
+    "total_contratos": 12,
+    "total_participaciones": 80,
+    "total_propuestas": 65,
+    "tiempo_promedio_publicacion_adjudicacion_dias": 45.5
+  }
+}
+```
+
+### GET /api/v1/reportes/dashboard/licitaciones-por-estado
+Devuelve conteo de licitaciones agrupadas por estado.
+
+**Response 200:**
+```json
+{
+  "success": true,
+  "message": "Licitaciones por estado",
+  "data": [
+    { "estado_proceso": "PUBLICADA", "cantidad": 8 },
+    { "estado_proceso": "ADJUDICADA", "cantidad": 12 }
+  ]
+}
+```
+
+### GET /api/v1/reportes/dashboard/participacion-proveedores
+Indicadores de participación.
+
+**Response 200:**
+```json
+{
+  "success": true,
+  "message": "Participación de proveedores",
+  "data": {
+    "proveedores_inscritos": 80,
+    "propuestas_enviadas": 65,
+    "tasa_participacion_pct": 81.25
+  }
+}
+```
+
+### GET /api/v1/reportes/dashboard/adjudicaciones-por-periodo
+Adjudicaciones en un rango de fechas.
+
+**Query params:** `from=YYYY-MM-DD&to=YYYY-MM-DD`
+
+**Response 200:**
+```json
+{
+  "success": true,
+  "message": "Adjudicaciones por periodo",
+  "data": [
+    { "fecha": "2026-04-15", "cantidad": 2, "monto_total": 1500000.00 }
+  ]
+}
+```
+
+---
+
+## Exportaciones (ADMINISTRADOR)
+
+### GET /api/v1/reportes/export/licitaciones.csv
+Exporta licitaciones a CSV con filtros.
+
+**Query params:**
+- `estado` — filtrar por estado del proceso
+- `dependencia` — ID de dependencia
+- `from` — fecha creación desde (YYYY-MM-DD)
+- `to` — fecha creación hasta (YYYY-MM-DD)
+
+**Headers:** `Authorization: Bearer <token>`
+
+**Response 200:** archivo CSV con BOM UTF-8.
+
+**Auditoría:** se registra quién exportó, tipo y cantidad de registros.
+
+> PDF y XLSX quedan documentados como backlog técnico futuro.
+
+---
+
+## Transparencia Pública (sin autenticación)
+
+### GET /api/v1/public/convocatorias
+Lista pública de convocatorias publicadas.
+
+**Query params:**
+- `page` (default: 1)
+- `limit` (default: 20, max: 100)
+- `sort` — `fecha_creacion` | `numero_licitacion` | `tipo_procedimiento`
+- `order` — `ASC` | `DESC`
+
+**Response 200:**
+```json
+{
+  "success": true,
+  "message": "Listado público de convocatorias",
+  "data": {
+    "items": [...],
+    "total": 40,
+    "page": 1,
+    "limit": 20
+  }
+}
+```
+
+### GET /api/v1/public/convocatorias/{id}
+Detalle público de una convocatoria.
+
+### GET /api/v1/public/resultados
+Resultados de adjudicación públicos.
+
+**Query params:** `page`, `limit`
+
+### GET /api/v1/public/contratos
+Contratos públicos (sin datos sensibles de proveedor).
+
+**Query params:** `page`, `limit`
+
+**Reglas:**
+- No expone datos personales, credenciales ni archivos restringidos.
+- Oculta licitaciones en `BORRADOR` y `CANCELADA`.
+
+---
+
+## Historial de Licitación
+
+### GET /api/v1/licitaciones/{id}/historial
+Devuelve eventos trazables de una licitación.
+
+**Headers:** `Authorization: Bearer <token>`
+
+**Incluye:**
+- Cambios de estado (auditoría)
+- Evaluaciones y dictámenes
+- Creación de contrato
+- Documentos públicos asociados
+
+**Response 200:**
+```json
+{
+  "success": true,
+  "message": "Historial de la licitación",
+  "data": [
+    {
+      "id_historial": 1,
+      "usuario_nombre": "Admin",
+      "accion": "ACTUALIZAR",
+      "valores_nuevos": { "estado_proceso": "ADJUDICADA" },
+      "fecha_accion": "2026-04-10 14:30:00",
+      "tipo_evento": "AUDITORIA"
+    }
+  ]
+}
+```
+
+**Auditoría:** se registra el acceso al historial.
+
+---
+
+## Notificaciones
+
+### POST /api/v1/notificaciones
+Crea una notificación (ADMINISTRADOR o eventos del sistema).
+
+**Headers:** `Authorization: Bearer <token>`
+
+**Body:**
+```json
+{
+  "id_usuario_destino": 2,
+  "id_licitacion": 5,
+  "tipo_notificacion": "CONVOCATORIA_PUBLICADA | ACLARACION | RESULTADO_EVALUACION | ADJUDICACION | CAMBIO_ESTADO | GENERAL",
+  "titulo": "string",
+  "mensaje": "string"
+}
+```
+
+### GET /api/v1/notificaciones/mias
+Lista las notificaciones del usuario autenticado.
+
+**Headers:** `Authorization: Bearer <token>`
+
+### PATCH /api/v1/notificaciones/{id}/leida
+Marca una notificación como leída.
+
+**Reglas:**
+- Solo el destinatario puede marcarla como leída.
+- Valida pertenencia.
+
+**Response 200 / 403 / 404**
+
+**Auditoría:** se registra la lectura.

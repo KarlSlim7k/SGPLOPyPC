@@ -37,6 +37,9 @@ require_once __DIR__ . '/../app/controllers/ParticipacionController.php';
 require_once __DIR__ . '/../app/controllers/DocumentoController.php';
 require_once __DIR__ . '/../app/controllers/EvaluacionController.php';
 require_once __DIR__ . '/../app/controllers/ContratoController.php';
+require_once __DIR__ . '/../app/controllers/ReporteController.php';
+require_once __DIR__ . '/../app/controllers/PublicController.php';
+require_once __DIR__ . '/../app/controllers/NotificacionController.php';
 
 // Middlewares
 require_once __DIR__ . '/../app/middlewares/AuthMiddleware.php';
@@ -168,6 +171,78 @@ try {
         // Adjudicación
         case preg_match('#^/licitaciones/(\d+)/adjudicar$#', $route, $m) && $requestMethod === 'POST':
             (new LicitacionController())->adjudicar((int) $m[1]);
+            break;
+
+        // Reportes / Dashboard
+        case $route === '/reportes/dashboard/resumen' && $requestMethod === 'GET':
+            AuthMiddleware::handle();
+            RoleMiddleware::handle('ADMINISTRADOR');
+            (new ReporteController())->dashboardResumen();
+            break;
+
+        case $route === '/reportes/dashboard/licitaciones-por-estado' && $requestMethod === 'GET':
+            AuthMiddleware::handle();
+            RoleMiddleware::handle('ADMINISTRADOR');
+            (new ReporteController())->dashboardLicitacionesPorEstado();
+            break;
+
+        case $route === '/reportes/dashboard/participacion-proveedores' && $requestMethod === 'GET':
+            AuthMiddleware::handle();
+            RoleMiddleware::handle('ADMINISTRADOR');
+            (new ReporteController())->dashboardParticipacionProveedores();
+            break;
+
+        case $route === '/reportes/dashboard/adjudicaciones-por-periodo' && $requestMethod === 'GET':
+            AuthMiddleware::handle();
+            RoleMiddleware::handle('ADMINISTRADOR');
+            (new ReporteController())->dashboardAdjudicacionesPorPeriodo();
+            break;
+
+        // Exportaciones
+        case $route === '/reportes/export/licitaciones.csv' && $requestMethod === 'GET':
+            AuthMiddleware::handle();
+            RoleMiddleware::handle('ADMINISTRADOR');
+            (new ReporteController())->exportarLicitacionesCsv();
+            break;
+
+        // Transparencia pública
+        case $route === '/public/convocatorias' && $requestMethod === 'GET':
+            (new PublicController())->listConvocatorias();
+            break;
+
+        case preg_match('#^/public/convocatorias/(\d+)$#', $route, $m) && $requestMethod === 'GET':
+            (new PublicController())->getConvocatoria((int) $m[1]);
+            break;
+
+        case $route === '/public/resultados' && $requestMethod === 'GET':
+            (new PublicController())->listResultados();
+            break;
+
+        case $route === '/public/contratos' && $requestMethod === 'GET':
+            (new PublicController())->listContratos();
+            break;
+
+        // Historial de licitación
+        case preg_match('#^/licitaciones/(\d+)/historial$#', $route, $m) && $requestMethod === 'GET':
+            AuthMiddleware::handle();
+            (new ReporteController())->historialLicitacion((int) $m[1]);
+            break;
+
+        // Notificaciones
+        case $route === '/notificaciones' && $requestMethod === 'POST':
+            AuthMiddleware::handle();
+            RoleMiddleware::handle('ADMINISTRADOR');
+            (new NotificacionController())->create();
+            break;
+
+        case $route === '/notificaciones/mias' && $requestMethod === 'GET':
+            AuthMiddleware::handle();
+            (new NotificacionController())->listMias();
+            break;
+
+        case preg_match('#^/notificaciones/(\d+)/leida$#', $route, $m) && $requestMethod === 'PATCH':
+            AuthMiddleware::handle();
+            (new NotificacionController())->marcarLeida((int) $m[1]);
             break;
 
         default:
