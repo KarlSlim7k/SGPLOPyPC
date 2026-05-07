@@ -13,6 +13,14 @@ class EvaluacionController {
         $this->service = new EvaluacionService();
     }
 
+    public function list(): never {
+        AuthMiddleware::handle();
+        RoleMiddleware::handle('ADMINISTRADOR');
+        $idLicitacion = isset($_GET['licitacion']) ? (int) $_GET['licitacion'] : null;
+        $data = $this->service->list($idLicitacion && $idLicitacion > 0 ? $idLicitacion : null);
+        jsonResponse(true, 'Listado de evaluaciones', $data, null, 200);
+    }
+
     public function create(): never {
         AuthMiddleware::handle();
         RoleMiddleware::handle('ADMINISTRADOR');

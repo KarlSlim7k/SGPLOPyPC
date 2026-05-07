@@ -112,6 +112,24 @@ class PropuestaRepository {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public function findAll(?int $idLicitacion = null): array {
+        $sql = 'SELECT pr.*, pa.id_licitacion, pa.id_proveedor, pa.estatus AS estatus_participacion, '
+             . 'li.numero_licitacion, pv.nombre_empresa, pv.registro_fiscal '
+             . 'FROM propuesta pr '
+             . 'JOIN participacion pa ON pr.id_participacion = pa.id_participacion '
+             . 'JOIN licitacion li ON pa.id_licitacion = li.id_licitacion '
+             . 'JOIN proveedor pv ON pa.id_proveedor = pv.id_proveedor';
+        $params = [];
+        if ($idLicitacion !== null) {
+            $sql .= ' WHERE pa.id_licitacion = :id_licitacion';
+            $params['id_licitacion'] = $idLicitacion;
+        }
+        $sql .= ' ORDER BY pr.fecha_envio DESC';
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($params);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     public function updateEstatus(int $id, string $estatus): void {
         $stmt = $this->db->prepare('UPDATE propuesta SET estatus = :estatus WHERE id_propuesta = :id');
         $stmt->execute(['id' => $id, 'estatus' => $estatus]);

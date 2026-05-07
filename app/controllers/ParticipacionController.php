@@ -68,4 +68,12 @@ class ParticipacionController {
         }
         jsonResponse(true, 'Propuesta obtenida', $item, null, 200);
     }
+
+    public function listPropuestas(): never {
+        AuthMiddleware::handle();
+        RoleMiddleware::handle('ADMINISTRADOR');
+        $idLicitacion = isset($_GET['licitacion']) ? (int) $_GET['licitacion'] : null;
+        $data = $this->service->listPropuestas($idLicitacion && $idLicitacion > 0 ? $idLicitacion : null);
+        jsonResponse(true, 'Listado de propuestas', $data, null, 200);
+    }
 }

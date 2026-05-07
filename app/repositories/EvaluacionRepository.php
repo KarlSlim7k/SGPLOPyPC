@@ -49,6 +49,25 @@ class EvaluacionRepository {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public function findAll(?int $idLicitacion = null): array {
+        $sql = 'SELECT e.*, p.monto_propuesta, p.descripcion_tecnica, '
+             . 'pa.id_licitacion, pa.id_proveedor, li.numero_licitacion, pr.nombre_empresa, pr.registro_fiscal '
+             . 'FROM evaluacion e '
+             . 'JOIN propuesta p ON e.id_propuesta = p.id_propuesta '
+             . 'JOIN participacion pa ON p.id_participacion = pa.id_participacion '
+             . 'JOIN licitacion li ON pa.id_licitacion = li.id_licitacion '
+             . 'JOIN proveedor pr ON pa.id_proveedor = pr.id_proveedor';
+        $params = [];
+        if ($idLicitacion !== null) {
+            $sql .= ' WHERE pa.id_licitacion = :id_licitacion';
+            $params['id_licitacion'] = $idLicitacion;
+        }
+        $sql .= ' ORDER BY e.fecha_evaluacion DESC';
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($params);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     public function create(array $data): int {
         $stmt = $this->db->prepare(
             'INSERT INTO evaluacion (id_propuesta, id_evaluador, puntaje_tecnico, puntaje_economico, puntaje_total, observaciones, dictamen, fecha_evaluacion) '

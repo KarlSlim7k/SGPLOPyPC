@@ -171,6 +171,11 @@ try {
             AuthMiddleware::handle();
             (new ParticipacionController())->getPropuesta((int) $m[1]);
             break;
+        case $route === '/propuestas' && $requestMethod === 'GET':
+            AuthMiddleware::handle();
+            RoleMiddleware::handle('ADMINISTRADOR');
+            (new ParticipacionController())->listPropuestas();
+            break;
 
         // Documentos
         case $route === '/documentos/upload' && $requestMethod === 'POST':
@@ -194,6 +199,11 @@ try {
             AuthMiddleware::handle();
             RoleMiddleware::handle('ADMINISTRADOR');
             (new EvaluacionController())->create();
+            break;
+        case $route === '/evaluaciones' && $requestMethod === 'GET':
+            AuthMiddleware::handle();
+            RoleMiddleware::handle('ADMINISTRADOR');
+            (new EvaluacionController())->list();
             break;
 
         case preg_match('#^/evaluaciones/(\d+)$#', $route, $m) && $requestMethod === 'GET':
@@ -219,6 +229,11 @@ try {
             AuthMiddleware::handle();
             RoleMiddleware::handle('ADMINISTRADOR');
             (new ContratoController())->create();
+            break;
+        case $route === '/contratos' && $requestMethod === 'GET':
+            AuthMiddleware::handle();
+            RoleMiddleware::handle('ADMINISTRADOR');
+            (new ContratoController())->list();
             break;
 
         case preg_match('#^/contratos/(\d+)$#', $route, $m) && $requestMethod === 'GET':

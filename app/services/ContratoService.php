@@ -21,6 +21,10 @@ class ContratoService {
         return $this->repo->findById($id);
     }
 
+    public function list(?string $estatus = null): array {
+        return $this->repo->findAll($estatus);
+    }
+
     public function create(array $input, int $idUsuario): array {
         $errors = $this->validateCreate($input);
         if (!empty($errors)) {

@@ -256,6 +256,88 @@
     </div>
 
 <script src="/frontend/shared/admin.js"></script>
-<script>(function(){ if(!window.SGPLAdmin.protectRoute()) return; window.SGPLAdmin.attachLogoutHandlers(); })();</script>
+<script>
+(function () {
+  if (!window.SGPLAdmin.protectRoute()) return;
+  window.SGPLAdmin.attachLogoutHandlers();
+
+  const stats = document.querySelectorAll('.grid.grid-cols-2.md\\:grid-cols-4 .text-2xl.font-extrabold');
+  const searchInput = document.querySelector('input[type="search"]');
+  const licSelect = document.querySelectorAll('select')[0];
+  const statusSelect = document.querySelectorAll('select')[1];
+  const tbody = document.querySelector('tbody');
+  const summary = document.querySelector('.border-t p.text-sm');
+
+  let cache = [];
+
+  function badgeClass(status) {
+    const map = {
+      RECIBIDA: 'bg-amber-100 text-amber-700 border-amber-200',
+      EN_REVISION: 'bg-blue-100 text-blue-700 border-blue-200',
+      ACEPTADA: 'bg-emerald-100 text-emerald-700 border-emerald-200',
+      RECHAZADA: 'bg-red-100 text-red-700 border-red-200'
+    };
+    return map[status] || 'bg-slate-100 text-slate-700 border-slate-200';
+  }
+
+  function render(items) {
+    const term = (searchInput.value || '').toLowerCase().trim();
+    const licVal = licSelect.value || '';
+    const statusVal = statusSelect.value || '';
+
+    const filtered = items.filter(function (item) {
+      const text = (item.nombre_empresa + ' ' + item.numero_licitacion + ' ' + item.registro_fiscal).toLowerCase();
+      const matchesText = !term || text.includes(term);
+      const matchesLic = !licVal || item.numero_licitacion === licVal;
+      const matchesStatus = !statusVal || item.estatus === statusVal;
+      return matchesText && matchesLic && matchesStatus;
+    });
+
+    tbody.innerHTML = filtered.length
+      ? filtered.map(function (item) {
+          return '<tr class="hover:bg-slate-50 transition-colors">'
+            + '<td class="px-6 py-4"><p class="font-semibold text-slate-800 text-sm">' + item.nombre_empresa + '</p><p class="text-xs text-slate-400 mt-0.5">' + item.registro_fiscal + '</p></td>'
+            + '<td class="px-6 py-4 font-mono text-slate-600 text-xs whitespace-nowrap">' + item.numero_licitacion + '</td>'
+            + '<td class="px-6 py-4"><div class="flex gap-1.5"><span class="px-1.5 py-0.5 rounded text-xs bg-blue-50 text-blue-600 border border-blue-100 font-medium">Tecnica</span><span class="px-1.5 py-0.5 rounded text-xs bg-emerald-50 text-emerald-600 border border-emerald-100 font-medium">Economica</span></div></td>'
+            + '<td class="px-6 py-4 font-bold text-slate-800 whitespace-nowrap">' + window.SGPLAdmin.formatCurrency(item.monto_propuesta) + '</td>'
+            + '<td class="px-6 py-4 text-slate-500 text-xs whitespace-nowrap">' + window.SGPLAdmin.formatDate(item.fecha_envio) + '</td>'
+            + '<td class="px-6 py-4 whitespace-nowrap"><span class="px-2.5 py-1 rounded-full text-xs font-semibold border ' + badgeClass(item.estatus) + '">' + item.estatus + '</span></td>'
+            + '<td class="px-6 py-4 text-right"><button class="p-2 text-slate-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg" data-id="' + item.id_propuesta + '" aria-label="Ver propuesta"><i class="ph ph-eye text-base"></i></button></td>'
+            + '</tr>';
+        }).join('')
+      : '<tr><td colspan="7" class="px-6 py-8 text-center text-slate-500">Sin propuestas para los filtros seleccionados.</td></tr>';
+
+    summary.textContent = 'Mostrando ' + filtered.length + ' de ' + items.length + ' propuestas';
+
+    if (stats.length >= 4) {
+      stats[0].textContent = items.length;
+      stats[1].textContent = items.filter(i => i.estatus === 'RECIBIDA').length;
+      stats[2].textContent = items.filter(i => i.estatus === 'EN_REVISION').length;
+      stats[3].textContent = items.filter(i => i.estatus === 'ACEPTADA' || i.estatus === 'RECHAZADA').length;
+    }
+  }
+
+  async function load() {
+    tbody.innerHTML = '<tr><td colspan="7" class="px-6 py-8 text-center text-slate-500">Cargando propuestas...</td></tr>';
+    try {
+      const res = await window.SGPLAdmin.authFetch('/propuestas');
+      cache = res.data || [];
+
+      const lics = Array.from(new Set(cache.map(i => i.numero_licitacion))).sort();
+      licSelect.innerHTML = '<option value=\"\">Todas las licitaciones</option>' + lics.map(v => '<option value=\"' + v + '\">' + v + '</option>').join('');
+      statusSelect.innerHTML = '<option value=\"\">Todos los estados</option><option value=\"RECIBIDA\">RECIBIDA</option><option value=\"EN_REVISION\">EN_REVISION</option><option value=\"ACEPTADA\">ACEPTADA</option><option value=\"RECHAZADA\">RECHAZADA</option>';
+      render(cache);
+    } catch (_) {
+      tbody.innerHTML = '<tr><td colspan="7" class="px-6 py-8 text-center text-red-600">No se pudieron cargar propuestas.</td></tr>';
+    }
+  }
+
+  searchInput?.addEventListener('input', function () { render(cache); });
+  licSelect?.addEventListener('change', function () { render(cache); });
+  statusSelect?.addEventListener('change', function () { render(cache); });
+
+  load();
+})();
+</script>
 </body>
 </html>

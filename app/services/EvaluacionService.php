@@ -18,6 +18,10 @@ class EvaluacionService {
         return $this->repo->findById($id);
     }
 
+    public function list(?int $idLicitacion = null): array {
+        return $this->repo->findAll($idLicitacion);
+    }
+
     public function create(array $input, int $idEvaluador): array {
         $errors = $this->validateInput($input);
         if (!empty($errors)) {

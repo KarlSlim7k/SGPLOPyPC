@@ -23,6 +23,22 @@ class ContratoRepository {
         return $row ?: null;
     }
 
+    public function findAll(?string $estatus = null): array {
+        $sql = 'SELECT c.*, l.numero_licitacion, p.nombre_empresa, p.registro_fiscal '
+             . 'FROM contrato c '
+             . 'JOIN licitacion l ON c.id_licitacion = l.id_licitacion '
+             . 'JOIN proveedor p ON c.id_proveedor = p.id_proveedor';
+        $params = [];
+        if ($estatus !== null && $estatus !== '') {
+            $sql .= ' WHERE c.estatus = :estatus';
+            $params['estatus'] = $estatus;
+        }
+        $sql .= ' ORDER BY c.fecha_creacion DESC';
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($params);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     public function findByLicitacion(int $idLicitacion): ?array {
         $stmt = $this->db->prepare(
             'SELECT c.*, l.numero_licitacion, p.nombre_empresa, p.registro_fiscal '

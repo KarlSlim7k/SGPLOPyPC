@@ -103,4 +103,8 @@ class ParticipacionService {
         }
         return null;
     }
+
+    public function listPropuestas(?int $idLicitacion = null): array {
+        return $this->propRepo->findAll($idLicitacion);
+    }
 }

@@ -13,6 +13,14 @@ class ContratoController {
         $this->service = new ContratoService();
     }
 
+    public function list(): never {
+        AuthMiddleware::handle();
+        RoleMiddleware::handle('ADMINISTRADOR');
+        $estatus = $_GET['estatus'] ?? null;
+        $data = $this->service->list($estatus);
+        jsonResponse(true, 'Listado de contratos', $data, null, 200);
+    }
+
     public function create(): never {
         AuthMiddleware::handle();
         RoleMiddleware::handle('ADMINISTRADOR');

@@ -221,6 +221,124 @@
     </div>
 
 <script src="/frontend/shared/admin.js"></script>
-<script>(function(){ if(!window.SGPLAdmin.protectRoute()) return; window.SGPLAdmin.attachLogoutHandlers(); })();</script>
+<script>
+(function () {
+  if (!window.SGPLAdmin.protectRoute()) return;
+  window.SGPLAdmin.attachLogoutHandlers();
+
+  const stats = document.querySelectorAll('.grid.grid-cols-2.md\\:grid-cols-4 .text-2xl.font-extrabold');
+  const searchInput = document.querySelector('input[type="search"]');
+  const statusSelect = document.querySelectorAll('select')[1];
+  const exportBtn = document.querySelector('header button');
+  const tbody = document.querySelector('tbody');
+  const summary = document.querySelector('.border-t p.text-sm');
+
+  let cache = [];
+
+  function badgeClass(status) {
+    const map = {
+      EN_FORMALIZACION: 'bg-blue-100 text-blue-700 border-blue-200',
+      VIGENTE: 'bg-violet-100 text-violet-700 border-violet-200',
+      EN_EJECUCION: 'bg-violet-100 text-violet-700 border-violet-200',
+      CONCLUIDO: 'bg-emerald-100 text-emerald-700 border-emerald-200',
+      RESCINDIDO: 'bg-red-100 text-red-700 border-red-200'
+    };
+    return map[status] || 'bg-slate-100 text-slate-700 border-slate-200';
+  }
+
+  function render(items) {
+    const term = (searchInput.value || '').toLowerCase().trim();
+    const statusVal = statusSelect.value || '';
+    const filtered = items.filter(function (i) {
+      const matchText = !term || (i.numero_contrato || '').toLowerCase().includes(term) || (i.numero_licitacion || '').toLowerCase().includes(term);
+      const matchStatus = !statusVal || i.estatus === statusVal;
+      return matchText && matchStatus;
+    });
+
+    tbody.innerHTML = filtered.length
+      ? filtered.map(function (i) {
+          return '<tr class="hover:bg-slate-50 transition-colors">'
+            + '<td class="px-6 py-4 font-mono font-semibold text-slate-800 text-xs whitespace-nowrap">' + i.numero_contrato + '</td>'
+            + '<td class="px-6 py-4 font-mono text-slate-600 text-xs whitespace-nowrap">' + i.numero_licitacion + '</td>'
+            + '<td class="px-6 py-4"><p class="font-semibold text-slate-800 text-sm">' + i.nombre_empresa + '</p><p class="text-xs text-slate-400 mt-0.5">' + i.registro_fiscal + '</p></td>'
+            + '<td class="px-6 py-4 font-bold text-slate-800 whitespace-nowrap">' + window.SGPLAdmin.formatCurrency(i.monto_contrato) + '</td>'
+            + '<td class="px-6 py-4 text-slate-500 text-xs whitespace-nowrap">' + window.SGPLAdmin.formatDate(i.fecha_adjudicacion) + '</td>'
+            + '<td class="px-6 py-4 whitespace-nowrap"><span class="px-2.5 py-1 rounded-full text-xs font-semibold border ' + badgeClass(i.estatus) + '">' + i.estatus + '</span></td>'
+            + '<td class="px-6 py-4 text-right"><select data-id="' + i.id_contrato + '" class="chg px-2 py-1 text-xs border rounded-lg bg-white">'
+            + '<option value="EN_FORMALIZACION"' + (i.estatus === 'EN_FORMALIZACION' ? ' selected' : '') + '>EN_FORMALIZACION</option>'
+            + '<option value="VIGENTE"' + (i.estatus === 'VIGENTE' ? ' selected' : '') + '>VIGENTE</option>'
+            + '<option value="EN_EJECUCION"' + (i.estatus === 'EN_EJECUCION' ? ' selected' : '') + '>EN_EJECUCION</option>'
+            + '<option value="CONCLUIDO"' + (i.estatus === 'CONCLUIDO' ? ' selected' : '') + '>CONCLUIDO</option>'
+            + '<option value="RESCINDIDO"' + (i.estatus === 'RESCINDIDO' ? ' selected' : '') + '>RESCINDIDO</option>'
+            + '</select></td></tr>';
+        }).join('')
+      : '<tr><td colspan="7" class="px-6 py-8 text-center text-slate-500">Sin contratos para los filtros actuales.</td></tr>';
+
+    summary.textContent = 'Mostrando ' + filtered.length + ' de ' + items.length + ' contratos';
+
+    if (stats.length >= 4) {
+      stats[0].textContent = items.length;
+      stats[1].textContent = items.filter(i => i.estatus === 'EN_FORMALIZACION').length;
+      const totalMonto = items.reduce((acc, it) => acc + Number(it.monto_contrato || 0), 0);
+      stats[2].textContent = window.SGPLAdmin.formatCurrency(totalMonto);
+      stats[3].textContent = 0;
+    }
+
+    document.querySelectorAll('.chg').forEach(function (sel) {
+      sel.addEventListener('change', onChangeStatus);
+    });
+  }
+
+  async function onChangeStatus(e) {
+    const id = e.currentTarget.getAttribute('data-id');
+    const estatus = e.currentTarget.value;
+    try {
+      await window.SGPLAdmin.authFetch('/contratos/' + id + '/estatus', {
+        method: 'PATCH',
+        body: JSON.stringify({ estatus })
+      });
+      await load();
+    } catch (error) {
+      alert(error.message + (error.errors?.length ? '\n' + error.errors.join('\n') : ''));
+    }
+  }
+
+  async function load() {
+    tbody.innerHTML = '<tr><td colspan="7" class="px-6 py-8 text-center text-slate-500">Cargando contratos...</td></tr>';
+    try {
+      const res = await window.SGPLAdmin.authFetch('/contratos');
+      cache = res.data || [];
+      render(cache);
+    } catch (_) {
+      tbody.innerHTML = '<tr><td colspan="7" class="px-6 py-8 text-center text-red-600">No se pudieron cargar contratos.</td></tr>';
+    }
+  }
+
+  exportBtn?.addEventListener('click', async function () {
+    const token = window.SGPLAdmin.getToken();
+    try {
+      const response = await fetch('/api/v1/reportes/export/licitaciones.csv', {
+        headers: { Authorization: 'Bearer ' + token }
+      });
+      if (!response.ok) throw new Error('No se pudo exportar el archivo.');
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'adjudicaciones.csv';
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      alert(error.message);
+    }
+  });
+
+  searchInput?.addEventListener('input', function () { render(cache); });
+  statusSelect.innerHTML = '<option value=\"\">Todos los estados</option><option value=\"EN_FORMALIZACION\">EN_FORMALIZACION</option><option value=\"VIGENTE\">VIGENTE</option><option value=\"EN_EJECUCION\">EN_EJECUCION</option><option value=\"CONCLUIDO\">CONCLUIDO</option><option value=\"RESCINDIDO\">RESCINDIDO</option>';
+  statusSelect?.addEventListener('change', function () { render(cache); });
+
+  load();
+})();
+</script>
 </body>
 </html>
