@@ -4,17 +4,20 @@ declare(strict_types=1);
 require_once __DIR__ . '/../repositories/ContratoRepository.php';
 require_once __DIR__ . '/../repositories/LicitacionRepository.php';
 require_once __DIR__ . '/../repositories/ProveedorRepository.php';
+require_once __DIR__ . '/../repositories/PropuestaRepository.php';
 require_once __DIR__ . '/../helpers/audit.php';
 
 class ContratoService {
     private ContratoRepository $repo;
     private LicitacionRepository $licRepo;
     private ProveedorRepository $provRepo;
+    private PropuestaRepository $propRepo;
 
     public function __construct() {
         $this->repo = new ContratoRepository();
         $this->licRepo = new LicitacionRepository();
         $this->provRepo = new ProveedorRepository();
+        $this->propRepo = new PropuestaRepository();
     }
 
     public function get(int $id): ?array {
@@ -46,6 +49,17 @@ class ContratoService {
         $proveedor = $this->provRepo->findById($idProveedor);
         if (!$proveedor) {
             return ['ok' => false, 'errors' => ['Proveedor no encontrado.']];
+        }
+        $propuestas = $this->propRepo->findByLicitacion($idLicitacion);
+        $propuestaAceptada = null;
+        foreach ($propuestas as $propuesta) {
+            if (($propuesta['estatus'] ?? null) === 'ACEPTADA') {
+                $propuestaAceptada = $propuesta;
+                break;
+            }
+        }
+        if ($propuestaAceptada && (int) $propuestaAceptada['id_proveedor'] !== $idProveedor) {
+            return ['ok' => false, 'errors' => ['El proveedor del contrato debe corresponder al proveedor adjudicado.']];
         }
         $numero = trim($input['numero_contrato']);
         $dup = $this->repo->findByNumero($numero);

@@ -103,16 +103,11 @@
             </div>
 
             <div class="flex items-center gap-3">
-                <button class="relative p-2 text-slate-500 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors cursor-pointer" aria-label="Notificaciones (3 nuevas)">
-                    <i class="ph ph-bell text-xl" aria-hidden="true"></i>
-                    <span class="absolute top-1.5 right-1.5 w-2 h-2 bg-red-500 rounded-full border-2 border-white" aria-hidden="true"></span>
-                </button>
-                <div class="h-6 w-px bg-slate-200" aria-hidden="true"></div>
-                <div class="flex items-center gap-3 cursor-pointer">
-                    <img src="https://ui-avatars.com/api/?name=Admin+Usuario&background=1e40af&color=ffffff&size=80" alt="Avatar de Admin Usuario" class="w-9 h-9 rounded-full border-2 border-slate-200">
+                <div class="flex items-center gap-3">
+                    <img src="https://ui-avatars.com/api/?name=SGPLOPyPC&background=1e40af&color=ffffff&size=80" alt="Avatar del usuario" class="w-9 h-9 rounded-full border-2 border-slate-200">
                     <div class="hidden sm:block">
-                        <p class="text-sm font-semibold text-slate-700 leading-tight">Ing. Admin García</p>
-                        <p class="text-xs text-slate-500">Administrador del sistema</p>
+                        <p id="header-user-name" class="text-sm font-semibold text-slate-700 leading-tight">Cargando usuario...</p>
+                        <p id="header-user-role" class="text-xs text-slate-500">Sesión administrativa</p>
                     </div>
                 </div>
             </div>
@@ -125,8 +120,8 @@
                 <!-- Welcome Banner -->
                 <div class="bg-gradient-to-r from-slate-900 to-primary-900 rounded-2xl p-6 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4">
                     <div>
-                        <h2 class="text-white font-bold text-lg">Bienvenido, Ing. Admin García</h2>
-                        <p class="text-slate-300 text-sm mt-1">Hoy es jueves 19 de marzo de 2026 · 3 notificaciones pendientes</p>
+                        <h2 id="welcome-title" class="text-white font-bold text-lg">Panel administrativo</h2>
+                        <p id="welcome-subtitle" class="text-slate-300 text-sm mt-1">Cargando estado actual del sistema...</p>
                     </div>
                     <a href="/frontend/admin/convocatorias/create.html" class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-500 text-white font-semibold px-4 py-2.5 rounded-xl transition-colors duration-200 text-sm shadow-sm cursor-pointer whitespace-nowrap">
                         <i class="ph ph-plus-circle text-lg" aria-hidden="true"></i>
@@ -141,46 +136,40 @@
                             <div class="w-11 h-11 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center shrink-0" aria-hidden="true">
                                 <i class="ph ph-megaphone text-xl"></i>
                             </div>
-                            <span class="text-xs font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full flex items-center gap-1">
-                                <i class="ph ph-arrow-up text-xs" aria-hidden="true"></i>+3
-                            </span>
+                            <span class="text-xs font-semibold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full">API</span>
                         </div>
-                        <p class="text-2xl font-extrabold text-slate-800">12</p>
-                        <p class="text-sm text-slate-500 mt-0.5">Licitaciones Activas</p>
+                        <p class="text-2xl font-extrabold text-slate-800">—</p>
+                        <p class="text-sm text-slate-500 mt-0.5">Licitaciones registradas</p>
                     </div>
                     <div class="bg-white rounded-2xl border border-slate-200 p-5 hover:shadow-md transition-all duration-200">
                         <div class="flex items-start justify-between mb-4">
                             <div class="w-11 h-11 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0" aria-hidden="true">
                                 <i class="ph ph-users text-xl"></i>
                             </div>
-                            <span class="text-xs font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full flex items-center gap-1">
-                                <i class="ph ph-arrow-up text-xs" aria-hidden="true"></i>+7
-                            </span>
+                            <span class="text-xs font-semibold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full">API</span>
                         </div>
-                        <p class="text-2xl font-extrabold text-slate-800">84</p>
-                        <p class="text-sm text-slate-500 mt-0.5">Proveedores Registrados</p>
+                        <p class="text-2xl font-extrabold text-slate-800">—</p>
+                        <p class="text-sm text-slate-500 mt-0.5">Proveedores registrados</p>
                     </div>
                     <div class="bg-white rounded-2xl border border-slate-200 p-5 hover:shadow-md transition-all duration-200">
                         <div class="flex items-start justify-between mb-4">
                             <div class="w-11 h-11 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center shrink-0" aria-hidden="true">
                                 <i class="ph ph-file-text text-xl"></i>
                             </div>
-                            <span class="text-xs font-semibold text-amber-600 bg-amber-50 px-2 py-0.5 rounded-full">Pendientes</span>
+                            <span class="text-xs font-semibold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full">API</span>
                         </div>
-                        <p class="text-2xl font-extrabold text-slate-800">26</p>
-                        <p class="text-sm text-slate-500 mt-0.5">Propuestas por Evaluar</p>
+                        <p class="text-2xl font-extrabold text-slate-800">—</p>
+                        <p class="text-sm text-slate-500 mt-0.5">Propuestas registradas</p>
                     </div>
                     <div class="bg-white rounded-2xl border border-slate-200 p-5 hover:shadow-md transition-all duration-200">
                         <div class="flex items-start justify-between mb-4">
                             <div class="w-11 h-11 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0" aria-hidden="true">
                                 <i class="ph ph-handshake text-xl"></i>
                             </div>
-                            <span class="text-xs font-semibold text-emerald-600 bg-emerald-50 px-2 py-0.5 rounded-full flex items-center gap-1">
-                                <i class="ph ph-arrow-up text-xs" aria-hidden="true"></i>+18
-                            </span>
+                            <span class="text-xs font-semibold text-slate-500 bg-slate-100 px-2 py-0.5 rounded-full">API</span>
                         </div>
-                        <p class="text-2xl font-extrabold text-slate-800">145</p>
-                        <p class="text-sm text-slate-500 mt-0.5">Contratos Adjudicados</p>
+                        <p class="text-2xl font-extrabold text-slate-800">—</p>
+                        <p class="text-sm text-slate-500 mt-0.5">Contratos registrados</p>
                     </div>
                 </div>
 
@@ -199,40 +188,13 @@
                                     <tr class="border-b border-slate-100 bg-slate-50/70">
                                         <th class="px-6 py-3 font-semibold text-slate-500 text-xs uppercase tracking-wide">Clave</th>
                                         <th class="px-6 py-3 font-semibold text-slate-500 text-xs uppercase tracking-wide">Tipo</th>
-                                        <th class="px-6 py-3 font-semibold text-slate-500 text-xs uppercase tracking-wide">Apertura</th>
+                                        <th class="px-6 py-3 font-semibold text-slate-500 text-xs uppercase tracking-wide">Creación</th>
                                         <th class="px-6 py-3 font-semibold text-slate-500 text-xs uppercase tracking-wide">Estado</th>
                                     </tr>
                                 </thead>
                                 <tbody class="divide-y divide-slate-100">
-                                    <tr class="hover:bg-slate-50 transition-colors">
-                                        <td class="px-6 py-3.5 font-mono font-semibold text-slate-800 text-xs">LO-902002994-E1-2026</td>
-                                        <td class="px-6 py-3.5 text-slate-600 text-xs">Licitación Pública</td>
-                                        <td class="px-6 py-3.5 text-slate-600 text-xs">15 Abr 2026</td>
-                                        <td class="px-6 py-3.5"><span class="px-2 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700 border border-emerald-200">Publicada</span></td>
-                                    </tr>
-                                    <tr class="hover:bg-slate-50 transition-colors">
-                                        <td class="px-6 py-3.5 font-mono font-semibold text-slate-800 text-xs">IR-902002994-E2-2026</td>
-                                        <td class="px-6 py-3.5 text-slate-600 text-xs">Inv. Restringida</td>
-                                        <td class="px-6 py-3.5 text-slate-600 text-xs">20 Abr 2026</td>
-                                        <td class="px-6 py-3.5"><span class="px-2 py-0.5 rounded-full text-xs font-semibold bg-amber-100 text-amber-700 border border-amber-200">En Evaluación</span></td>
-                                    </tr>
-                                    <tr class="hover:bg-slate-50 transition-colors">
-                                        <td class="px-6 py-3.5 font-mono font-semibold text-slate-800 text-xs">AD-902002994-E3-2026</td>
-                                        <td class="px-6 py-3.5 text-slate-600 text-xs">Adj. Directa</td>
-                                        <td class="px-6 py-3.5 text-slate-600 text-xs">—</td>
-                                        <td class="px-6 py-3.5"><span class="px-2 py-0.5 rounded-full text-xs font-semibold bg-blue-100 text-blue-700 border border-blue-200">Formalización</span></td>
-                                    </tr>
-                                    <tr class="hover:bg-slate-50 transition-colors">
-                                        <td class="px-6 py-3.5 font-mono font-semibold text-slate-800 text-xs">LO-902002994-E5-2026</td>
-                                        <td class="px-6 py-3.5 text-slate-600 text-xs">Licitación Pública</td>
-                                        <td class="px-6 py-3.5 text-slate-600 text-xs">05 May 2026</td>
-                                        <td class="px-6 py-3.5"><span class="px-2 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700 border border-emerald-200">Publicada</span></td>
-                                    </tr>
-                                    <tr class="hover:bg-slate-50 transition-colors">
-                                        <td class="px-6 py-3.5 font-mono font-semibold text-slate-800 text-xs">IR-902002994-E6-2026</td>
-                                        <td class="px-6 py-3.5 text-slate-600 text-xs">Inv. Restringida</td>
-                                        <td class="px-6 py-3.5 text-slate-600 text-xs">28 Abr 2026</td>
-                                        <td class="px-6 py-3.5"><span class="px-2 py-0.5 rounded-full text-xs font-semibold bg-violet-100 text-violet-700 border border-violet-200">Recib. Prop.</span></td>
+                                    <tr>
+                                        <td colspan="4" class="px-6 py-6 text-center text-slate-500">Cargando licitaciones...</td>
                                     </tr>
                                 </tbody>
                             </table>
@@ -242,47 +204,13 @@
                     <!-- Actividad Reciente -->
                     <div class="bg-white rounded-2xl border border-slate-200 flex flex-col">
                         <div class="px-6 py-4 border-b border-slate-100">
-                            <h3 class="font-bold text-slate-800">Actividad Reciente</h3>
+                            <h3 class="font-bold text-slate-800">Actualizaciones recientes</h3>
                         </div>
                         <div class="p-5 space-y-5 flex-1">
-                            <div class="flex gap-3">
-                                <div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 shrink-0 mt-0.5" aria-hidden="true"><i class="ph ph-file-arrow-up text-sm"></i></div>
-                                <div>
-                                    <p class="text-sm text-slate-700 leading-snug">Propuesta técnica recibida para <span class="font-semibold text-slate-900">LO-902002994-E4</span></p>
-                                    <p class="text-xs text-slate-400 mt-1">Hace 2 horas</p>
-                                </div>
-                            </div>
-                            <div class="flex gap-3">
-                                <div class="w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600 shrink-0 mt-0.5" aria-hidden="true"><i class="ph ph-check-circle text-sm"></i></div>
-                                <div>
-                                    <p class="text-sm text-slate-700 leading-snug">Proveedor <span class="font-semibold text-slate-900">Construcciones Norte S.A.</span> validado</p>
-                                    <p class="text-xs text-slate-400 mt-1">Hace 5 horas</p>
-                                </div>
-                            </div>
-                            <div class="flex gap-3">
-                                <div class="w-8 h-8 rounded-full bg-amber-100 flex items-center justify-center text-amber-600 shrink-0 mt-0.5" aria-hidden="true"><i class="ph ph-chat-circle-text text-sm"></i></div>
-                                <div>
-                                    <p class="text-sm text-slate-700 leading-snug">Nueva pregunta en junta de aclaraciones por <span class="font-semibold text-slate-900">Ingeniería ABC</span></p>
-                                    <p class="text-xs text-slate-400 mt-1">Ayer 14:30</p>
-                                </div>
-                            </div>
-                            <div class="flex gap-3">
-                                <div class="w-8 h-8 rounded-full bg-indigo-100 flex items-center justify-center text-indigo-600 shrink-0 mt-0.5" aria-hidden="true"><i class="ph ph-gavel text-sm"></i></div>
-                                <div>
-                                    <p class="text-sm text-slate-700 leading-snug">Fallo emitido para licitación <span class="font-semibold text-slate-900">AD-902002994-E3</span></p>
-                                    <p class="text-xs text-slate-400 mt-1">Ayer 10:00</p>
-                                </div>
-                            </div>
-                            <div class="flex gap-3">
-                                <div class="w-8 h-8 rounded-full bg-slate-100 flex items-center justify-center text-slate-500 shrink-0 mt-0.5" aria-hidden="true"><i class="ph ph-user-plus text-sm"></i></div>
-                                <div>
-                                    <p class="text-sm text-slate-700 leading-snug">Nuevo proveedor registrado: <span class="font-semibold text-slate-900">GEO Construcciones</span></p>
-                                    <p class="text-xs text-slate-400 mt-1">Hace 2 días</p>
-                                </div>
-                            </div>
+                            <p class="text-sm text-slate-500">Cargando actividad reciente...</p>
                         </div>
                         <div class="px-6 py-3 border-t border-slate-100 bg-slate-50/50 rounded-b-2xl">
-                            <a href="/frontend/admin/reportes/index.html" class="text-sm font-semibold text-primary-600 hover:text-primary-700 block text-center transition-colors cursor-pointer">Ver historial completo</a>
+                            <a href="/frontend/admin/convocatorias/index.html" class="text-sm font-semibold text-primary-600 hover:text-primary-700 block text-center transition-colors cursor-pointer">Ir a convocatorias</a>
                         </div>
                     </div>
                 </div>
@@ -318,15 +246,20 @@
   window.SGPLAdmin.attachLogoutHandlers();
 
   const user = window.SGPLAdmin.getUser();
-  if (user?.nombre) {
-    window.SGPLAdmin.setText('header .hidden.sm\\:block p.text-sm', user.nombre);
-  }
-
+  const headerUserName = document.getElementById('header-user-name');
+  const headerUserRole = document.getElementById('header-user-role');
+  const welcomeTitle = document.getElementById('welcome-title');
+  const welcomeSubtitle = document.getElementById('welcome-subtitle');
   const statValues = document.querySelectorAll('.grid.grid-cols-1.sm\\:grid-cols-2.lg\\:grid-cols-4 .text-2xl.font-extrabold');
   const tableBody = document.querySelector('table[aria-label="Licitaciones recientes"] tbody');
   const activityBody = document.querySelector('.bg-white.rounded-2xl.border.border-slate-200.flex.flex-col .p-5.space-y-5');
   const menuBtn = document.querySelector('button[aria-label="Abrir menú"]');
-  const notifBtn = document.querySelector('button[aria-label^="Notificaciones"]');
+
+  if (user?.nombre) {
+    headerUserName.textContent = user.nombre;
+    headerUserRole.textContent = user.rol || 'Sesión administrativa';
+    welcomeTitle.textContent = 'Bienvenido, ' + user.nombre;
+  }
 
   function estadoBadge(estado) {
     const map = {
@@ -350,6 +283,20 @@
     return map[tipo] || tipo;
   }
 
+  function estadoLabel(estado) {
+    const map = {
+      BORRADOR: 'Borrador',
+      PUBLICADA: 'Publicada',
+      EN_ACLARACIONES: 'Aclaraciones',
+      RECEPCION_PROPUESTAS: 'Recepción de propuestas',
+      EN_EVALUACION: 'En evaluación',
+      ADJUDICADA: 'Adjudicada',
+      DESIERTA: 'Desierta',
+      CANCELADA: 'Cancelada'
+    };
+    return map[estado] || estado;
+  }
+
   async function loadDashboard() {
     try {
       const [resumen, licitaciones] = await Promise.all([
@@ -365,33 +312,41 @@
         statValues[3].textContent = data.total_contratos || 0;
       }
 
+      const now = new Intl.DateTimeFormat('es-MX', {
+        weekday: 'long',
+        day: '2-digit',
+        month: 'long',
+        year: 'numeric'
+      }).format(new Date());
+      welcomeSubtitle.textContent = 'Actualizado al ' + now + '. Datos cargados desde la base de datos.';
+
       const recientes = (licitaciones.data || []).slice(0, 5);
       tableBody.innerHTML = recientes.length
         ? recientes.map(function (r) {
             return '<tr class="hover:bg-slate-50 transition-colors">'
-              + '<td class="px-6 py-3.5 font-mono font-semibold text-slate-800 text-xs">' + r.numero_licitacion + '</td>'
-              + '<td class="px-6 py-3.5 text-slate-600 text-xs">' + tipoLabel(r.tipo_procedimiento) + '</td>'
+              + '<td class="px-6 py-3.5 font-mono font-semibold text-slate-800 text-xs">' + window.SGPLAdmin.escapeHtml(r.numero_licitacion) + '</td>'
+              + '<td class="px-6 py-3.5 text-slate-600 text-xs">' + window.SGPLAdmin.escapeHtml(tipoLabel(r.tipo_procedimiento)) + '</td>'
               + '<td class="px-6 py-3.5 text-slate-600 text-xs">' + window.SGPLAdmin.formatDate(r.fecha_creacion) + '</td>'
-              + '<td class="px-6 py-3.5"><span class="px-2 py-0.5 rounded-full text-xs font-semibold border ' + estadoBadge(r.estado_proceso) + '">' + r.estado_proceso + '</span></td>'
+              + '<td class="px-6 py-3.5"><span class="px-2 py-0.5 rounded-full text-xs font-semibold border ' + estadoBadge(r.estado_proceso) + '">' + window.SGPLAdmin.escapeHtml(estadoLabel(r.estado_proceso)) + '</span></td>'
               + '</tr>';
           }).join('')
         : '<tr><td colspan="4" class="px-6 py-6 text-center text-slate-500">Sin licitaciones recientes.</td></tr>';
 
       activityBody.innerHTML = recientes.length
         ? recientes.map(function (r) {
-            return '<div class="flex gap-3"><div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 shrink-0 mt-0.5"><i class="ph ph-megaphone text-sm"></i></div><div><p class="text-sm text-slate-700 leading-snug">Actualizacion en <span class="font-semibold text-slate-900">' + r.numero_licitacion + '</span></p><p class="text-xs text-slate-400 mt-1">' + window.SGPLAdmin.formatDate(r.fecha_actualizacion || r.fecha_creacion) + '</p></div></div>';
+            return '<div class="flex gap-3"><div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 shrink-0 mt-0.5"><i class="ph ph-clock-counter-clockwise text-sm"></i></div><div><p class="text-sm text-slate-700 leading-snug"><span class="font-semibold text-slate-900">' + window.SGPLAdmin.escapeHtml(r.numero_licitacion) + '</span> se encuentra en <span class="font-semibold text-slate-900">' + window.SGPLAdmin.escapeHtml(estadoLabel(r.estado_proceso)) + '</span></p><p class="text-xs text-slate-400 mt-1">Última actualización: ' + window.SGPLAdmin.formatDateTime(r.fecha_actualizacion || r.fecha_creacion) + '</p></div></div>';
           }).join('')
         : '<p class="text-sm text-slate-500">Sin actividad reciente.</p>';
-    } catch (_) {
+    } catch (error) {
+      welcomeSubtitle.textContent = error.message || 'No se pudieron cargar los datos del dashboard.';
+      statValues.forEach(function (node) { node.textContent = '—'; });
       tableBody.innerHTML = '<tr><td colspan="4" class="px-6 py-6 text-center text-red-600">No se pudo cargar el dashboard.</td></tr>';
+      activityBody.innerHTML = '<p class="text-sm text-red-600">No se pudo cargar la actividad reciente.</p>';
     }
   }
 
   menuBtn?.addEventListener('click', function () {
-    alert('Menu movil disponible en versiones responsivas del panel.');
-  });
-  notifBtn?.addEventListener('click', function () {
-    alert('Bandeja de notificaciones en construccion. Revisa actividad en el panel.');
+    document.querySelector('aside')?.classList.toggle('hidden');
   });
 
   loadDashboard();

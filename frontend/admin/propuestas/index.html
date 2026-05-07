@@ -97,20 +97,20 @@
                 <!-- Stats -->
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                     <div class="bg-white rounded-2xl border border-slate-200 p-4">
-                        <p class="text-2xl font-extrabold text-slate-800">48</p>
+                        <p class="text-2xl font-extrabold text-slate-800">—</p>
                         <p class="text-xs text-slate-500 mt-0.5 font-medium">Total recibidas</p>
                     </div>
                     <div class="bg-white rounded-2xl border border-slate-200 p-4">
-                        <p class="text-2xl font-extrabold text-amber-600">26</p>
-                        <p class="text-xs text-slate-500 mt-0.5 font-medium">Por evaluar</p>
+                        <p class="text-2xl font-extrabold text-amber-600">—</p>
+                        <p class="text-xs text-slate-500 mt-0.5 font-medium">Recibidas</p>
                     </div>
                     <div class="bg-white rounded-2xl border border-slate-200 p-4">
-                        <p class="text-2xl font-extrabold text-blue-600">18</p>
-                        <p class="text-xs text-slate-500 mt-0.5 font-medium">En evaluación</p>
+                        <p class="text-2xl font-extrabold text-blue-600">—</p>
+                        <p class="text-xs text-slate-500 mt-0.5 font-medium">En revisión</p>
                     </div>
                     <div class="bg-white rounded-2xl border border-slate-200 p-4">
-                        <p class="text-2xl font-extrabold text-emerald-600">4</p>
-                        <p class="text-xs text-slate-500 mt-0.5 font-medium">Dictaminadas</p>
+                        <p class="text-2xl font-extrabold text-emerald-600">—</p>
+                        <p class="text-xs text-slate-500 mt-0.5 font-medium">Resueltas</p>
                     </div>
                 </div>
 
@@ -128,9 +128,10 @@
                     </select>
                     <select aria-label="Filtrar por estatus" class="px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-primary-500 cursor-pointer hover:bg-slate-100 transition-colors">
                         <option value="">Todos los estados</option>
-                        <option>Recibida</option>
-                        <option>En Evaluación</option>
-                        <option>Dictaminada</option>
+                        <option value="RECIBIDA">Recibida</option>
+                        <option value="EN_REVISION">En revisión</option>
+                        <option value="ACEPTADA">Aceptada</option>
+                        <option value="RECHAZADA">Rechazada</option>
                     </select>
                 </div>
 
@@ -142,7 +143,7 @@
                                 <tr class="border-b border-slate-100 bg-slate-50">
                                     <th class="px-6 py-3.5 font-semibold text-slate-500 text-xs uppercase tracking-wide">Proveedor</th>
                                     <th class="px-6 py-3.5 font-semibold text-slate-500 text-xs uppercase tracking-wide">Licitación</th>
-                                    <th class="px-6 py-3.5 font-semibold text-slate-500 text-xs uppercase tracking-wide">Tipo</th>
+                                    <th class="px-6 py-3.5 font-semibold text-slate-500 text-xs uppercase tracking-wide">Descripción técnica</th>
                                     <th class="px-6 py-3.5 font-semibold text-slate-500 text-xs uppercase tracking-wide">Monto Propuesto</th>
                                     <th class="px-6 py-3.5 font-semibold text-slate-500 text-xs uppercase tracking-wide">Recepción</th>
                                     <th class="px-6 py-3.5 font-semibold text-slate-500 text-xs uppercase tracking-wide">Estado</th>
@@ -150,105 +151,15 @@
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-slate-100">
-                                <tr class="hover:bg-slate-50 transition-colors group">
-                                    <td class="px-6 py-4">
-                                        <p class="font-semibold text-slate-800 text-sm">Construcciones Norte S.A.</p>
-                                        <p class="text-xs text-slate-400 mt-0.5">CNO890314AB1</p>
-                                    </td>
-                                    <td class="px-6 py-4 font-mono text-slate-600 text-xs whitespace-nowrap">LO-902002994-E1-2026</td>
-                                    <td class="px-6 py-4">
-                                        <div class="flex gap-1.5">
-                                            <span class="px-1.5 py-0.5 rounded text-xs bg-blue-50 text-blue-600 border border-blue-100 font-medium">Técnica</span>
-                                            <span class="px-1.5 py-0.5 rounded text-xs bg-emerald-50 text-emerald-600 border border-emerald-100 font-medium">Económica</span>
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-4 font-bold text-slate-800 whitespace-nowrap">$17,820,000</td>
-                                    <td class="px-6 py-4 text-slate-500 text-xs whitespace-nowrap">12 May 2026<br>09:35 hrs</td>
-                                    <td class="px-6 py-4 whitespace-nowrap"><span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-700 border border-amber-200">Por evaluar</span></td>
-                                    <td class="px-6 py-4 text-right">
-                                        <div class="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                            <button class="p-2 text-slate-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors cursor-pointer" aria-label="Ver propuesta"><i class="ph ph-eye text-base" aria-hidden="true"></i></button>
-                                            <button class="p-2 text-slate-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors cursor-pointer" aria-label="Descargar"><i class="ph ph-download-simple text-base" aria-hidden="true"></i></button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr class="hover:bg-slate-50 transition-colors group">
-                                    <td class="px-6 py-4">
-                                        <p class="font-semibold text-slate-800 text-sm">Ingeniería Hidráulica ABC</p>
-                                        <p class="text-xs text-slate-400 mt-0.5">IHA010509CD3</p>
-                                    </td>
-                                    <td class="px-6 py-4 font-mono text-slate-600 text-xs whitespace-nowrap">LO-902002994-E1-2026</td>
-                                    <td class="px-6 py-4">
-                                        <div class="flex gap-1.5">
-                                            <span class="px-1.5 py-0.5 rounded text-xs bg-blue-50 text-blue-600 border border-blue-100 font-medium">Técnica</span>
-                                            <span class="px-1.5 py-0.5 rounded text-xs bg-emerald-50 text-emerald-600 border border-emerald-100 font-medium">Económica</span>
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-4 font-bold text-slate-800 whitespace-nowrap">$18,100,000</td>
-                                    <td class="px-6 py-4 text-slate-500 text-xs whitespace-nowrap">12 May 2026<br>10:14 hrs</td>
-                                    <td class="px-6 py-4 whitespace-nowrap"><span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-700 border border-amber-200">Por evaluar</span></td>
-                                    <td class="px-6 py-4 text-right">
-                                        <div class="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                            <button class="p-2 text-slate-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors cursor-pointer" aria-label="Ver propuesta"><i class="ph ph-eye text-base" aria-hidden="true"></i></button>
-                                            <button class="p-2 text-slate-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors cursor-pointer" aria-label="Descargar"><i class="ph ph-download-simple text-base" aria-hidden="true"></i></button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr class="hover:bg-slate-50 transition-colors group">
-                                    <td class="px-6 py-4">
-                                        <p class="font-semibold text-slate-800 text-sm">GEO Construcciones y Diseño</p>
-                                        <p class="text-xs text-slate-400 mt-0.5">GCD950820BC2</p>
-                                    </td>
-                                    <td class="px-6 py-4 font-mono text-slate-600 text-xs whitespace-nowrap">IR-902002994-E2-2026</td>
-                                    <td class="px-6 py-4">
-                                        <div class="flex gap-1.5">
-                                            <span class="px-1.5 py-0.5 rounded text-xs bg-blue-50 text-blue-600 border border-blue-100 font-medium">Técnica</span>
-                                            <span class="px-1.5 py-0.5 rounded text-xs bg-emerald-50 text-emerald-600 border border-emerald-100 font-medium">Económica</span>
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-4 font-bold text-slate-800 whitespace-nowrap">$3,985,000</td>
-                                    <td class="px-6 py-4 text-slate-500 text-xs whitespace-nowrap">28 Abr 2026<br>11:02 hrs</td>
-                                    <td class="px-6 py-4 whitespace-nowrap"><span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-700 border border-blue-200">En Evaluación</span></td>
-                                    <td class="px-6 py-4 text-right">
-                                        <div class="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                            <button class="p-2 text-slate-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors cursor-pointer" aria-label="Ver propuesta"><i class="ph ph-eye text-base" aria-hidden="true"></i></button>
-                                            <button class="p-2 text-slate-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors cursor-pointer" aria-label="Descargar"><i class="ph ph-download-simple text-base" aria-hidden="true"></i></button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr class="hover:bg-slate-50 transition-colors group">
-                                    <td class="px-6 py-4">
-                                        <p class="font-semibold text-slate-800 text-sm">Construcciones Norte S.A.</p>
-                                        <p class="text-xs text-slate-400 mt-0.5">CNO890314AB1</p>
-                                    </td>
-                                    <td class="px-6 py-4 font-mono text-slate-600 text-xs whitespace-nowrap">AD-902002994-E3-2026</td>
-                                    <td class="px-6 py-4">
-                                        <div class="flex gap-1.5">
-                                            <span class="px-1.5 py-0.5 rounded text-xs bg-blue-50 text-blue-600 border border-blue-100 font-medium">Técnica</span>
-                                            <span class="px-1.5 py-0.5 rounded text-xs bg-emerald-50 text-emerald-600 border border-emerald-100 font-medium">Económica</span>
-                                        </div>
-                                    </td>
-                                    <td class="px-6 py-4 font-bold text-slate-800 whitespace-nowrap">$948,500</td>
-                                    <td class="px-6 py-4 text-slate-500 text-xs whitespace-nowrap">01 Mar 2026<br>08:55 hrs</td>
-                                    <td class="px-6 py-4 whitespace-nowrap"><span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700 border border-emerald-200">Dictaminada</span></td>
-                                    <td class="px-6 py-4 text-right">
-                                        <div class="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                            <button class="p-2 text-slate-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors cursor-pointer" aria-label="Ver propuesta"><i class="ph ph-eye text-base" aria-hidden="true"></i></button>
-                                            <button class="p-2 text-slate-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors cursor-pointer" aria-label="Descargar"><i class="ph ph-download-simple text-base" aria-hidden="true"></i></button>
-                                        </div>
-                                    </td>
+                                <tr>
+                                    <td colspan="7" class="px-6 py-8 text-center text-slate-500">Cargando propuestas...</td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
                     <div class="px-6 py-4 border-t border-slate-100 bg-slate-50/50 flex items-center justify-between">
-                        <p class="text-sm text-slate-500">Mostrando <span class="font-semibold text-slate-800">1–4</span> de <span class="font-semibold text-slate-800">48</span> propuestas</p>
-                        <div class="flex items-center gap-1">
-                            <button class="px-3 py-1.5 text-slate-400 text-sm rounded-lg border border-slate-200 bg-white opacity-50 cursor-not-allowed" disabled>Anterior</button>
-                            <button class="px-3 py-1.5 bg-primary-600 text-white text-sm font-semibold rounded-lg">1</button>
-                            <button class="px-3 py-1.5 text-slate-600 text-sm rounded-lg border border-slate-200 bg-white hover:bg-slate-50 transition-colors cursor-pointer">2</button>
-                            <button class="px-3 py-1.5 text-slate-600 text-sm rounded-lg border border-slate-200 bg-white hover:bg-slate-50 transition-colors cursor-pointer">Siguiente</button>
-                        </div>
+                        <p class="text-sm text-slate-500">Mostrando 0 de 0 propuestas</p>
+                        <span class="text-xs text-slate-400">Listado completo sin paginación</span>
                     </div>
                 </div>
             </div>
@@ -280,6 +191,16 @@
     return map[status] || 'bg-slate-100 text-slate-700 border-slate-200';
   }
 
+  function statusLabel(status) {
+    const map = {
+      RECIBIDA: 'Recibida',
+      EN_REVISION: 'En revisión',
+      ACEPTADA: 'Aceptada',
+      RECHAZADA: 'Rechazada'
+    };
+    return map[status] || status;
+  }
+
   function render(items) {
     const term = (searchInput.value || '').toLowerCase().trim();
     const licVal = licSelect.value || '';
@@ -296,12 +217,12 @@
     tbody.innerHTML = filtered.length
       ? filtered.map(function (item) {
           return '<tr class="hover:bg-slate-50 transition-colors">'
-            + '<td class="px-6 py-4"><p class="font-semibold text-slate-800 text-sm">' + item.nombre_empresa + '</p><p class="text-xs text-slate-400 mt-0.5">' + item.registro_fiscal + '</p></td>'
-            + '<td class="px-6 py-4 font-mono text-slate-600 text-xs whitespace-nowrap">' + item.numero_licitacion + '</td>'
-            + '<td class="px-6 py-4"><div class="flex gap-1.5"><span class="px-1.5 py-0.5 rounded text-xs bg-blue-50 text-blue-600 border border-blue-100 font-medium">Tecnica</span><span class="px-1.5 py-0.5 rounded text-xs bg-emerald-50 text-emerald-600 border border-emerald-100 font-medium">Economica</span></div></td>'
+            + '<td class="px-6 py-4"><p class="font-semibold text-slate-800 text-sm">' + window.SGPLAdmin.escapeHtml(item.nombre_empresa) + '</p><p class="text-xs text-slate-400 mt-0.5">' + window.SGPLAdmin.escapeHtml(item.registro_fiscal) + '</p></td>'
+            + '<td class="px-6 py-4 font-mono text-slate-600 text-xs whitespace-nowrap">' + window.SGPLAdmin.escapeHtml(item.numero_licitacion) + '</td>'
+            + '<td class="px-6 py-4 text-slate-600 text-xs max-w-[260px]">' + window.SGPLAdmin.escapeHtml(item.descripcion_tecnica || 'Sin descripción técnica registrada.') + '</td>'
             + '<td class="px-6 py-4 font-bold text-slate-800 whitespace-nowrap">' + window.SGPLAdmin.formatCurrency(item.monto_propuesta) + '</td>'
-            + '<td class="px-6 py-4 text-slate-500 text-xs whitespace-nowrap">' + window.SGPLAdmin.formatDate(item.fecha_envio) + '</td>'
-            + '<td class="px-6 py-4 whitespace-nowrap"><span class="px-2.5 py-1 rounded-full text-xs font-semibold border ' + badgeClass(item.estatus) + '">' + item.estatus + '</span></td>'
+            + '<td class="px-6 py-4 text-slate-500 text-xs whitespace-nowrap">' + window.SGPLAdmin.formatDateTime(item.fecha_envio) + '</td>'
+            + '<td class="px-6 py-4 whitespace-nowrap"><span class="px-2.5 py-1 rounded-full text-xs font-semibold border ' + badgeClass(item.estatus) + '">' + window.SGPLAdmin.escapeHtml(statusLabel(item.estatus)) + '</span></td>'
             + '<td class="px-6 py-4 text-right"><div class="flex justify-end gap-1">'
             + '<button class="btn-ver p-2 text-slate-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg" data-id="' + item.id_propuesta + '" aria-label="Ver propuesta"><i class="ph ph-eye text-base"></i></button>'
             + '<button class="btn-csv p-2 text-slate-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg" data-id="' + item.id_propuesta + '" aria-label="Descargar propuesta"><i class="ph ph-download-simple text-base"></i></button>'
@@ -324,7 +245,7 @@
         const id = btn.getAttribute('data-id');
         const p = items.find(function (x) { return String(x.id_propuesta) === String(id); });
         if (!p) return;
-        alert('Propuesta #' + p.id_propuesta + '\nProveedor: ' + p.nombre_empresa + '\nLicitacion: ' + p.numero_licitacion + '\nMonto: ' + window.SGPLAdmin.formatCurrency(p.monto_propuesta) + '\nEstatus: ' + p.estatus);
+        alert('Propuesta #' + p.id_propuesta + '\nProveedor: ' + p.nombre_empresa + '\nLicitacion: ' + p.numero_licitacion + '\nMonto: ' + window.SGPLAdmin.formatCurrency(p.monto_propuesta) + '\nEstatus: ' + statusLabel(p.estatus) + '\n\nDescripcion tecnica:\n' + (p.descripcion_tecnica || 'Sin descripción técnica registrada.'));
       });
     });
     document.querySelectorAll('.btn-csv').forEach(function (btn) {
@@ -345,7 +266,7 @@
 
       const lics = Array.from(new Set(cache.map(i => i.numero_licitacion))).sort();
       licSelect.innerHTML = '<option value=\"\">Todas las licitaciones</option>' + lics.map(v => '<option value=\"' + v + '\">' + v + '</option>').join('');
-      statusSelect.innerHTML = '<option value=\"\">Todos los estados</option><option value=\"RECIBIDA\">RECIBIDA</option><option value=\"EN_REVISION\">EN_REVISION</option><option value=\"ACEPTADA\">ACEPTADA</option><option value=\"RECHAZADA\">RECHAZADA</option>';
+      statusSelect.innerHTML = '<option value=\"\">Todos los estados</option><option value=\"RECIBIDA\">Recibida</option><option value=\"EN_REVISION\">En revisión</option><option value=\"ACEPTADA\">Aceptada</option><option value=\"RECHAZADA\">Rechazada</option>';
       render(cache);
     } catch (_) {
       tbody.innerHTML = '<tr><td colspan="7" class="px-6 py-8 text-center text-red-600">No se pudieron cargar propuestas.</td></tr>';

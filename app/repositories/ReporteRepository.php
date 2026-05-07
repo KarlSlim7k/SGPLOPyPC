@@ -44,6 +44,27 @@ class ReporteRepository {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public function licitacionesPorTipo(): array {
+        $stmt = $this->db->query(
+            'SELECT l.tipo_procedimiento, COUNT(*) AS cantidad, COALESCE(SUM(c.monto_contrato), 0) AS monto_total_contratado '
+            . 'FROM licitacion l '
+            . 'LEFT JOIN contrato c ON c.id_licitacion = l.id_licitacion '
+            . 'GROUP BY l.tipo_procedimiento '
+            . 'ORDER BY cantidad DESC'
+        );
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function licitacionesPorMes(int $year): array {
+        $stmt = $this->db->prepare(
+            'SELECT MONTH(fecha_creacion) AS mes, COUNT(*) AS cantidad '
+            . 'FROM licitacion WHERE YEAR(fecha_creacion) = :year '
+            . 'GROUP BY MONTH(fecha_creacion) ORDER BY MONTH(fecha_creacion)'
+        );
+        $stmt->execute(['year' => $year]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
     public function participacionProveedores(): array {
         $stmt = $this->db->query(
             'SELECT COUNT(*) AS inscritos FROM participacion'
@@ -119,6 +140,42 @@ class ReporteRepository {
             $sql .= ' WHERE ' . implode(' AND ', $where);
         }
         $sql .= ' ORDER BY l.fecha_creacion DESC';
+
+        $stmt = $this->db->prepare($sql);
+        $stmt->execute($params);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+    }
+
+    public function findContratosForExport(?string $estatus, ?string $from, ?string $to): array {
+        $where = [];
+        $params = [];
+
+        if ($estatus !== null && $estatus !== '') {
+            $where[] = 'c.estatus = :estatus';
+            $params['estatus'] = $estatus;
+        }
+        if ($from !== null && $from !== '') {
+            $where[] = 'c.fecha_adjudicacion >= :from';
+            $params['from'] = $from . ' 00:00:00';
+        }
+        if ($to !== null && $to !== '') {
+            $where[] = 'c.fecha_adjudicacion <= :to';
+            $params['to'] = $to . ' 23:59:59';
+        }
+
+        $sql = 'SELECT c.id_contrato, c.numero_contrato, c.monto_contrato, c.fecha_adjudicacion, c.fecha_inicio, c.fecha_fin, c.estatus, '
+             . 'l.numero_licitacion, l.tipo_procedimiento, d.nombre AS dependencia_nombre, '
+             . 'p.nombre_empresa, p.registro_fiscal '
+             . 'FROM contrato c '
+             . 'JOIN licitacion l ON l.id_licitacion = c.id_licitacion '
+             . 'JOIN dependencia d ON d.id_dependencia = l.id_dependencia '
+             . 'JOIN proveedor p ON p.id_proveedor = c.id_proveedor';
+
+        if (!empty($where)) {
+            $sql .= ' WHERE ' . implode(' AND ', $where);
+        }
+
+        $sql .= ' ORDER BY c.fecha_adjudicacion DESC, c.id_contrato DESC';
 
         $stmt = $this->db->prepare($sql);
         $stmt->execute($params);

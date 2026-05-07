@@ -4,6 +4,8 @@ declare(strict_types=1);
 require_once __DIR__ . '/../repositories/LicitacionRepository.php';
 require_once __DIR__ . '/../repositories/EvaluacionRepository.php';
 require_once __DIR__ . '/../repositories/ParticipacionRepository.php';
+require_once __DIR__ . '/../repositories/PropuestaRepository.php';
+require_once __DIR__ . '/../repositories/FechaProcesoRepository.php';
 require_once __DIR__ . '/../helpers/audit.php';
 
 class LicitacionService {
@@ -11,12 +13,14 @@ class LicitacionService {
     private EvaluacionRepository $evalRepo;
     private ParticipacionRepository $partRepo;
     private PropuestaRepository $propRepo;
+    private FechaProcesoRepository $fechaRepo;
 
     public function __construct() {
         $this->repo = new LicitacionRepository();
         $this->evalRepo = new EvaluacionRepository();
         $this->partRepo = new ParticipacionRepository();
         $this->propRepo = new PropuestaRepository();
+        $this->fechaRepo = new FechaProcesoRepository();
     }
 
     public function list(?string $estado, ?string $tipo, ?int $dependencia, ?array $estadosPermitidos = null): array {
@@ -46,6 +50,7 @@ class LicitacionService {
             'estado_proceso' => $input['estado_proceso'] ?? 'BORRADOR',
         ];
         $id = $this->repo->create($data);
+        $this->fechaRepo->replaceForLicitacion($id, $this->normalizeFechasProceso($input));
         auditLog($idUsuario, 'licitacion', $id, 'CREAR', null, $data);
         return ['ok' => true, 'id' => $id];
     }
@@ -72,7 +77,12 @@ class LicitacionService {
                 $data[$f] = is_string($input[$f]) ? trim($input[$f]) : $input[$f];
             }
         }
-        $this->repo->update($id, $data);
+        if (!empty($data)) {
+            $this->repo->update($id, $data);
+        }
+        if (array_key_exists('fechas_proceso', $input)) {
+            $this->fechaRepo->replaceForLicitacion($id, $this->normalizeFechasProceso($input));
+        }
         auditLog($idUsuario, 'licitacion', $id, 'ACTUALIZAR', $existing, $data);
         return ['ok' => true];
     }
@@ -154,6 +164,51 @@ class LicitacionService {
             $estados = ['BORRADOR','PUBLICADA','EN_ACLARACIONES','RECEPCION_PROPUESTAS','EN_EVALUACION','ADJUDICADA','DESIERTA','CANCELADA'];
             if (!in_array($input['estado_proceso'], $estados, true)) $errors[] = 'Estado de proceso no válido.';
         }
+        if (array_key_exists('fechas_proceso', $input) && !is_array($input['fechas_proceso'])) {
+            $errors[] = 'El bloque fechas_proceso debe ser un arreglo.';
+        }
+        if (is_array($input['fechas_proceso'] ?? null)) {
+            foreach ($input['fechas_proceso'] as $fecha) {
+                $tipoFecha = $fecha['tipo_fecha'] ?? '';
+                $fechaProgramada = $fecha['fecha_programada'] ?? '';
+                $tiposFechaPermitidos = ['PUBLICACION_CONVOCATORIA','JUNTA_ACLARACIONES','RECEPCION_PROPUESTAS','APERTURA_PROPUESTAS','FALLO_ADJUDICACION'];
+                if (!in_array($tipoFecha, $tiposFechaPermitidos, true)) {
+                    $errors[] = 'Tipo de fecha de proceso no válido.';
+                    break;
+                }
+                if (!$this->isDateOnly((string) $fechaProgramada)) {
+                    $errors[] = 'Las fechas del proceso deben tener formato YYYY-MM-DD.';
+                    break;
+                }
+            }
+        }
         return $errors;
+    }
+
+    private function normalizeFechasProceso(array $input): array {
+        $items = $input['fechas_proceso'] ?? [];
+        if (!is_array($items)) {
+            return [];
+        }
+
+        $normalized = [];
+        foreach ($items as $item) {
+            $tipoFecha = $item['tipo_fecha'] ?? null;
+            $fechaProgramada = $item['fecha_programada'] ?? null;
+            if (!is_string($tipoFecha) || !is_string($fechaProgramada) || !$this->isDateOnly($fechaProgramada)) {
+                continue;
+            }
+            $normalized[] = [
+                'tipo_fecha' => $tipoFecha,
+                'fecha_programada' => $fechaProgramada . ' 00:00:00',
+                'observaciones' => isset($item['observaciones']) ? trim((string) $item['observaciones']) : null,
+            ];
+        }
+        return $normalized;
+    }
+
+    private function isDateOnly(string $date): bool {
+        $parsed = DateTime::createFromFormat('Y-m-d', $date);
+        return $parsed !== false && $parsed->format('Y-m-d') === $date;
     }
 }

@@ -12,7 +12,9 @@
             theme: {
                 extend: {
                     fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] },
-                    colors: { primary: { 50:'#eff6ff',100:'#dbeafe',500:'#3b82f6',600:'#2563eb',700:'#1d4ed8',800:'#1e40af',900:'#1e3a8a' } }
+                    colors: {
+                        primary: { 50:'#eff6ff',100:'#dbeafe',500:'#3b82f6',600:'#2563eb',700:'#1d4ed8',800:'#1e40af',900:'#1e3a8a' }
+                    }
                 }
             }
         }
@@ -21,7 +23,6 @@
 </head>
 <body class="bg-slate-100 text-slate-900 font-sans antialiased flex h-screen overflow-hidden">
 
-    <!-- Sidebar -->
     <aside class="w-64 bg-slate-900 flex flex-col hidden md:flex h-full shrink-0">
         <div class="p-5 border-b border-slate-800">
             <a href="/" class="flex items-center gap-3 cursor-pointer">
@@ -61,16 +62,15 @@
         </div>
     </aside>
 
-    <!-- Main -->
     <div class="flex-1 flex flex-col h-full overflow-hidden">
         <header class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-6 z-10 shrink-0">
             <div>
                 <h1 class="text-base font-bold text-slate-800">Adjudicaciones y Contratos</h1>
-                <p class="text-xs text-slate-500">Fallos emitidos y contratos formalizados</p>
+                <p class="text-xs text-slate-500">Formalización y seguimiento de contratos adjudicados</p>
             </div>
             <div class="flex items-center gap-3">
-                <button class="inline-flex items-center gap-2 border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-medium px-4 py-2 rounded-lg text-sm cursor-pointer transition-colors">
-                    <i class="ph ph-download-simple text-base" aria-hidden="true"></i> Exportar
+                <button id="btn-export-contratos" class="inline-flex items-center gap-2 border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-medium px-4 py-2 rounded-lg text-sm cursor-pointer transition-colors">
+                    <i class="ph ph-download-simple text-base" aria-hidden="true"></i> Exportar contratos
                 </button>
                 <img src="https://ui-avatars.com/api/?name=Admin+Usuario&background=1e40af&color=ffffff&size=80" alt="Admin" class="w-9 h-9 rounded-full border-2 border-slate-200">
             </div>
@@ -79,47 +79,97 @@
         <main class="flex-1 overflow-x-hidden overflow-y-auto p-6">
             <div class="max-w-7xl mx-auto space-y-5">
 
-                <!-- Stats -->
                 <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
                     <div class="bg-white rounded-2xl border border-slate-200 p-4">
-                        <p class="text-2xl font-extrabold text-slate-800">145</p>
-                        <p class="text-xs text-slate-500 mt-0.5 font-medium">Total adjudicados</p>
+                        <p class="text-2xl font-extrabold text-slate-800">—</p>
+                        <p class="text-xs text-slate-500 mt-0.5 font-medium">Contratos registrados</p>
                     </div>
                     <div class="bg-white rounded-2xl border border-slate-200 p-4">
-                        <p class="text-2xl font-extrabold text-blue-600">8</p>
+                        <p class="text-2xl font-extrabold text-blue-600">—</p>
                         <p class="text-xs text-slate-500 mt-0.5 font-medium">En formalización</p>
                     </div>
                     <div class="bg-white rounded-2xl border border-slate-200 p-4">
-                        <p class="text-2xl font-extrabold text-emerald-600">$280M</p>
-                        <p class="text-xs text-slate-500 mt-0.5 font-medium">MXN contratados</p>
+                        <p class="text-2xl font-extrabold text-emerald-600">—</p>
+                        <p class="text-xs text-slate-500 mt-0.5 font-medium">Monto contratado</p>
                     </div>
                     <div class="bg-white rounded-2xl border border-slate-200 p-4">
-                        <p class="text-2xl font-extrabold text-violet-600">0</p>
-                        <p class="text-xs text-slate-500 mt-0.5 font-medium">Inconformidades</p>
+                        <p class="text-2xl font-extrabold text-violet-600">—</p>
+                        <p class="text-xs text-slate-500 mt-0.5 font-medium">Vigentes / ejecución</p>
                     </div>
                 </div>
 
-                <!-- Filters -->
+                <div class="bg-white rounded-2xl border border-slate-200 p-5">
+                    <div class="flex items-center justify-between gap-4 mb-4">
+                        <div>
+                            <h2 class="font-bold text-slate-800">Formalizar contrato</h2>
+                            <p class="text-xs text-slate-500">Crea el contrato para licitaciones adjudicadas que aún no tienen formalización.</p>
+                        </div>
+                        <p id="contract-helper" class="text-xs text-slate-500">Cargando licitaciones adjudicadas...</p>
+                    </div>
+                    <form id="contract-form" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Licitación adjudicada</label>
+                            <select id="contract-licitacion" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm">
+                                <option value="">Cargando...</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Proveedor adjudicado</label>
+                            <input id="contract-proveedor" type="text" readonly class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm bg-slate-50 text-slate-600" value="—">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Número de contrato</label>
+                            <input id="contract-numero" type="text" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm" placeholder="CONT-2026-001">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Monto del contrato</label>
+                            <input id="contract-monto" type="number" min="0" step="0.01" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm" placeholder="0.00">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Fecha de adjudicación</label>
+                            <input id="contract-fecha-adj" type="date" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Estatus inicial</label>
+                            <select id="contract-estatus" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm">
+                                <option value="EN_FORMALIZACION">EN_FORMALIZACION</option>
+                                <option value="VIGENTE">VIGENTE</option>
+                                <option value="EN_EJECUCION">EN_EJECUCION</option>
+                                <option value="CONCLUIDO">CONCLUIDO</option>
+                                <option value="RESCINDIDO">RESCINDIDO</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Fecha de inicio</label>
+                            <input id="contract-fecha-inicio" type="date" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-600 mb-1">Fecha de fin</label>
+                            <input id="contract-fecha-fin" type="date" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm">
+                        </div>
+                        <div class="flex items-end">
+                            <button type="submit" class="w-full inline-flex items-center justify-center gap-2 bg-primary-600 hover:bg-primary-700 text-white font-semibold px-4 py-2 rounded-lg text-sm transition-colors">
+                                <i class="ph ph-file-plus text-base"></i> Crear contrato
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
                 <div class="bg-white rounded-2xl border border-slate-200 p-4 flex flex-wrap gap-3">
                     <div class="relative">
                         <i class="ph ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-sm" aria-hidden="true"></i>
-                        <input type="search" placeholder="Buscar por número de contrato..." aria-label="Buscar adjudicación" class="pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:bg-white transition-all w-72">
+                        <input type="search" placeholder="Buscar por contrato o licitación..." aria-label="Buscar adjudicación" class="pl-9 pr-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:bg-white transition-all w-72">
                     </div>
-                    <select aria-label="Filtrar por año" class="px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-primary-500 cursor-pointer hover:bg-slate-100 transition-colors">
-                        <option>Ejercicio 2026</option>
-                        <option>Ejercicio 2025</option>
-                        <option>Ejercicio 2024</option>
-                    </select>
                     <select aria-label="Filtrar por estado" class="px-4 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-primary-500 cursor-pointer hover:bg-slate-100 transition-colors">
                         <option value="">Todos los estados</option>
-                        <option>Formalización</option>
-                        <option>Contrato Firmado</option>
-                        <option>En Ejecución</option>
-                        <option>Concluido</option>
+                        <option value="EN_FORMALIZACION">EN_FORMALIZACION</option>
+                        <option value="VIGENTE">VIGENTE</option>
+                        <option value="EN_EJECUCION">EN_EJECUCION</option>
+                        <option value="CONCLUIDO">CONCLUIDO</option>
+                        <option value="RESCINDIDO">RESCINDIDO</option>
                     </select>
                 </div>
 
-                <!-- Table -->
                 <div class="bg-white border border-slate-200 rounded-2xl overflow-hidden">
                     <div class="overflow-x-auto">
                         <table class="w-full text-left text-sm" aria-label="Adjudicaciones y contratos">
@@ -127,93 +177,23 @@
                                 <tr class="border-b border-slate-100 bg-slate-50">
                                     <th class="px-6 py-3.5 font-semibold text-slate-500 text-xs uppercase tracking-wide">No. Contrato</th>
                                     <th class="px-6 py-3.5 font-semibold text-slate-500 text-xs uppercase tracking-wide">Licitación</th>
-                                    <th class="px-6 py-3.5 font-semibold text-slate-500 text-xs uppercase tracking-wide">Proveedor Adjudicado</th>
+                                    <th class="px-6 py-3.5 font-semibold text-slate-500 text-xs uppercase tracking-wide">Proveedor adjudicado</th>
                                     <th class="px-6 py-3.5 font-semibold text-slate-500 text-xs uppercase tracking-wide">Monto</th>
-                                    <th class="px-6 py-3.5 font-semibold text-slate-500 text-xs uppercase tracking-wide">Fecha Fallo</th>
+                                    <th class="px-6 py-3.5 font-semibold text-slate-500 text-xs uppercase tracking-wide">Fecha fallo</th>
                                     <th class="px-6 py-3.5 font-semibold text-slate-500 text-xs uppercase tracking-wide">Estado</th>
                                     <th class="px-6 py-3.5 font-semibold text-slate-500 text-xs uppercase tracking-wide text-right">Acciones</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-slate-100">
-                                <tr class="hover:bg-slate-50 transition-colors group">
-                                    <td class="px-6 py-4 font-mono font-semibold text-slate-800 text-xs whitespace-nowrap">CONT-2026-003</td>
-                                    <td class="px-6 py-4 font-mono text-slate-600 text-xs whitespace-nowrap">AD-902002994-E3-2026</td>
-                                    <td class="px-6 py-4">
-                                        <p class="font-semibold text-slate-800 text-sm">Construcciones Norte S.A.</p>
-                                        <p class="text-xs text-slate-400 mt-0.5">CNO890314AB1</p>
-                                    </td>
-                                    <td class="px-6 py-4 font-bold text-slate-800 whitespace-nowrap">$948,500</td>
-                                    <td class="px-6 py-4 text-slate-500 text-xs whitespace-nowrap">10 Mar 2026</td>
-                                    <td class="px-6 py-4 whitespace-nowrap"><span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-700 border border-blue-200">Formalización</span></td>
-                                    <td class="px-6 py-4 text-right">
-                                        <div class="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                            <button class="p-2 text-slate-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors cursor-pointer" aria-label="Ver contrato"><i class="ph ph-eye text-base" aria-hidden="true"></i></button>
-                                            <button class="p-2 text-slate-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors cursor-pointer" aria-label="Descargar acta"><i class="ph ph-download-simple text-base" aria-hidden="true"></i></button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr class="hover:bg-slate-50 transition-colors group">
-                                    <td class="px-6 py-4 font-mono font-semibold text-slate-800 text-xs whitespace-nowrap">CONT-2026-002</td>
-                                    <td class="px-6 py-4 font-mono text-slate-600 text-xs whitespace-nowrap">LO-902002994-E4-2025</td>
-                                    <td class="px-6 py-4">
-                                        <p class="font-semibold text-slate-800 text-sm">Ingeniería Hidráulica ABC S.C.</p>
-                                        <p class="text-xs text-slate-400 mt-0.5">IHA010509CD3</p>
-                                    </td>
-                                    <td class="px-6 py-4 font-bold text-slate-800 whitespace-nowrap">$22,350,000</td>
-                                    <td class="px-6 py-4 text-slate-500 text-xs whitespace-nowrap">18 Feb 2026</td>
-                                    <td class="px-6 py-4 whitespace-nowrap"><span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-violet-100 text-violet-700 border border-violet-200">En Ejecución</span></td>
-                                    <td class="px-6 py-4 text-right">
-                                        <div class="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                            <button class="p-2 text-slate-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors cursor-pointer" aria-label="Ver contrato"><i class="ph ph-eye text-base" aria-hidden="true"></i></button>
-                                            <button class="p-2 text-slate-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors cursor-pointer" aria-label="Descargar acta"><i class="ph ph-download-simple text-base" aria-hidden="true"></i></button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr class="hover:bg-slate-50 transition-colors group">
-                                    <td class="px-6 py-4 font-mono font-semibold text-slate-800 text-xs whitespace-nowrap">CONT-2026-001</td>
-                                    <td class="px-6 py-4 font-mono text-slate-600 text-xs whitespace-nowrap">IR-902002994-E8-2025</td>
-                                    <td class="px-6 py-4">
-                                        <p class="font-semibold text-slate-800 text-sm">GEO Construcciones y Diseño S.A.</p>
-                                        <p class="text-xs text-slate-400 mt-0.5">GCD950820BC2</p>
-                                    </td>
-                                    <td class="px-6 py-4 font-bold text-slate-800 whitespace-nowrap">$5,820,000</td>
-                                    <td class="px-6 py-4 text-slate-500 text-xs whitespace-nowrap">05 Ene 2026</td>
-                                    <td class="px-6 py-4 whitespace-nowrap"><span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700 border border-emerald-200">Concluido</span></td>
-                                    <td class="px-6 py-4 text-right">
-                                        <div class="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                            <button class="p-2 text-slate-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors cursor-pointer" aria-label="Ver contrato"><i class="ph ph-eye text-base" aria-hidden="true"></i></button>
-                                            <button class="p-2 text-slate-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors cursor-pointer" aria-label="Descargar acta"><i class="ph ph-download-simple text-base" aria-hidden="true"></i></button>
-                                        </div>
-                                    </td>
-                                </tr>
-                                <tr class="hover:bg-slate-50 transition-colors group">
-                                    <td class="px-6 py-4 font-mono font-semibold text-slate-800 text-xs whitespace-nowrap">CONT-2025-018</td>
-                                    <td class="px-6 py-4 font-mono text-slate-600 text-xs whitespace-nowrap">LO-902002994-E11-2025</td>
-                                    <td class="px-6 py-4">
-                                        <p class="font-semibold text-slate-800 text-sm">Construcciones Norte S.A.</p>
-                                        <p class="text-xs text-slate-400 mt-0.5">CNO890314AB1</p>
-                                    </td>
-                                    <td class="px-6 py-4 font-bold text-slate-800 whitespace-nowrap">$14,600,000</td>
-                                    <td class="px-6 py-4 text-slate-500 text-xs whitespace-nowrap">20 Oct 2025</td>
-                                    <td class="px-6 py-4 whitespace-nowrap"><span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700 border border-emerald-200">Concluido</span></td>
-                                    <td class="px-6 py-4 text-right">
-                                        <div class="flex items-center justify-end gap-1 opacity-0 group-hover:opacity-100 transition-opacity">
-                                            <button class="p-2 text-slate-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors cursor-pointer" aria-label="Ver contrato"><i class="ph ph-eye text-base" aria-hidden="true"></i></button>
-                                            <button class="p-2 text-slate-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors cursor-pointer" aria-label="Descargar acta"><i class="ph ph-download-simple text-base" aria-hidden="true"></i></button>
-                                        </div>
-                                    </td>
+                                <tr>
+                                    <td colspan="7" class="px-6 py-8 text-center text-slate-500">Cargando contratos...</td>
                                 </tr>
                             </tbody>
                         </table>
                     </div>
                     <div class="px-6 py-4 border-t border-slate-100 bg-slate-50/50 flex items-center justify-between">
-                        <p class="text-sm text-slate-500">Mostrando <span class="font-semibold text-slate-800">1–4</span> de <span class="font-semibold text-slate-800">145</span> contratos</p>
-                        <div class="flex items-center gap-1">
-                            <button class="px-3 py-1.5 text-slate-400 text-sm rounded-lg border border-slate-200 bg-white opacity-50 cursor-not-allowed" disabled>Anterior</button>
-                            <button class="px-3 py-1.5 bg-primary-600 text-white text-sm font-semibold rounded-lg">1</button>
-                            <button class="px-3 py-1.5 text-slate-600 text-sm rounded-lg border border-slate-200 bg-white hover:bg-slate-50 transition-colors cursor-pointer">2</button>
-                            <button class="px-3 py-1.5 text-slate-600 text-sm rounded-lg border border-slate-200 bg-white hover:bg-slate-50 transition-colors cursor-pointer">Siguiente</button>
-                        </div>
+                        <p class="text-sm text-slate-500">Mostrando 0 de 0 contratos</p>
+                        <span class="text-xs text-slate-400">Listado completo sin paginación</span>
                     </div>
                 </div>
             </div>
@@ -228,12 +208,24 @@
 
   const stats = document.querySelectorAll('.grid.grid-cols-2.md\\:grid-cols-4 .text-2xl.font-extrabold');
   const searchInput = document.querySelector('input[type="search"]');
-  const statusSelect = document.querySelectorAll('select')[1];
-  const exportBtn = document.querySelector('header button');
+  const statusSelect = document.querySelector('select[aria-label="Filtrar por estado"]');
+  const exportBtn = document.getElementById('btn-export-contratos');
   const tbody = document.querySelector('tbody');
   const summary = document.querySelector('.border-t p.text-sm');
+  const contractForm = document.getElementById('contract-form');
+  const contractHelper = document.getElementById('contract-helper');
+  const contractLicitacion = document.getElementById('contract-licitacion');
+  const contractProveedor = document.getElementById('contract-proveedor');
+  const contractNumero = document.getElementById('contract-numero');
+  const contractMonto = document.getElementById('contract-monto');
+  const contractFechaAdj = document.getElementById('contract-fecha-adj');
+  const contractFechaInicio = document.getElementById('contract-fecha-inicio');
+  const contractFechaFin = document.getElementById('contract-fecha-fin');
+  const contractEstatus = document.getElementById('contract-estatus');
 
   let cache = [];
+  let adjudicadasPendientes = [];
+  let adjudicadaSeleccionada = null;
 
   function badgeClass(status) {
     const map = {
@@ -246,30 +238,77 @@
     return map[status] || 'bg-slate-100 text-slate-700 border-slate-200';
   }
 
+  function hydrateContractOptions() {
+    contractLicitacion.innerHTML = adjudicadasPendientes.length
+      ? adjudicadasPendientes.map(function (item) {
+          return '<option value="' + item.id_licitacion + '">' + window.SGPLAdmin.escapeHtml(item.numero_licitacion) + '</option>';
+        }).join('')
+      : '<option value="">Sin licitaciones pendientes</option>';
+    contractHelper.textContent = adjudicadasPendientes.length
+      ? adjudicadasPendientes.length + ' licitaciones adjudicadas sin contrato.'
+      : 'No hay licitaciones adjudicadas pendientes de formalización.';
+  }
+
+  async function syncSelectedAdjudicacion() {
+    const licitacionId = contractLicitacion.value;
+    adjudicadaSeleccionada = adjudicadasPendientes.find(function (item) {
+      return String(item.id_licitacion) === String(licitacionId);
+    }) || null;
+
+    if (!adjudicadaSeleccionada) {
+      contractProveedor.value = '—';
+      contractMonto.value = '';
+      contractFechaAdj.value = '';
+      return;
+    }
+
+    const propuestasRes = await window.SGPLAdmin.authFetch('/propuestas?licitacion=' + licitacionId);
+    const propuestaAceptada = (propuestasRes.data || []).find(function (item) {
+      return item.estatus === 'ACEPTADA';
+    });
+
+    if (!propuestaAceptada) {
+      adjudicadaSeleccionada = null;
+      contractProveedor.value = 'Proveedor adjudicado no localizado';
+      contractMonto.value = '';
+      contractFechaAdj.value = '';
+      return;
+    }
+
+    adjudicadaSeleccionada.id_proveedor = propuestaAceptada.id_proveedor;
+    adjudicadaSeleccionada.nombre_empresa = propuestaAceptada.nombre_empresa;
+    adjudicadaSeleccionada.monto_propuesta = propuestaAceptada.monto_propuesta;
+    contractProveedor.value = propuestaAceptada.nombre_empresa + ' (' + propuestaAceptada.registro_fiscal + ')';
+    contractMonto.value = Number(propuestaAceptada.monto_propuesta || 0);
+    contractFechaAdj.value = (adjudicadaSeleccionada.fecha_fallo_adjudicacion || '').slice(0, 10);
+  }
+
   function render(items) {
     const term = (searchInput.value || '').toLowerCase().trim();
     const statusVal = statusSelect.value || '';
-    const filtered = items.filter(function (i) {
-      const matchText = !term || (i.numero_contrato || '').toLowerCase().includes(term) || (i.numero_licitacion || '').toLowerCase().includes(term);
-      const matchStatus = !statusVal || i.estatus === statusVal;
-      return matchText && matchStatus;
+    const filtered = items.filter(function (item) {
+      const matchesText = !term
+        || (item.numero_contrato || '').toLowerCase().includes(term)
+        || (item.numero_licitacion || '').toLowerCase().includes(term);
+      const matchesStatus = !statusVal || item.estatus === statusVal;
+      return matchesText && matchesStatus;
     });
 
     tbody.innerHTML = filtered.length
-      ? filtered.map(function (i) {
+      ? filtered.map(function (item) {
           return '<tr class="hover:bg-slate-50 transition-colors">'
-            + '<td class="px-6 py-4 font-mono font-semibold text-slate-800 text-xs whitespace-nowrap">' + i.numero_contrato + '</td>'
-            + '<td class="px-6 py-4 font-mono text-slate-600 text-xs whitespace-nowrap">' + i.numero_licitacion + '</td>'
-            + '<td class="px-6 py-4"><p class="font-semibold text-slate-800 text-sm">' + i.nombre_empresa + '</p><p class="text-xs text-slate-400 mt-0.5">' + i.registro_fiscal + '</p></td>'
-            + '<td class="px-6 py-4 font-bold text-slate-800 whitespace-nowrap">' + window.SGPLAdmin.formatCurrency(i.monto_contrato) + '</td>'
-            + '<td class="px-6 py-4 text-slate-500 text-xs whitespace-nowrap">' + window.SGPLAdmin.formatDate(i.fecha_adjudicacion) + '</td>'
-            + '<td class="px-6 py-4 whitespace-nowrap"><span class="px-2.5 py-1 rounded-full text-xs font-semibold border ' + badgeClass(i.estatus) + '">' + i.estatus + '</span></td>'
-            + '<td class="px-6 py-4 text-right"><select data-id="' + i.id_contrato + '" class="chg px-2 py-1 text-xs border rounded-lg bg-white">'
-            + '<option value="EN_FORMALIZACION"' + (i.estatus === 'EN_FORMALIZACION' ? ' selected' : '') + '>EN_FORMALIZACION</option>'
-            + '<option value="VIGENTE"' + (i.estatus === 'VIGENTE' ? ' selected' : '') + '>VIGENTE</option>'
-            + '<option value="EN_EJECUCION"' + (i.estatus === 'EN_EJECUCION' ? ' selected' : '') + '>EN_EJECUCION</option>'
-            + '<option value="CONCLUIDO"' + (i.estatus === 'CONCLUIDO' ? ' selected' : '') + '>CONCLUIDO</option>'
-            + '<option value="RESCINDIDO"' + (i.estatus === 'RESCINDIDO' ? ' selected' : '') + '>RESCINDIDO</option>'
+            + '<td class="px-6 py-4 font-mono font-semibold text-slate-800 text-xs whitespace-nowrap">' + window.SGPLAdmin.escapeHtml(item.numero_contrato) + '</td>'
+            + '<td class="px-6 py-4 font-mono text-slate-600 text-xs whitespace-nowrap">' + window.SGPLAdmin.escapeHtml(item.numero_licitacion) + '</td>'
+            + '<td class="px-6 py-4"><p class="font-semibold text-slate-800 text-sm">' + window.SGPLAdmin.escapeHtml(item.nombre_empresa) + '</p><p class="text-xs text-slate-400 mt-0.5">' + window.SGPLAdmin.escapeHtml(item.registro_fiscal) + '</p></td>'
+            + '<td class="px-6 py-4 font-bold text-slate-800 whitespace-nowrap">' + window.SGPLAdmin.formatCurrency(item.monto_contrato) + '</td>'
+            + '<td class="px-6 py-4 text-slate-500 text-xs whitespace-nowrap">' + window.SGPLAdmin.formatDate(item.fecha_adjudicacion) + '</td>'
+            + '<td class="px-6 py-4 whitespace-nowrap"><span class="px-2.5 py-1 rounded-full text-xs font-semibold border ' + badgeClass(item.estatus) + '">' + window.SGPLAdmin.escapeHtml(item.estatus) + '</span></td>'
+            + '<td class="px-6 py-4 text-right"><select data-id="' + item.id_contrato + '" class="chg px-2 py-1 text-xs border rounded-lg bg-white">'
+            + '<option value="EN_FORMALIZACION"' + (item.estatus === 'EN_FORMALIZACION' ? ' selected' : '') + '>EN_FORMALIZACION</option>'
+            + '<option value="VIGENTE"' + (item.estatus === 'VIGENTE' ? ' selected' : '') + '>VIGENTE</option>'
+            + '<option value="EN_EJECUCION"' + (item.estatus === 'EN_EJECUCION' ? ' selected' : '') + '>EN_EJECUCION</option>'
+            + '<option value="CONCLUIDO"' + (item.estatus === 'CONCLUIDO' ? ' selected' : '') + '>CONCLUIDO</option>'
+            + '<option value="RESCINDIDO"' + (item.estatus === 'RESCINDIDO' ? ' selected' : '') + '>RESCINDIDO</option>'
             + '</select></td></tr>';
         }).join('')
       : '<tr><td colspan="7" class="px-6 py-8 text-center text-slate-500">Sin contratos para los filtros actuales.</td></tr>';
@@ -278,10 +317,13 @@
 
     if (stats.length >= 4) {
       stats[0].textContent = items.length;
-      stats[1].textContent = items.filter(i => i.estatus === 'EN_FORMALIZACION').length;
-      const totalMonto = items.reduce((acc, it) => acc + Number(it.monto_contrato || 0), 0);
-      stats[2].textContent = window.SGPLAdmin.formatCurrency(totalMonto);
-      stats[3].textContent = 0;
+      stats[1].textContent = items.filter(function (item) { return item.estatus === 'EN_FORMALIZACION'; }).length;
+      stats[2].textContent = window.SGPLAdmin.formatCurrency(items.reduce(function (acc, item) {
+        return acc + Number(item.monto_contrato || 0);
+      }, 0));
+      stats[3].textContent = items.filter(function (item) {
+        return item.estatus === 'VIGENTE' || item.estatus === 'EN_EJECUCION';
+      }).length;
     }
 
     document.querySelectorAll('.chg').forEach(function (sel) {
@@ -295,7 +337,7 @@
     try {
       await window.SGPLAdmin.authFetch('/contratos/' + id + '/estatus', {
         method: 'PATCH',
-        body: JSON.stringify({ estatus })
+        body: JSON.stringify({ estatus: estatus })
       });
       await load();
     } catch (error) {
@@ -306,8 +348,22 @@
   async function load() {
     tbody.innerHTML = '<tr><td colspan="7" class="px-6 py-8 text-center text-slate-500">Cargando contratos...</td></tr>';
     try {
-      const res = await window.SGPLAdmin.authFetch('/contratos');
-      cache = res.data || [];
+      const results = await Promise.all([
+        window.SGPLAdmin.authFetch('/contratos'),
+        window.SGPLAdmin.authFetch('/licitaciones?estado=ADJUDICADA')
+      ]);
+      cache = results[0].data || [];
+      const adjudicadas = results[1].data || [];
+      const contratosPorLicitacion = new Set(cache.map(function (item) {
+        return String(item.id_licitacion);
+      }));
+      adjudicadasPendientes = adjudicadas.filter(function (item) {
+        return !contratosPorLicitacion.has(String(item.id_licitacion));
+      });
+      hydrateContractOptions();
+      if (adjudicadasPendientes.length) {
+        await syncSelectedAdjudicacion();
+      }
       render(cache);
     } catch (_) {
       tbody.innerHTML = '<tr><td colspan="7" class="px-6 py-8 text-center text-red-600">No se pudieron cargar contratos.</td></tr>';
@@ -315,26 +371,51 @@
   }
 
   exportBtn?.addEventListener('click', async function () {
-    const token = window.SGPLAdmin.getToken();
     try {
-      const response = await fetch('/api/v1/reportes/export/licitaciones.csv', {
-        headers: { Authorization: 'Bearer ' + token }
-      });
-      if (!response.ok) throw new Error('No se pudo exportar el archivo.');
-      const blob = await response.blob();
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'adjudicaciones.csv';
-      a.click();
-      URL.revokeObjectURL(url);
+      await window.SGPLAdmin.downloadApiFile('/reportes/export/contratos.csv', 'adjudicaciones_contratos.csv');
     } catch (error) {
       alert(error.message);
     }
   });
 
+  contractLicitacion?.addEventListener('change', function () {
+    syncSelectedAdjudicacion().catch(function (error) {
+      alert(error.message);
+    });
+  });
+
+  contractForm?.addEventListener('submit', async function (event) {
+    event.preventDefault();
+    if (!adjudicadaSeleccionada || !adjudicadaSeleccionada.id_proveedor) {
+      alert('Selecciona una licitación adjudicada válida para formalizar el contrato.');
+      return;
+    }
+
+    try {
+      await window.SGPLAdmin.authFetch('/contratos', {
+        method: 'POST',
+        body: JSON.stringify({
+          id_licitacion: Number(adjudicadaSeleccionada.id_licitacion),
+          id_proveedor: Number(adjudicadaSeleccionada.id_proveedor),
+          numero_contrato: contractNumero.value.trim(),
+          monto_contrato: Number(contractMonto.value || 0),
+          fecha_adjudicacion: contractFechaAdj.value,
+          fecha_inicio: contractFechaInicio.value,
+          fecha_fin: contractFechaFin.value,
+          estatus: contractEstatus.value
+        })
+      });
+
+      contractNumero.value = '';
+      contractFechaInicio.value = '';
+      contractFechaFin.value = '';
+      await load();
+    } catch (error) {
+      alert(error.message + (error.errors?.length ? '\n' + error.errors.join('\n') : ''));
+    }
+  });
+
   searchInput?.addEventListener('input', function () { render(cache); });
-  statusSelect.innerHTML = '<option value=\"\">Todos los estados</option><option value=\"EN_FORMALIZACION\">EN_FORMALIZACION</option><option value=\"VIGENTE\">VIGENTE</option><option value=\"EN_EJECUCION\">EN_EJECUCION</option><option value=\"CONCLUIDO\">CONCLUIDO</option><option value=\"RESCINDIDO\">RESCINDIDO</option>';
   statusSelect?.addEventListener('change', function () { render(cache); });
 
   load();

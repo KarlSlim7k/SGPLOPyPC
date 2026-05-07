@@ -69,13 +69,9 @@
                 <p class="text-xs text-slate-500">Estadísticas y análisis del ejercicio 2026</p>
             </div>
             <div class="flex items-center gap-3">
-                <select aria-label="Seleccionar período" class="px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-700 focus:outline-none focus:ring-2 focus:ring-primary-500 cursor-pointer hover:bg-slate-100 transition-colors">
-                    <option>Ejercicio 2026</option>
-                    <option>Ejercicio 2025</option>
-                    <option>Ejercicio 2024</option>
-                </select>
-                <button class="inline-flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white font-semibold px-4 py-2 rounded-lg text-sm cursor-pointer transition-colors shadow-sm">
-                    <i class="ph ph-download-simple text-base" aria-hidden="true"></i> Descargar PDF
+                <span id="report-year-label" class="px-3 py-2 bg-slate-50 border border-slate-200 rounded-lg text-sm text-slate-700">Ejercicio actual</span>
+                <button id="btn-export-licitaciones" class="inline-flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white font-semibold px-4 py-2 rounded-lg text-sm cursor-pointer transition-colors shadow-sm">
+                    <i class="ph ph-download-simple text-base" aria-hidden="true"></i> Exportar licitaciones CSV
                 </button>
                 <img src="https://ui-avatars.com/api/?name=Admin+Usuario&background=1e40af&color=ffffff&size=80" alt="Admin" class="w-9 h-9 rounded-full border-2 border-slate-200">
             </div>
@@ -89,38 +85,38 @@
                     <div class="bg-white rounded-2xl border border-slate-200 p-5">
                         <div class="flex items-start justify-between mb-3">
                             <div class="w-10 h-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center" aria-hidden="true"><i class="ph ph-megaphone text-xl"></i></div>
-                            <span class="text-xs text-emerald-600 font-semibold bg-emerald-50 px-2 py-0.5 rounded-full">+25%</span>
+                            <span class="text-xs text-slate-500 font-semibold bg-slate-100 px-2 py-0.5 rounded-full">API</span>
                         </div>
-                        <p class="text-2xl font-extrabold text-slate-800">57</p>
-                        <p class="text-xs text-slate-500 mt-0.5 font-medium">Licitaciones totales 2026</p>
-                        <p class="text-xs text-slate-400 mt-1">vs 42 en 2025</p>
+                        <p class="text-2xl font-extrabold text-slate-800">—</p>
+                        <p class="text-xs text-slate-500 mt-0.5 font-medium">Licitaciones registradas</p>
+                        <p class="text-xs text-slate-400 mt-1">Datos reales del sistema</p>
                     </div>
                     <div class="bg-white rounded-2xl border border-slate-200 p-5">
                         <div class="flex items-start justify-between mb-3">
                             <div class="w-10 h-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center" aria-hidden="true"><i class="ph ph-handshake text-xl"></i></div>
-                            <span class="text-xs text-emerald-600 font-semibold bg-emerald-50 px-2 py-0.5 rounded-full">+18%</span>
+                            <span class="text-xs text-slate-500 font-semibold bg-slate-100 px-2 py-0.5 rounded-full">API</span>
                         </div>
-                        <p class="text-2xl font-extrabold text-slate-800">145</p>
-                        <p class="text-xs text-slate-500 mt-0.5 font-medium">Contratos adjudicados</p>
-                        <p class="text-xs text-slate-400 mt-1">vs 123 en 2025</p>
+                        <p class="text-2xl font-extrabold text-slate-800">—</p>
+                        <p class="text-xs text-slate-500 mt-0.5 font-medium">Licitaciones adjudicadas</p>
+                        <p class="text-xs text-slate-400 mt-1">Según estado del proceso</p>
                     </div>
                     <div class="bg-white rounded-2xl border border-slate-200 p-5">
                         <div class="flex items-start justify-between mb-3">
                             <div class="w-10 h-10 rounded-xl bg-violet-50 text-violet-600 flex items-center justify-center" aria-hidden="true"><i class="ph ph-currency-dollar text-xl"></i></div>
-                            <span class="text-xs text-emerald-600 font-semibold bg-emerald-50 px-2 py-0.5 rounded-full">+12%</span>
+                            <span class="text-xs text-slate-500 font-semibold bg-slate-100 px-2 py-0.5 rounded-full">API</span>
                         </div>
-                        <p class="text-2xl font-extrabold text-slate-800">$280M</p>
-                        <p class="text-xs text-slate-500 mt-0.5 font-medium">MXN en contratos</p>
-                        <p class="text-xs text-slate-400 mt-1">vs $250M en 2025</p>
+                        <p class="text-2xl font-extrabold text-slate-800">—</p>
+                        <p class="text-xs text-slate-500 mt-0.5 font-medium">Contratos registrados</p>
+                        <p class="text-xs text-slate-400 mt-1">Base contractual activa</p>
                     </div>
                     <div class="bg-white rounded-2xl border border-slate-200 p-5">
                         <div class="flex items-start justify-between mb-3">
                             <div class="w-10 h-10 rounded-xl bg-amber-50 text-amber-600 flex items-center justify-center" aria-hidden="true"><i class="ph ph-timer text-xl"></i></div>
-                            <span class="text-xs text-emerald-600 font-semibold bg-emerald-50 px-2 py-0.5 rounded-full">-8 días</span>
+                            <span class="text-xs text-slate-500 font-semibold bg-slate-100 px-2 py-0.5 rounded-full">API</span>
                         </div>
-                        <p class="text-2xl font-extrabold text-slate-800">32 días</p>
-                        <p class="text-xs text-slate-500 mt-0.5 font-medium">Tiempo promedio proceso</p>
-                        <p class="text-xs text-slate-400 mt-1">vs 40 días en 2025</p>
+                        <p class="text-2xl font-extrabold text-slate-800">—</p>
+                        <p class="text-xs text-slate-500 mt-0.5 font-medium">Promedio pub. a adjud.</p>
+                        <p class="text-xs text-slate-400 mt-1">Días calculados en backend</p>
                     </div>
                 </div>
 
@@ -130,89 +126,19 @@
                     <!-- Bar chart SVG -->
                     <div class="lg:col-span-2 bg-white rounded-2xl border border-slate-200 p-6">
                         <div class="flex items-center justify-between mb-6">
-                            <h3 class="font-bold text-slate-800">Licitaciones por Mes — 2026</h3>
-                            <span class="text-xs text-slate-400">Ene–Mar 2026</span>
+                            <h3 class="font-bold text-slate-800">Licitaciones por mes</h3>
+                            <span id="chart-caption" class="text-xs text-slate-400">Cargando serie...</span>
                         </div>
-                        <!-- Simple SVG bar chart -->
-                        <svg viewBox="0 0 600 200" xmlns="http://www.w3.org/2000/svg" aria-label="Gráfica de barras: licitaciones por mes en 2026" role="img" class="w-full">
-                            <title>Licitaciones por mes 2026</title>
-                            <!-- Grid lines -->
-                            <line x1="60" y1="20" x2="580" y2="20" stroke="#f1f5f9" stroke-width="1"/>
-                            <line x1="60" y1="60" x2="580" y2="60" stroke="#f1f5f9" stroke-width="1"/>
-                            <line x1="60" y1="100" x2="580" y2="100" stroke="#f1f5f9" stroke-width="1"/>
-                            <line x1="60" y1="140" x2="580" y2="140" stroke="#f1f5f9" stroke-width="1"/>
-                            <!-- Y labels -->
-                            <text x="50" y="24" text-anchor="end" class="text-xs" font-size="11" fill="#94a3b8">20</text>
-                            <text x="50" y="64" text-anchor="end" class="text-xs" font-size="11" fill="#94a3b8">15</text>
-                            <text x="50" y="104" text-anchor="end" class="text-xs" font-size="11" fill="#94a3b8">10</text>
-                            <text x="50" y="144" text-anchor="end" class="text-xs" font-size="11" fill="#94a3b8">5</text>
-                            <!-- Bars: Enero=8, Feb=12, Mar=9 -->
-                            <rect x="80" y="108" width="50" height="52" rx="6" fill="#2563eb" opacity="0.85"/>
-                            <rect x="200" y="60" width="50" height="100" rx="6" fill="#2563eb"/>
-                            <rect x="320" y="96" width="50" height="64" rx="6" fill="#2563eb" opacity="0.85"/>
-                            <!-- Future months placeholder -->
-                            <rect x="440" y="140" width="50" height="20" rx="6" fill="#e2e8f0"/>
-                            <!-- X labels -->
-                            <text x="105" y="185" text-anchor="middle" font-size="11" fill="#64748b">Enero</text>
-                            <text x="225" y="185" text-anchor="middle" font-size="11" fill="#64748b">Febrero</text>
-                            <text x="345" y="185" text-anchor="middle" font-size="11" fill="#64748b">Marzo</text>
-                            <text x="465" y="185" text-anchor="middle" font-size="11" fill="#cbd5e1">Abril</text>
-                            <!-- Value labels -->
-                            <text x="105" y="100" text-anchor="middle" font-size="12" font-weight="700" fill="#1e40af">8</text>
-                            <text x="225" y="52" text-anchor="middle" font-size="12" font-weight="700" fill="#1e40af">12</text>
-                            <text x="345" y="88" text-anchor="middle" font-size="12" font-weight="700" fill="#1e40af">9</text>
-                        </svg>
+                        <div id="chart-bars" class="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-3 items-end min-h-[220px]">
+                            <p class="text-sm text-slate-500 col-span-full">Cargando gráfica...</p>
+                        </div>
                     </div>
 
                     <!-- Breakdown -->
                     <div class="bg-white rounded-2xl border border-slate-200 p-6 flex flex-col gap-5">
                         <h3 class="font-bold text-slate-800">Por tipo de procedimiento</h3>
-                        <div class="space-y-4">
-                            <div>
-                                <div class="flex justify-between items-center mb-1.5">
-                                    <span class="text-sm font-medium text-slate-700">Licitación Pública</span>
-                                    <span class="text-sm font-bold text-slate-800">38 <span class="text-xs font-normal text-slate-400">(67%)</span></span>
-                                </div>
-                                <div class="w-full bg-slate-100 rounded-full h-2" aria-hidden="true">
-                                    <div class="bg-blue-600 h-2 rounded-full" style="width: 67%"></div>
-                                </div>
-                            </div>
-                            <div>
-                                <div class="flex justify-between items-center mb-1.5">
-                                    <span class="text-sm font-medium text-slate-700">Inv. Restringida</span>
-                                    <span class="text-sm font-bold text-slate-800">12 <span class="text-xs font-normal text-slate-400">(21%)</span></span>
-                                </div>
-                                <div class="w-full bg-slate-100 rounded-full h-2" aria-hidden="true">
-                                    <div class="bg-indigo-500 h-2 rounded-full" style="width: 21%"></div>
-                                </div>
-                            </div>
-                            <div>
-                                <div class="flex justify-between items-center mb-1.5">
-                                    <span class="text-sm font-medium text-slate-700">Adj. Directa</span>
-                                    <span class="text-sm font-bold text-slate-800">7 <span class="text-xs font-normal text-slate-400">(12%)</span></span>
-                                </div>
-                                <div class="w-full bg-slate-100 rounded-full h-2" aria-hidden="true">
-                                    <div class="bg-violet-400 h-2 rounded-full" style="width: 12%"></div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="border-t border-slate-100 pt-5 mt-auto">
-                            <h4 class="font-bold text-slate-700 text-sm mb-4">Monto adjudicado por tipo</h4>
-                            <div class="space-y-2">
-                                <div class="flex justify-between text-sm">
-                                    <span class="text-slate-600">Licitación Pública</span>
-                                    <span class="font-semibold text-slate-800">$218M MXN</span>
-                                </div>
-                                <div class="flex justify-between text-sm">
-                                    <span class="text-slate-600">Inv. Restringida</span>
-                                    <span class="font-semibold text-slate-800">$42M MXN</span>
-                                </div>
-                                <div class="flex justify-between text-sm">
-                                    <span class="text-slate-600">Adj. Directa</span>
-                                    <span class="font-semibold text-slate-800">$20M MXN</span>
-                                </div>
-                            </div>
+                        <div id="tipo-breakdown" class="space-y-4">
+                            <p class="text-sm text-slate-500">Cargando distribución...</p>
                         </div>
                     </div>
                 </div>
@@ -220,47 +146,19 @@
                 <!-- Report Downloads -->
                 <div class="bg-white rounded-2xl border border-slate-200 p-6">
                     <h3 class="font-bold text-slate-800 mb-5">Reportes Disponibles para Descarga</h3>
-                    <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-3">
-                        <button class="flex items-center gap-4 p-4 border border-slate-200 rounded-xl hover:border-primary-200 hover:bg-primary-50 transition-all group cursor-pointer text-left">
-                            <div class="w-10 h-10 rounded-lg bg-red-50 text-red-600 flex items-center justify-center shrink-0 group-hover:bg-red-600 group-hover:text-white transition-colors" aria-hidden="true"><i class="ph ph-file-pdf text-xl"></i></div>
+                    <div class="grid md:grid-cols-2 gap-3">
+                        <button data-export="licitaciones" class="flex items-center gap-4 p-4 border border-slate-200 rounded-xl hover:border-primary-200 hover:bg-primary-50 transition-all group cursor-pointer text-left">
+                            <div class="w-10 h-10 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center shrink-0 group-hover:bg-blue-600 group-hover:text-white transition-colors" aria-hidden="true"><i class="ph ph-file-csv text-xl"></i></div>
                             <div>
-                                <p class="font-semibold text-slate-800 text-sm">Reporte General 2026</p>
-                                <p class="text-xs text-slate-400 mt-0.5">PDF · Actualizado 19 Mar 2026</p>
+                                <p class="font-semibold text-slate-800 text-sm">Licitaciones</p>
+                                <p class="text-xs text-slate-400 mt-0.5">CSV exportado desde `/reportes/export/licitaciones.csv`</p>
                             </div>
                         </button>
-                        <button class="flex items-center gap-4 p-4 border border-slate-200 rounded-xl hover:border-emerald-200 hover:bg-emerald-50 transition-all group cursor-pointer text-left">
-                            <div class="w-10 h-10 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 group-hover:bg-emerald-600 group-hover:text-white transition-colors" aria-hidden="true"><i class="ph ph-file-xls text-xl"></i></div>
+                        <button data-export="contratos" class="flex items-center gap-4 p-4 border border-slate-200 rounded-xl hover:border-emerald-200 hover:bg-emerald-50 transition-all group cursor-pointer text-left">
+                            <div class="w-10 h-10 rounded-lg bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0 group-hover:bg-emerald-600 group-hover:text-white transition-colors" aria-hidden="true"><i class="ph ph-file-csv text-xl"></i></div>
                             <div>
-                                <p class="font-semibold text-slate-800 text-sm">Base de Contratos</p>
-                                <p class="text-xs text-slate-400 mt-0.5">XLSX · 145 registros</p>
-                            </div>
-                        </button>
-                        <button class="flex items-center gap-4 p-4 border border-slate-200 rounded-xl hover:border-blue-200 hover:bg-blue-50 transition-all group cursor-pointer text-left">
-                            <div class="w-10 h-10 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center shrink-0 group-hover:bg-blue-600 group-hover:text-white transition-colors" aria-hidden="true"><i class="ph ph-file-pdf text-xl"></i></div>
-                            <div>
-                                <p class="font-semibold text-slate-800 text-sm">Padrón de Proveedores</p>
-                                <p class="text-xs text-slate-400 mt-0.5">PDF · 84 proveedores</p>
-                            </div>
-                        </button>
-                        <button class="flex items-center gap-4 p-4 border border-slate-200 rounded-xl hover:border-amber-200 hover:bg-amber-50 transition-all group cursor-pointer text-left">
-                            <div class="w-10 h-10 rounded-lg bg-amber-50 text-amber-600 flex items-center justify-center shrink-0 group-hover:bg-amber-600 group-hover:text-white transition-colors" aria-hidden="true"><i class="ph ph-file-pdf text-xl"></i></div>
-                            <div>
-                                <p class="font-semibold text-slate-800 text-sm">Dictámenes de Evaluación</p>
-                                <p class="text-xs text-slate-400 mt-0.5">PDF · Primer trimestre</p>
-                            </div>
-                        </button>
-                        <button class="flex items-center gap-4 p-4 border border-slate-200 rounded-xl hover:border-violet-200 hover:bg-violet-50 transition-all group cursor-pointer text-left">
-                            <div class="w-10 h-10 rounded-lg bg-violet-50 text-violet-600 flex items-center justify-center shrink-0 group-hover:bg-violet-600 group-hover:text-white transition-colors" aria-hidden="true"><i class="ph ph-file-xls text-xl"></i></div>
-                            <div>
-                                <p class="font-semibold text-slate-800 text-sm">Bitácora de Auditoría</p>
-                                <p class="text-xs text-slate-400 mt-0.5">XLSX · Log completo del sistema</p>
-                            </div>
-                        </button>
-                        <button class="flex items-center gap-4 p-4 border border-slate-200 rounded-xl hover:border-slate-300 hover:bg-slate-50 transition-all group cursor-pointer text-left">
-                            <div class="w-10 h-10 rounded-lg bg-slate-100 text-slate-500 flex items-center justify-center shrink-0 group-hover:bg-slate-800 group-hover:text-white transition-colors" aria-hidden="true"><i class="ph ph-file-pdf text-xl"></i></div>
-                            <div>
-                                <p class="font-semibold text-slate-800 text-sm">Informe de Transparencia</p>
-                                <p class="text-xs text-slate-400 mt-0.5">PDF · Formato gobierno abierto</p>
+                                <p class="font-semibold text-slate-800 text-sm">Contratos y adjudicaciones</p>
+                                <p class="text-xs text-slate-400 mt-0.5">CSV exportado desde `/reportes/export/contratos.csv`</p>
                             </div>
                         </button>
                     </div>
@@ -277,32 +175,61 @@
   window.SGPLAdmin.attachLogoutHandlers();
 
   const kpiValues = document.querySelectorAll('.grid.grid-cols-2.lg\\:grid-cols-4 .text-2xl.font-extrabold');
-  const kpiSub = document.querySelectorAll('.grid.grid-cols-2.lg\\:grid-cols-4 .text-xs.text-slate-500.mt-0\\.5.font-medium');
-  const exportBtn = document.querySelector('header button');
-  const reportButtons = document.querySelectorAll('.bg-white.rounded-2xl.border.border-slate-200.p-6 button');
-  const breakdownRows = document.querySelectorAll('.bg-white.rounded-2xl.border.border-slate-200.p-6.flex.flex-col.gap-5 .space-y-4 > div');
+  const reportYearLabel = document.getElementById('report-year-label');
+  const chartCaption = document.getElementById('chart-caption');
+  const chartBars = document.getElementById('chart-bars');
+  const breakdown = document.getElementById('tipo-breakdown');
+  const exportLicitacionesBtn = document.getElementById('btn-export-licitaciones');
+  const reportButtons = document.querySelectorAll('[data-export]');
+
+  function tipoLabel(tipo) {
+    const map = {
+      LICITACION_PUBLICA: 'Licitación pública',
+      INVITACION_RESTRINGIDA: 'Invitación restringida',
+      ADJUDICACION_DIRECTA: 'Adjudicación directa'
+    };
+    return map[tipo] || tipo;
+  }
 
   function updateBreakdown(items) {
     const total = items.reduce(function (acc, it) { return acc + Number(it.cantidad || 0); }, 0) || 1;
-    const keyOrder = ['PUBLICADA', 'RECEPCION_PROPUESTAS', 'EN_EVALUACION', 'ADJUDICADA'];
-    const normalized = keyOrder.map(function (key) {
-      return items.find(function (i) { return i.estado_proceso === key; }) || { estado_proceso: key, cantidad: 0 };
-    });
+    breakdown.innerHTML = items.length
+      ? items.map(function (item) {
+          const pct = Math.round((Number(item.cantidad || 0) / total) * 100);
+          return '<div>'
+            + '<div class="flex justify-between items-center mb-1.5">'
+            + '<span class="text-sm font-medium text-slate-700">' + window.SGPLAdmin.escapeHtml(tipoLabel(item.tipo_procedimiento)) + '</span>'
+            + '<span class="text-sm font-bold text-slate-800">' + Number(item.cantidad || 0) + ' <span class="text-xs font-normal text-slate-400">(' + pct + '%)</span></span>'
+            + '</div>'
+            + '<div class="w-full bg-slate-100 rounded-full h-2 mb-2" aria-hidden="true"><div class="bg-blue-600 h-2 rounded-full" style="width: ' + pct + '%"></div></div>'
+            + '<div class="flex justify-between text-xs text-slate-500"><span>Monto contratado</span><span class="font-semibold text-slate-700">' + window.SGPLAdmin.formatCurrency(item.monto_total_contratado || 0) + '</span></div>'
+            + '</div>';
+        }).join('')
+      : '<p class="text-sm text-slate-500">Sin datos por tipo de procedimiento.</p>';
+  }
 
-    breakdownRows.forEach(function (row, idx) {
-      const item = normalized[idx] || { estado_proceso: 'N/A', cantidad: 0 };
-      const pct = Math.round((Number(item.cantidad || 0) / total) * 100);
-      row.querySelector('span.text-sm.font-medium.text-slate-700').textContent = item.estado_proceso;
-      row.querySelector('span.text-sm.font-bold.text-slate-800').innerHTML = item.cantidad + ' <span class="text-xs font-normal text-slate-400">(' + pct + '%)</span>';
-      row.querySelector('div.w-full.bg-slate-100.rounded-full.h-2 > div').style.width = pct + '%';
-    });
+  function updateChart(items) {
+    const max = items.reduce(function (acc, item) { return Math.max(acc, Number(item.cantidad || 0)); }, 0) || 1;
+    chartBars.innerHTML = items.length
+      ? items.map(function (item) {
+          const height = Math.max(12, Math.round((Number(item.cantidad || 0) / max) * 180));
+          return '<div class="flex flex-col justify-end gap-2">'
+            + '<div class="rounded-xl bg-blue-600/10 p-2 text-center text-xs font-semibold text-blue-700">' + Number(item.cantidad || 0) + '</div>'
+            + '<div class="rounded-2xl bg-gradient-to-t from-blue-600 to-blue-400" style="height:' + height + 'px"></div>'
+            + '<p class="text-center text-xs text-slate-500">' + window.SGPLAdmin.escapeHtml(item.mes_corto) + '</p>'
+            + '</div>';
+        }).join('')
+      : '<p class="text-sm text-slate-500 col-span-full">No hay licitaciones registradas en este ejercicio.</p>';
   }
 
   async function loadData() {
     try {
-      const [resumen, estado] = await Promise.all([
+      const year = new Date().getFullYear();
+      reportYearLabel.textContent = 'Ejercicio ' + year;
+      const [resumen, tipos, meses] = await Promise.all([
         window.SGPLAdmin.authFetch('/reportes/dashboard/resumen'),
-        window.SGPLAdmin.authFetch('/reportes/dashboard/licitaciones-por-estado')
+        window.SGPLAdmin.authFetch('/reportes/dashboard/licitaciones-por-tipo'),
+        window.SGPLAdmin.authFetch('/reportes/dashboard/licitaciones-por-mes?year=' + year)
       ]);
 
       const r = resumen.data || {};
@@ -312,41 +239,39 @@
         kpiValues[2].textContent = r.total_contratos ?? 0;
         kpiValues[3].textContent = (r.tiempo_promedio_publicacion_adjudicacion_dias ?? 0) + ' dias';
       }
-      if (kpiSub.length >= 4) {
-        kpiSub[0].textContent = 'Licitaciones totales';
-        kpiSub[1].textContent = 'Licitaciones adjudicadas';
-        kpiSub[2].textContent = 'Contratos registrados';
-        kpiSub[3].textContent = 'Tiempo promedio del proceso';
-      }
-
-      updateBreakdown(estado.data || []);
-    } catch (_) {
+      const tiposData = tipos.data || [];
+      const mesesData = meses.data || [];
+      updateBreakdown(tiposData);
+      updateChart(mesesData);
+      chartCaption.textContent = mesesData.length ? 'Serie mensual del ejercicio ' + year : 'Sin movimientos en el ejercicio ' + year;
+    } catch (error) {
       if (kpiValues.length) kpiValues[0].textContent = 'Error';
+      breakdown.innerHTML = '<p class="text-sm text-red-600">No se pudo cargar el desglose.</p>';
+      chartBars.innerHTML = '<p class="text-sm text-red-600 col-span-full">No se pudo cargar la serie mensual.</p>';
+      chartCaption.textContent = error.message || 'No se pudo cargar la información.';
     }
   }
 
-  exportBtn?.addEventListener('click', async function () {
-    const token = window.SGPLAdmin.getToken();
+  exportLicitacionesBtn?.addEventListener('click', async function () {
     try {
-      const response = await fetch('/api/v1/reportes/export/licitaciones.csv', {
-        headers: { Authorization: 'Bearer ' + token }
-      });
-      if (!response.ok) throw new Error('No se pudo exportar el reporte.');
-      const blob = await response.blob();
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement('a');
-      a.href = url;
-      a.download = 'reporte_licitaciones.csv';
-      a.click();
-      URL.revokeObjectURL(url);
+      await window.SGPLAdmin.downloadApiFile('/reportes/export/licitaciones.csv', 'reporte_licitaciones.csv');
     } catch (error) {
       alert(error.message);
     }
   });
 
   reportButtons.forEach(function (btn) {
-    btn.addEventListener('click', function () {
-      exportBtn?.click();
+    btn.addEventListener('click', async function () {
+      const type = btn.getAttribute('data-export');
+      try {
+        if (type === 'contratos') {
+          await window.SGPLAdmin.downloadApiFile('/reportes/export/contratos.csv', 'reporte_contratos.csv');
+          return;
+        }
+        await window.SGPLAdmin.downloadApiFile('/reportes/export/licitaciones.csv', 'reporte_licitaciones.csv');
+      } catch (error) {
+        alert(error.message);
+      }
     });
   });
 

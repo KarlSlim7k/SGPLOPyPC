@@ -21,6 +21,24 @@ class ReporteService {
         return $this->repo->licitacionesPorEstado();
     }
 
+    public function licitacionesPorTipo(): array {
+        return $this->repo->licitacionesPorTipo();
+    }
+
+    public function licitacionesPorMes(?int $year = null): array {
+        $targetYear = $year ?? (int) date('Y');
+        $rows = $this->repo->licitacionesPorMes($targetYear);
+        $labels = [1 => 'Ene', 2 => 'Feb', 3 => 'Mar', 4 => 'Abr', 5 => 'May', 6 => 'Jun', 7 => 'Jul', 8 => 'Ago', 9 => 'Sep', 10 => 'Oct', 11 => 'Nov', 12 => 'Dic'];
+        return array_map(function (array $row) use ($labels): array {
+            $mes = (int) $row['mes'];
+            return [
+                'mes' => $mes,
+                'mes_corto' => $labels[$mes] ?? (string) $mes,
+                'cantidad' => (int) $row['cantidad'],
+            ];
+        }, $rows);
+    }
+
     public function participacionProveedores(): array {
         return $this->repo->participacionProveedores();
     }
@@ -99,6 +117,67 @@ class ReporteService {
         ]);
 
         return ['ok' => true, 'csv' => $csv, 'filename' => 'licitaciones_' . date('Ymd_His') . '.csv'];
+    }
+
+    public function exportarContratosCsv(array $filters, int $idUsuario): array {
+        $estatus = isset($filters['estatus']) && $filters['estatus'] !== '' ? $filters['estatus'] : null;
+        $from = isset($filters['from']) && $filters['from'] !== '' ? $filters['from'] : null;
+        $to = isset($filters['to']) && $filters['to'] !== '' ? $filters['to'] : null;
+
+        $rows = $this->repo->findContratosForExport($estatus, $from, $to);
+        if (empty($rows)) {
+            return ['ok' => false, 'errors' => ['No hay contratos para exportar con los filtros seleccionados.']];
+        }
+
+        $output = fopen('php://temp', 'r+');
+        if ($output === false) {
+            return ['ok' => false, 'errors' => ['No se pudo crear el buffer de exportación.']];
+        }
+
+        fprintf($output, "\xEF\xBB\xBF");
+        fputcsv($output, [
+            'ID Contrato',
+            'Número Contrato',
+            'Número Licitación',
+            'Dependencia',
+            'Tipo Procedimiento',
+            'Proveedor',
+            'RFC',
+            'Monto Contrato',
+            'Fecha Adjudicación',
+            'Fecha Inicio',
+            'Fecha Fin',
+            'Estatus',
+        ]);
+
+        foreach ($rows as $row) {
+            fputcsv($output, [
+                $row['id_contrato'],
+                $row['numero_contrato'],
+                $row['numero_licitacion'],
+                $row['dependencia_nombre'],
+                $row['tipo_procedimiento'],
+                $row['nombre_empresa'],
+                $row['registro_fiscal'],
+                $row['monto_contrato'],
+                $row['fecha_adjudicacion'],
+                $row['fecha_inicio'] ?? '',
+                $row['fecha_fin'] ?? '',
+                $row['estatus'],
+            ]);
+        }
+
+        rewind($output);
+        $csv = stream_get_contents($output);
+        fclose($output);
+
+        auditLog($idUsuario, 'reporte_exportacion', 0, 'CREAR', null, [
+            'tipo' => 'csv_contratos',
+            'filtros' => $filters,
+            'registros' => count($rows),
+        ]);
+
+        return ['ok' => true, 'csv' => $csv, 'filename' => 'contratos_' . date('Ymd_His') . '.csv'];
     }
 
     public function historialLicitacion(int $idLicitacion): array {

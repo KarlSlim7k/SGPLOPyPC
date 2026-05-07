@@ -49,6 +49,9 @@ class EvaluacionService {
             'dictamen' => null,
         ];
         $id = $this->repo->create($data);
+        if (($propuesta['estatus'] ?? null) === 'RECIBIDA') {
+            $this->propRepo->updateEstatus($idPropuesta, 'EN_REVISION');
+        }
         auditLog($idEvaluador, 'evaluacion', $id, 'CREAR', null, $data);
         return ['ok' => true, 'id' => $id];
     }

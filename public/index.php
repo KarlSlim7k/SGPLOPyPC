@@ -38,6 +38,7 @@ require_once __DIR__ . '/../app/controllers/HealthController.php';
 require_once __DIR__ . '/../app/controllers/AuthController.php';
 require_once __DIR__ . '/../app/controllers/UserController.php';
 require_once __DIR__ . '/../app/controllers/AdminController.php';
+require_once __DIR__ . '/../app/controllers/DependenciaController.php';
 require_once __DIR__ . '/../app/controllers/LicitacionController.php';
 require_once __DIR__ . '/../app/controllers/ProveedorController.php';
 require_once __DIR__ . '/../app/controllers/ParticipacionController.php';
@@ -85,10 +86,26 @@ try {
             (new UserController())->me();
             break;
 
+        case $route === '/me/profile' && $requestMethod === 'PUT':
+            AuthMiddleware::handle();
+            (new UserController())->updateProfile();
+            break;
+
+        case $route === '/me/password' && $requestMethod === 'POST':
+            AuthMiddleware::handle();
+            (new UserController())->changePassword();
+            break;
+
         case $route === '/admin/dashboard' && $requestMethod === 'GET':
             AuthMiddleware::handle();
             RoleMiddleware::handle('ADMINISTRADOR');
             (new AdminController())->dashboard();
+            break;
+
+        case $route === '/dependencias' && $requestMethod === 'GET':
+            AuthMiddleware::handle();
+            RoleMiddleware::handle('ADMINISTRADOR');
+            (new DependenciaController())->list();
             break;
 
         // Licitaciones
@@ -274,6 +291,18 @@ try {
             (new ReporteController())->dashboardLicitacionesPorEstado();
             break;
 
+        case $route === '/reportes/dashboard/licitaciones-por-tipo' && $requestMethod === 'GET':
+            AuthMiddleware::handle();
+            RoleMiddleware::handle('ADMINISTRADOR');
+            (new ReporteController())->dashboardLicitacionesPorTipo();
+            break;
+
+        case $route === '/reportes/dashboard/licitaciones-por-mes' && $requestMethod === 'GET':
+            AuthMiddleware::handle();
+            RoleMiddleware::handle('ADMINISTRADOR');
+            (new ReporteController())->dashboardLicitacionesPorMes();
+            break;
+
         case $route === '/reportes/dashboard/participacion-proveedores' && $requestMethod === 'GET':
             AuthMiddleware::handle();
             RoleMiddleware::handle('ADMINISTRADOR');
@@ -297,6 +326,18 @@ try {
                 jsonResponse(false, 'Demasiadas exportaciones. Intente más tarde.', null, null, 429);
             }
             (new ReporteController())->exportarLicitacionesCsv();
+            break;
+
+        case $route === '/reportes/export/contratos.csv' && $requestMethod === 'GET':
+            AuthMiddleware::handle();
+            RoleMiddleware::handle('ADMINISTRADOR');
+            $rl = new RateLimiter(5, 60);
+            $ip = getClientIp();
+            if (!$rl->isAllowed('export:' . $ip)) {
+                $logger->security('Rate limit exceeded on export', ['ip' => $ip]);
+                jsonResponse(false, 'Demasiadas exportaciones. Intente más tarde.', null, null, 429);
+            }
+            (new ReporteController())->exportarContratosCsv();
             break;
 
         // Transparencia pública

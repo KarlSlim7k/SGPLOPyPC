@@ -14,6 +14,10 @@
     }
   }
 
+  function setUser(user) {
+    localStorage.setItem(USER_KEY, JSON.stringify(user || null));
+  }
+
   function clearSession() {
     localStorage.removeItem(TOKEN_KEY);
     localStorage.removeItem(USER_KEY);
@@ -90,6 +94,55 @@
     }).format(date);
   }
 
+  function formatDateTime(dateString) {
+    if (!dateString) return 'N/A';
+    const date = new Date(dateString);
+    if (Number.isNaN(date.getTime())) return 'N/A';
+    return new Intl.DateTimeFormat('es-MX', {
+      day: '2-digit',
+      month: 'short',
+      year: 'numeric',
+      hour: '2-digit',
+      minute: '2-digit',
+    }).format(date);
+  }
+
+  function escapeHtml(value) {
+    return String(value ?? '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  async function downloadApiFile(url, filename, options) {
+    const token = getToken();
+    const response = await fetch('/api/v1' + url, Object.assign({}, options || {}, {
+      headers: Object.assign({}, (options && options.headers) || {}, {
+        Authorization: 'Bearer ' + token,
+      }),
+    }));
+
+    if (response.status === 401) {
+      clearSession();
+      window.location.href = '/frontend/auth/login.html';
+      throw new Error('Sesion expirada. Inicia sesion nuevamente.');
+    }
+
+    if (!response.ok) {
+      throw new Error('No se pudo descargar el archivo.');
+    }
+
+    const blob = await response.blob();
+    const blobUrl = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = blobUrl;
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(blobUrl);
+  }
+
   function attachLogoutHandlers() {
     document.querySelectorAll('[data-action="logout"]').forEach(function (btn) {
       btn.addEventListener('click', logout);
@@ -124,12 +177,16 @@
   window.SGPLAdmin = {
     getToken,
     getUser,
+    setUser,
     clearSession,
     logout,
     protectRoute,
     authFetch,
     formatCurrency,
     formatDate,
+    formatDateTime,
+    escapeHtml,
+    downloadApiFile,
     attachLogoutHandlers,
     setText,
     downloadCsv,

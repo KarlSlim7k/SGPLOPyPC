@@ -138,9 +138,14 @@
                                 <select id="tipo" name="tipo" required class="w-full px-4 py-2.5 border border-slate-300 rounded-xl text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all cursor-pointer">
                                     <option value="">Selecciona un tipo...</option>
                                     <option value="lp">Licitación Pública Nacional</option>
-                                    <option value="li">Licitación Pública Internacional</option>
                                     <option value="ir">Invitación Restringida (3+ proveedores)</option>
                                     <option value="ad">Adjudicación Directa</option>
+                                </select>
+                            </div>
+                            <div class="space-y-1.5">
+                                <label for="dependencia" class="text-sm font-semibold text-slate-700">Dependencia responsable <span class="text-red-500" aria-label="requerido">*</span></label>
+                                <select id="dependencia" name="dependencia" required class="w-full px-4 py-2.5 border border-slate-300 rounded-xl text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all cursor-pointer">
+                                    <option value="">Cargando dependencias...</option>
                                 </select>
                             </div>
                             <div class="space-y-1.5">
@@ -190,9 +195,19 @@
                     <div class="bg-white rounded-2xl border border-slate-200 overflow-hidden">
                         <div class="px-6 py-4 border-b border-slate-100 bg-slate-50/70 flex items-center gap-2">
                             <div class="w-7 h-7 rounded-lg bg-primary-50 text-primary-600 flex items-center justify-center" aria-hidden="true"><i class="ph ph-file-pdf text-sm"></i></div>
-                            <h2 class="font-bold text-slate-800 text-sm">Documentos Adjuntos <span class="text-slate-400 font-normal">(Bases y Anexos)</span></h2>
+                            <h2 class="font-bold text-slate-800 text-sm">Documentos Adjuntos <span class="text-slate-400 font-normal">(documentos iniciales del proceso)</span></h2>
                         </div>
-                        <div class="p-6">
+                        <div class="p-6 space-y-4">
+                            <div class="space-y-1.5 max-w-sm">
+                                <label for="tipo-documento" class="text-sm font-semibold text-slate-700">Tipo documental para esta carga</label>
+                                <select id="tipo-documento" class="w-full px-4 py-2.5 border border-slate-300 rounded-xl text-sm text-slate-800 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-primary-500 transition-all cursor-pointer">
+                                    <option value="BASES_LICITACION">Bases de licitación</option>
+                                    <option value="ANEXO_TECNICO">Anexo técnico</option>
+                                    <option value="PLANO">Plano</option>
+                                    <option value="FORMATO_OFICIAL">Formato oficial</option>
+                                    <option value="ACLARACION">Aclaración</option>
+                                </select>
+                            </div>
                             <label for="file-upload" class="block border-2 border-dashed border-slate-300 rounded-2xl p-10 text-center hover:bg-slate-50 hover:border-primary-400 transition-all cursor-pointer group">
                                 <div class="w-12 h-12 rounded-full bg-primary-50 text-primary-600 flex items-center justify-center mx-auto mb-3 group-hover:bg-primary-600 group-hover:text-white transition-colors" aria-hidden="true">
                                     <i class="ph ph-upload-simple text-xl"></i>
@@ -235,10 +250,11 @@
   const submitBtn = document.querySelector('button[type="submit"]');
   const fileInput = document.getElementById('file-upload');
   const tipoField = document.getElementById('tipo');
+  const dependenciaField = document.getElementById('dependencia');
+  const tipoDocumentoField = document.getElementById('tipo-documento');
 
   const tipoMap = {
     lp: 'LICITACION_PUBLICA',
-    li: 'LICITACION_PUBLICA',
     ir: 'INVITACION_RESTRINGIDA',
     ad: 'ADJUDICACION_DIRECTA'
   };
@@ -250,7 +266,7 @@
     for (const file of files) {
       const body = new FormData();
       body.append('archivo', file);
-      body.append('tipo_documento', 'BASES_LICITACION');
+      body.append('tipo_documento', tipoDocumentoField.value);
       body.append('id_licitacion', idLicitacion);
 
       await window.SGPLAdmin.authFetch('/documentos/upload', {
@@ -260,15 +276,45 @@
     }
   }
 
+  function buildFechasProceso(targetState) {
+    const fechas = [];
+    if (targetState === 'PUBLICADA') {
+      fechas.push({
+        tipo_fecha: 'PUBLICACION_CONVOCATORIA',
+        fecha_programada: new Date().toISOString().slice(0, 10)
+      });
+    }
+
+    const mappings = [
+      ['junta', 'JUNTA_ACLARACIONES'],
+      ['recepcion', 'RECEPCION_PROPUESTAS'],
+      ['apertura', 'APERTURA_PROPUESTAS'],
+      ['fallo', 'FALLO_ADJUDICACION']
+    ];
+
+    mappings.forEach(function (entry) {
+      const value = document.getElementById(entry[0]).value;
+      if (value) {
+        fechas.push({
+          tipo_fecha: entry[1],
+          fecha_programada: value
+        });
+      }
+    });
+
+    return fechas;
+  }
+
   async function submitConvocatoria(targetState) {
     const payload = {
       numero_licitacion: document.getElementById('clave').value.trim(),
-      id_dependencia: 1,
+      id_dependencia: Number(dependenciaField.value || 0),
       tipo_procedimiento: tipoMap[tipoField.value] || '',
       descripcion_proyecto: document.getElementById('objeto').value.trim(),
       presupuesto_estimado: Number(document.getElementById('presupuesto').value || 0),
       ubicacion_proyecto: document.getElementById('ubicacion').value.trim(),
-      estado_proceso: targetState
+      estado_proceso: targetState,
+      fechas_proceso: buildFechasProceso(targetState)
     };
 
     submitBtn.disabled = true;
@@ -297,10 +343,27 @@
     submitConvocatoria('BORRADOR');
   });
 
+  async function loadDependencias() {
+    try {
+      const res = await window.SGPLAdmin.authFetch('/dependencias');
+      const items = res.data || [];
+      dependenciaField.innerHTML = items.length
+        ? '<option value="">Selecciona una dependencia...</option>' + items.map(function (item) {
+            const label = item.siglas ? item.nombre + ' (' + item.siglas + ')' : item.nombre;
+            return '<option value="' + item.id_dependencia + '">' + label + '</option>';
+          }).join('')
+        : '<option value="">Sin dependencias activas</option>';
+    } catch (_) {
+      dependenciaField.innerHTML = '<option value="">No se pudieron cargar dependencias</option>';
+    }
+  }
+
   form.addEventListener('submit', function (event) {
     event.preventDefault();
     submitConvocatoria('PUBLICADA');
   });
+
+  loadDependencias();
 })();
 </script>
 </body>

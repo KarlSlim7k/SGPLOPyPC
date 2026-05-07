@@ -12,14 +12,27 @@ class ProveedorRepository {
 
     public function findAll(): array {
         $stmt = $this->db->query(
-            'SELECT p.*, u.email, u.nombre AS usuario_nombre FROM proveedor p JOIN usuario u ON p.id_usuario = u.id_usuario ORDER BY p.fecha_registro DESC'
+            'SELECT p.*, u.email, u.nombre AS usuario_nombre, COUNT(DISTINCT pa.id_licitacion) AS total_licitaciones '
+            . 'FROM proveedor p '
+            . 'JOIN usuario u ON p.id_usuario = u.id_usuario '
+            . 'LEFT JOIN participacion pa ON pa.id_proveedor = p.id_proveedor '
+            . 'GROUP BY p.id_proveedor, p.id_usuario, p.nombre_empresa, p.representante_legal, p.registro_fiscal, p.domicilio, '
+            . 'p.telefono, p.especialidad, p.estatus, p.fecha_registro, u.email, u.nombre '
+            . 'ORDER BY p.fecha_registro DESC'
         );
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function findById(int $id): ?array {
         $stmt = $this->db->prepare(
-            'SELECT p.*, u.email, u.nombre AS usuario_nombre FROM proveedor p JOIN usuario u ON p.id_usuario = u.id_usuario WHERE p.id_proveedor = :id LIMIT 1'
+            'SELECT p.*, u.email, u.nombre AS usuario_nombre, COUNT(DISTINCT pa.id_licitacion) AS total_licitaciones '
+            . 'FROM proveedor p '
+            . 'JOIN usuario u ON p.id_usuario = u.id_usuario '
+            . 'LEFT JOIN participacion pa ON pa.id_proveedor = p.id_proveedor '
+            . 'WHERE p.id_proveedor = :id '
+            . 'GROUP BY p.id_proveedor, p.id_usuario, p.nombre_empresa, p.representante_legal, p.registro_fiscal, p.domicilio, '
+            . 'p.telefono, p.especialidad, p.estatus, p.fecha_registro, u.email, u.nombre '
+            . 'LIMIT 1'
         );
         $stmt->execute(['id' => $id]);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);

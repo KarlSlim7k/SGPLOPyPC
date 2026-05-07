@@ -23,6 +23,17 @@ class ReporteController {
         jsonResponse(true, 'Licitaciones por estado', $data, null, 200);
     }
 
+    public function dashboardLicitacionesPorTipo(): never {
+        $data = $this->service->licitacionesPorTipo();
+        jsonResponse(true, 'Licitaciones por tipo', $data, null, 200);
+    }
+
+    public function dashboardLicitacionesPorMes(): never {
+        $year = isset($_GET['year']) ? (int) $_GET['year'] : null;
+        $data = $this->service->licitacionesPorMes($year);
+        jsonResponse(true, 'Licitaciones por mes', $data, null, 200);
+    }
+
     public function dashboardParticipacionProveedores(): never {
         $data = $this->service->participacionProveedores();
         jsonResponse(true, 'Participación de proveedores', $data, null, 200);
@@ -47,6 +58,23 @@ class ReporteController {
             'to' => $_GET['to'] ?? null,
         ];
         $result = $this->service->exportarLicitacionesCsv($filters, (int) $user['id_usuario']);
+        if (!$result['ok']) {
+            jsonResponse(false, 'Error de exportación', null, $result['errors'], 422);
+        }
+        header('Content-Type: text/csv; charset=utf-8');
+        header('Content-Disposition: attachment; filename="' . $result['filename'] . '"');
+        echo $result['csv'];
+        exit;
+    }
+
+    public function exportarContratosCsv(): never {
+        $user = AuthMiddleware::getAuthenticatedUser();
+        $filters = [
+            'estatus' => $_GET['estatus'] ?? null,
+            'from' => $_GET['from'] ?? null,
+            'to' => $_GET['to'] ?? null,
+        ];
+        $result = $this->service->exportarContratosCsv($filters, (int) $user['id_usuario']);
         if (!$result['ok']) {
             jsonResponse(false, 'Error de exportación', null, $result['errors'], 422);
         }
