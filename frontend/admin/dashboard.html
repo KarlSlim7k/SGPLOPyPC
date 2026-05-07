@@ -81,7 +81,7 @@
             <a href="/" class="flex items-center gap-3 px-3 py-2 text-slate-400 hover:bg-slate-800 hover:text-white rounded-lg transition-all text-sm font-medium cursor-pointer">
                 <i class="ph ph-arrow-square-out text-lg shrink-0" aria-hidden="true"></i> Ver Sitio Público
             </a>
-            <button class="flex items-center gap-3 w-full px-3 py-2 text-slate-400 hover:bg-red-950 hover:text-red-400 rounded-lg font-medium transition-all text-sm cursor-pointer">
+            <button data-action="logout" class="flex items-center gap-3 w-full px-3 py-2 text-slate-400 hover:bg-red-950 hover:text-red-400 rounded-lg font-medium transition-all text-sm cursor-pointer">
                 <i class="ph ph-sign-out text-lg shrink-0" aria-hidden="true"></i> Cerrar Sesión
             </button>
         </div>
@@ -311,5 +311,82 @@
         </main>
     </div>
 
+<script src="/frontend/shared/admin.js"></script>
+<script>
+(function () {
+  if (!window.SGPLAdmin.protectRoute()) return;
+  window.SGPLAdmin.attachLogoutHandlers();
+
+  const user = window.SGPLAdmin.getUser();
+  if (user?.nombre) {
+    window.SGPLAdmin.setText('header .hidden.sm\\:block p.text-sm', user.nombre);
+  }
+
+  const statValues = document.querySelectorAll('.grid.grid-cols-1.sm\\:grid-cols-2.lg\\:grid-cols-4 .text-2xl.font-extrabold');
+  const tableBody = document.querySelector('table[aria-label="Licitaciones recientes"] tbody');
+  const activityBody = document.querySelector('.bg-white.rounded-2xl.border.border-slate-200.flex.flex-col .p-5.space-y-5');
+
+  function estadoBadge(estado) {
+    const map = {
+      PUBLICADA: 'bg-emerald-100 text-emerald-700 border-emerald-200',
+      RECEPCION_PROPUESTAS: 'bg-violet-100 text-violet-700 border-violet-200',
+      EN_EVALUACION: 'bg-amber-100 text-amber-700 border-amber-200',
+      ADJUDICADA: 'bg-blue-100 text-blue-700 border-blue-200',
+      BORRADOR: 'bg-slate-100 text-slate-700 border-slate-200',
+      CANCELADA: 'bg-red-100 text-red-700 border-red-200',
+      DESIERTA: 'bg-orange-100 text-orange-700 border-orange-200'
+    };
+    return map[estado] || 'bg-slate-100 text-slate-700 border-slate-200';
+  }
+
+  function tipoLabel(tipo) {
+    const map = {
+      LICITACION_PUBLICA: 'Licitacion Publica',
+      INVITACION_RESTRINGIDA: 'Inv. Restringida',
+      ADJUDICACION_DIRECTA: 'Adj. Directa'
+    };
+    return map[tipo] || tipo;
+  }
+
+  async function loadDashboard() {
+    try {
+      const [resumen, licitaciones] = await Promise.all([
+        window.SGPLAdmin.authFetch('/reportes/dashboard/resumen'),
+        window.SGPLAdmin.authFetch('/licitaciones')
+      ]);
+
+      const data = resumen.data || {};
+      if (statValues.length >= 4) {
+        statValues[0].textContent = data.total_licitaciones || 0;
+        statValues[1].textContent = data.total_proveedores || 0;
+        statValues[2].textContent = data.total_propuestas || 0;
+        statValues[3].textContent = data.total_contratos || 0;
+      }
+
+      const recientes = (licitaciones.data || []).slice(0, 5);
+      tableBody.innerHTML = recientes.length
+        ? recientes.map(function (r) {
+            return '<tr class="hover:bg-slate-50 transition-colors">'
+              + '<td class="px-6 py-3.5 font-mono font-semibold text-slate-800 text-xs">' + r.numero_licitacion + '</td>'
+              + '<td class="px-6 py-3.5 text-slate-600 text-xs">' + tipoLabel(r.tipo_procedimiento) + '</td>'
+              + '<td class="px-6 py-3.5 text-slate-600 text-xs">' + window.SGPLAdmin.formatDate(r.fecha_creacion) + '</td>'
+              + '<td class="px-6 py-3.5"><span class="px-2 py-0.5 rounded-full text-xs font-semibold border ' + estadoBadge(r.estado_proceso) + '">' + r.estado_proceso + '</span></td>'
+              + '</tr>';
+          }).join('')
+        : '<tr><td colspan="4" class="px-6 py-6 text-center text-slate-500">Sin licitaciones recientes.</td></tr>';
+
+      activityBody.innerHTML = recientes.length
+        ? recientes.map(function (r) {
+            return '<div class="flex gap-3"><div class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 shrink-0 mt-0.5"><i class="ph ph-megaphone text-sm"></i></div><div><p class="text-sm text-slate-700 leading-snug">Actualizacion en <span class="font-semibold text-slate-900">' + r.numero_licitacion + '</span></p><p class="text-xs text-slate-400 mt-1">' + window.SGPLAdmin.formatDate(r.fecha_actualizacion || r.fecha_creacion) + '</p></div></div>';
+          }).join('')
+        : '<p class="text-sm text-slate-500">Sin actividad reciente.</p>';
+    } catch (_) {
+      tableBody.innerHTML = '<tr><td colspan="4" class="px-6 py-6 text-center text-red-600">No se pudo cargar el dashboard.</td></tr>';
+    }
+  }
+
+  loadDashboard();
+})();
+</script>
 </body>
 </html>

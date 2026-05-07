@@ -57,7 +57,7 @@
         </nav>
         <div class="p-4 border-t border-slate-800 space-y-0.5">
             <a href="/" class="flex items-center gap-3 px-3 py-2 text-slate-400 hover:bg-slate-800 hover:text-white rounded-lg transition-all text-sm font-medium cursor-pointer"><i class="ph ph-arrow-square-out text-lg shrink-0" aria-hidden="true"></i> Ver Sitio Público</a>
-            <button class="flex items-center gap-3 w-full px-3 py-2 text-slate-400 hover:bg-red-950 hover:text-red-400 rounded-lg font-medium transition-all text-sm cursor-pointer"><i class="ph ph-sign-out text-lg shrink-0" aria-hidden="true"></i> Cerrar Sesión</button>
+            <button data-action="logout" class="flex items-center gap-3 w-full px-3 py-2 text-slate-400 hover:bg-red-950 hover:text-red-400 rounded-lg font-medium transition-all text-sm cursor-pointer"><i class="ph ph-sign-out text-lg shrink-0" aria-hidden="true"></i> Cerrar Sesión</button>
         </div>
     </aside>
 
@@ -270,5 +270,81 @@
         </main>
     </div>
 
+<script src="/frontend/shared/admin.js"></script>
+<script>
+(function () {
+  if (!window.SGPLAdmin.protectRoute()) return;
+  window.SGPLAdmin.attachLogoutHandlers();
+
+  const kpiValues = document.querySelectorAll('.grid.grid-cols-2.lg\\:grid-cols-4 .text-2xl.font-extrabold');
+  const kpiSub = document.querySelectorAll('.grid.grid-cols-2.lg\\:grid-cols-4 .text-xs.text-slate-500.mt-0\\.5.font-medium');
+  const exportBtn = document.querySelector('header button');
+  const breakdownRows = document.querySelectorAll('.bg-white.rounded-2xl.border.border-slate-200.p-6.flex.flex-col.gap-5 .space-y-4 > div');
+
+  function updateBreakdown(items) {
+    const total = items.reduce(function (acc, it) { return acc + Number(it.cantidad || 0); }, 0) || 1;
+    const keyOrder = ['PUBLICADA', 'RECEPCION_PROPUESTAS', 'EN_EVALUACION', 'ADJUDICADA'];
+    const normalized = keyOrder.map(function (key) {
+      return items.find(function (i) { return i.estado_proceso === key; }) || { estado_proceso: key, cantidad: 0 };
+    });
+
+    breakdownRows.forEach(function (row, idx) {
+      const item = normalized[idx] || { estado_proceso: 'N/A', cantidad: 0 };
+      const pct = Math.round((Number(item.cantidad || 0) / total) * 100);
+      row.querySelector('span.text-sm.font-medium.text-slate-700').textContent = item.estado_proceso;
+      row.querySelector('span.text-sm.font-bold.text-slate-800').innerHTML = item.cantidad + ' <span class="text-xs font-normal text-slate-400">(' + pct + '%)</span>';
+      row.querySelector('div.w-full.bg-slate-100.rounded-full.h-2 > div').style.width = pct + '%';
+    });
+  }
+
+  async function loadData() {
+    try {
+      const [resumen, estado] = await Promise.all([
+        window.SGPLAdmin.authFetch('/reportes/dashboard/resumen'),
+        window.SGPLAdmin.authFetch('/reportes/dashboard/licitaciones-por-estado')
+      ]);
+
+      const r = resumen.data || {};
+      if (kpiValues.length >= 4) {
+        kpiValues[0].textContent = r.total_licitaciones ?? 0;
+        kpiValues[1].textContent = r.total_adjudicadas ?? 0;
+        kpiValues[2].textContent = window.SGPLAdmin.formatCurrency(r.total_contratos ?? 0);
+        kpiValues[3].textContent = (r.tiempo_promedio_publicacion_adjudicacion_dias ?? 0) + ' dias';
+      }
+      if (kpiSub.length >= 4) {
+        kpiSub[0].textContent = 'Licitaciones totales';
+        kpiSub[1].textContent = 'Licitaciones adjudicadas';
+        kpiSub[2].textContent = 'Contratos (conteo en MXN referencial)';
+        kpiSub[3].textContent = 'Tiempo promedio del proceso';
+      }
+
+      updateBreakdown(estado.data || []);
+    } catch (_) {
+      if (kpiValues.length) kpiValues[0].textContent = 'Error';
+    }
+  }
+
+  exportBtn?.addEventListener('click', async function () {
+    const token = window.SGPLAdmin.getToken();
+    try {
+      const response = await fetch('/api/v1/reportes/export/licitaciones.csv', {
+        headers: { Authorization: 'Bearer ' + token }
+      });
+      if (!response.ok) throw new Error('No se pudo exportar el reporte.');
+      const blob = await response.blob();
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url;
+      a.download = 'reporte_licitaciones.csv';
+      a.click();
+      URL.revokeObjectURL(url);
+    } catch (error) {
+      alert(error.message);
+    }
+  });
+
+  loadData();
+})();
+</script>
 </body>
 </html>

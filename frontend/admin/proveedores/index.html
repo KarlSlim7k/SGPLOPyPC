@@ -75,7 +75,7 @@
             <a href="/" class="flex items-center gap-3 px-3 py-2 text-slate-400 hover:bg-slate-800 hover:text-white rounded-lg transition-all text-sm font-medium cursor-pointer">
                 <i class="ph ph-arrow-square-out text-lg shrink-0" aria-hidden="true"></i> Ver Sitio Público
             </a>
-            <button class="flex items-center gap-3 w-full px-3 py-2 text-slate-400 hover:bg-red-950 hover:text-red-400 rounded-lg font-medium transition-all text-sm cursor-pointer">
+            <button data-action="logout" class="flex items-center gap-3 w-full px-3 py-2 text-slate-400 hover:bg-red-950 hover:text-red-400 rounded-lg font-medium transition-all text-sm cursor-pointer">
                 <i class="ph ph-sign-out text-lg shrink-0" aria-hidden="true"></i> Cerrar Sesión
             </button>
         </div>
@@ -281,5 +281,110 @@
         </main>
     </div>
 
+<script src="/frontend/shared/admin.js"></script>
+<script>
+(function () {
+  if (!window.SGPLAdmin.protectRoute()) return;
+  window.SGPLAdmin.attachLogoutHandlers();
+
+  const searchInput = document.querySelector('input[type="search"]');
+  const statusSelect = document.querySelectorAll('select')[0];
+  const tbody = document.querySelector('tbody');
+  const summary = document.querySelector('.border-t p.text-sm');
+  const stats = document.querySelectorAll('.grid.grid-cols-2.md\\:grid-cols-4 .text-2xl.font-extrabold');
+
+  function badge(estatus) {
+    const map = {
+      VALIDADO: 'bg-emerald-100 text-emerald-700 border-emerald-200',
+      PENDIENTE: 'bg-amber-100 text-amber-700 border-amber-200',
+      SUSPENDIDO: 'bg-red-100 text-red-700 border-red-200',
+      RECHAZADO: 'bg-slate-200 text-slate-700 border-slate-300'
+    };
+    return map[estatus] || 'bg-slate-100 text-slate-700 border-slate-200';
+  }
+
+  function formatStatusLabel(status) {
+    return status.charAt(0) + status.slice(1).toLowerCase();
+  }
+
+  function countByStatus(items, status) {
+    return items.filter(function (p) { return p.estatus === status; }).length;
+  }
+
+  function render(items) {
+    const term = (searchInput.value || '').toLowerCase().trim();
+    const selected = (statusSelect.value || '').toUpperCase();
+
+    const filtered = items.filter(function (p) {
+      const statusOk = !selected || p.estatus === selected;
+      const text = (p.nombre_empresa + ' ' + p.registro_fiscal + ' ' + (p.representante_legal || '')).toLowerCase();
+      const termOk = !term || text.includes(term);
+      return statusOk && termOk;
+    });
+
+    tbody.innerHTML = filtered.length
+      ? filtered.map(function (p) {
+          return '<tr class="hover:bg-slate-50 transition-colors">'
+            + '<td class="px-6 py-4"><p class="font-semibold text-slate-800 text-sm">' + p.nombre_empresa + '</p><p class="text-xs text-slate-400 mt-0.5">Rep: ' + (p.representante_legal || 'N/A') + '</p></td>'
+            + '<td class="px-6 py-4 font-mono text-slate-600 text-xs whitespace-nowrap">' + p.registro_fiscal + '</td>'
+            + '<td class="px-6 py-4 text-slate-600 text-xs whitespace-nowrap">' + (p.especialidad || 'Sin clasificar') + '</td>'
+            + '<td class="px-6 py-4 text-slate-800 font-bold text-sm">' + (p.total_licitaciones || 0) + '</td>'
+            + '<td class="px-6 py-4 text-slate-500 text-xs whitespace-nowrap">' + window.SGPLAdmin.formatDate(p.fecha_registro) + '</td>'
+            + '<td class="px-6 py-4 whitespace-nowrap"><span class="px-2.5 py-1 rounded-full text-xs font-semibold border ' + badge(p.estatus) + '">' + formatStatusLabel(p.estatus) + '</span></td>'
+            + '<td class="px-6 py-4 text-right"><select data-id="' + p.id_proveedor + '" class="change-status px-2 py-1 text-xs border rounded-lg bg-white">'
+            + '<option value="PENDIENTE"' + (p.estatus === 'PENDIENTE' ? ' selected' : '') + '>PENDIENTE</option>'
+            + '<option value="VALIDADO"' + (p.estatus === 'VALIDADO' ? ' selected' : '') + '>VALIDADO</option>'
+            + '<option value="RECHAZADO"' + (p.estatus === 'RECHAZADO' ? ' selected' : '') + '>RECHAZADO</option>'
+            + '<option value="SUSPENDIDO"' + (p.estatus === 'SUSPENDIDO' ? ' selected' : '') + '>SUSPENDIDO</option>'
+            + '</select></td></tr>';
+        }).join('')
+      : '<tr><td colspan="7" class="px-6 py-8 text-center text-slate-500">Sin proveedores para los filtros actuales.</td></tr>';
+
+    summary.textContent = 'Mostrando ' + filtered.length + ' de ' + items.length + ' proveedores';
+
+    document.querySelectorAll('.change-status').forEach(function (sel) {
+      sel.addEventListener('change', onChangeStatus);
+    });
+
+    if (stats.length >= 4) {
+      stats[0].textContent = items.length;
+      stats[1].textContent = countByStatus(items, 'VALIDADO');
+      stats[2].textContent = countByStatus(items, 'PENDIENTE');
+      stats[3].textContent = countByStatus(items, 'SUSPENDIDO');
+    }
+  }
+
+  async function onChangeStatus(e) {
+    const id = e.currentTarget.getAttribute('data-id');
+    const estatus = e.currentTarget.value;
+    try {
+      await window.SGPLAdmin.authFetch('/proveedores/' + id + '/estatus', {
+        method: 'PATCH',
+        body: JSON.stringify({ estatus: estatus })
+      });
+      await load();
+    } catch (error) {
+      alert(error.message + (error.errors?.length ? '\n' + error.errors.join('\n') : ''));
+    }
+  }
+
+  let cache = [];
+  async function load() {
+    tbody.innerHTML = '<tr><td colspan="7" class="px-6 py-8 text-center text-slate-500">Cargando proveedores...</td></tr>';
+    try {
+      const res = await window.SGPLAdmin.authFetch('/proveedores');
+      cache = res.data || [];
+      render(cache);
+    } catch (_) {
+      tbody.innerHTML = '<tr><td colspan="7" class="px-6 py-8 text-center text-red-600">No se pudieron cargar proveedores.</td></tr>';
+    }
+  }
+
+  searchInput?.addEventListener('input', function () { render(cache); });
+  statusSelect?.addEventListener('change', function () { render(cache); });
+
+  load();
+})();
+</script>
 </body>
 </html>

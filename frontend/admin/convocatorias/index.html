@@ -75,7 +75,7 @@
             <a href="/" class="flex items-center gap-3 px-3 py-2 text-slate-400 hover:bg-slate-800 hover:text-white rounded-lg transition-all text-sm font-medium cursor-pointer">
                 <i class="ph ph-arrow-square-out text-lg shrink-0" aria-hidden="true"></i> Ver Sitio Público
             </a>
-            <button class="flex items-center gap-3 w-full px-3 py-2 text-slate-400 hover:bg-red-950 hover:text-red-400 rounded-lg font-medium transition-all text-sm cursor-pointer">
+            <button data-action="logout" class="flex items-center gap-3 w-full px-3 py-2 text-slate-400 hover:bg-red-950 hover:text-red-400 rounded-lg font-medium transition-all text-sm cursor-pointer">
                 <i class="ph ph-sign-out text-lg shrink-0" aria-hidden="true"></i> Cerrar Sesión
             </button>
         </div>
@@ -260,6 +260,166 @@
             </div>
         </main>
     </div>
+
+<script src="/frontend/shared/admin.js"></script>
+<script>
+(function () {
+  if (!window.SGPLAdmin.protectRoute()) return;
+  window.SGPLAdmin.attachLogoutHandlers();
+
+  const searchInput = document.querySelector('input[type="search"]');
+  const selects = document.querySelectorAll('select');
+  const estadoSelect = selects[0];
+  const tipoSelect = selects[1];
+  const exportBtn = document.querySelector('button .ph-download-simple')?.closest('button');
+  const tbody = document.querySelector('tbody');
+  const summary = document.querySelector('.border-t p.text-sm');
+
+  const estadoMap = {
+    publicada: 'PUBLICADA',
+    recibiendo: 'RECEPCION_PROPUESTAS',
+    evaluacion: 'EN_EVALUACION',
+    adjudicada: 'ADJUDICADA',
+    formalizacion: 'ADJUDICADA',
+    'formalización': 'ADJUDICADA'
+  };
+
+  const tipoMap = {
+    lp: 'LICITACION_PUBLICA',
+    ir: 'INVITACION_RESTRINGIDA',
+    ad: 'ADJUDICACION_DIRECTA'
+  };
+
+  function estadoBadge(estado) {
+    const map = {
+      PUBLICADA: 'bg-emerald-100 text-emerald-700 border-emerald-200',
+      RECEPCION_PROPUESTAS: 'bg-violet-100 text-violet-700 border-violet-200',
+      EN_EVALUACION: 'bg-amber-100 text-amber-700 border-amber-200',
+      ADJUDICADA: 'bg-blue-100 text-blue-700 border-blue-200',
+      BORRADOR: 'bg-slate-100 text-slate-700 border-slate-200',
+      CANCELADA: 'bg-red-100 text-red-700 border-red-200',
+      DESIERTA: 'bg-orange-100 text-orange-700 border-orange-200'
+    };
+    return map[estado] || 'bg-slate-100 text-slate-700 border-slate-200';
+  }
+
+  function tipoLabel(tipo) {
+    const map = {
+      LICITACION_PUBLICA: 'Licitacion Publica',
+      INVITACION_RESTRINGIDA: 'Inv. Restringida',
+      ADJUDICACION_DIRECTA: 'Adj. Directa'
+    };
+    return map[tipo] || tipo;
+  }
+
+  function renderRows(rows) {
+    if (!rows.length) {
+      tbody.innerHTML = '<tr><td colspan="7" class="px-6 py-8 text-center text-slate-500">Sin convocatorias para los filtros actuales.</td></tr>';
+      summary.textContent = 'Mostrando 0 resultados';
+      return;
+    }
+
+    tbody.innerHTML = rows.map(function (row) {
+      return '<tr class="hover:bg-slate-50 transition-colors">'
+        + '<td class="px-6 py-4 font-mono font-semibold text-slate-800 text-xs whitespace-nowrap">' + row.numero_licitacion + '</td>'
+        + '<td class="px-6 py-4 min-w-[260px]"><p class="text-slate-700 font-medium leading-snug">' + row.descripcion_proyecto + '</p><p class="text-xs text-slate-400 mt-0.5">' + (row.ubicacion_proyecto || 'Sin ubicacion') + '</p></td>'
+        + '<td class="px-6 py-4 text-slate-600 text-xs whitespace-nowrap">' + tipoLabel(row.tipo_procedimiento) + '</td>'
+        + '<td class="px-6 py-4 text-slate-700 font-semibold text-xs whitespace-nowrap">' + window.SGPLAdmin.formatCurrency(row.presupuesto_estimado) + '</td>'
+        + '<td class="px-6 py-4 text-slate-600 text-xs whitespace-nowrap">' + window.SGPLAdmin.formatDate(row.fecha_creacion) + '</td>'
+        + '<td class="px-6 py-4 whitespace-nowrap"><span class="px-2.5 py-1 rounded-full text-xs font-semibold border ' + estadoBadge(row.estado_proceso) + '">' + row.estado_proceso + '</span></td>'
+        + '<td class="px-6 py-4 text-right"><button data-id="' + row.id_licitacion + '" data-estado="' + row.estado_proceso + '" class="btn-next-state p-2 text-slate-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg transition-colors">'
+        + '<i class="ph ph-arrow-clockwise text-base" aria-hidden="true"></i></button></td></tr>';
+    }).join('');
+
+    summary.textContent = 'Mostrando ' + rows.length + ' resultados';
+
+    document.querySelectorAll('.btn-next-state').forEach(function (btn) {
+      btn.addEventListener('click', onNextState);
+    });
+  }
+
+  async function onNextState(e) {
+    const id = e.currentTarget.getAttribute('data-id');
+    const current = e.currentTarget.getAttribute('data-estado');
+    const flow = {
+      BORRADOR: 'PUBLICADA',
+      PUBLICADA: 'RECEPCION_PROPUESTAS',
+      RECEPCION_PROPUESTAS: 'EN_EVALUACION'
+    };
+    const next = flow[current];
+    if (!next) {
+      alert('No hay transicion automatica para este estado.');
+      return;
+    }
+    if (!confirm('Cambiar estado a ' + next + '?')) return;
+
+    try {
+      await window.SGPLAdmin.authFetch('/licitaciones/' + id + '/estado', {
+        method: 'PATCH',
+        body: JSON.stringify({ estado_proceso: next })
+      });
+      await loadData();
+    } catch (error) {
+      alert(error.message + (error.errors?.length ? '\n' + error.errors.join('\n') : ''));
+    }
+  }
+
+  async function loadData() {
+    tbody.innerHTML = '<tr><td colspan="7" class="px-6 py-8 text-center text-slate-500">Cargando convocatorias...</td></tr>';
+
+    const params = new URLSearchParams();
+    const estadoVal = estadoMap[(estadoSelect.value || '').toLowerCase()];
+    const tipoVal = tipoMap[(tipoSelect.value || '').toLowerCase()];
+
+    if (estadoVal) params.set('estado', estadoVal);
+    if (tipoVal) params.set('tipo', tipoVal);
+
+    try {
+      const response = await window.SGPLAdmin.authFetch('/licitaciones' + (params.toString() ? '?' + params.toString() : ''));
+      const all = response.data || [];
+      const term = (searchInput.value || '').toLowerCase().trim();
+      const filtered = term
+        ? all.filter(function (r) {
+            return (r.numero_licitacion || '').toLowerCase().includes(term)
+              || (r.descripcion_proyecto || '').toLowerCase().includes(term);
+          })
+        : all;
+      renderRows(filtered);
+    } catch (error) {
+      tbody.innerHTML = '<tr><td colspan="7" class="px-6 py-8 text-center text-red-600">No se pudieron cargar convocatorias.</td></tr>';
+    }
+  }
+
+  exportBtn?.addEventListener('click', async function () {
+    const params = new URLSearchParams();
+    const estadoVal = estadoMap[(estadoSelect.value || '').toLowerCase()];
+    if (estadoVal) params.set('estado', estadoVal);
+    const url = '/api/v1/reportes/export/licitaciones.csv' + (params.toString() ? '?' + params.toString() : '');
+    const token = window.SGPLAdmin.getToken();
+    try {
+      const response = await fetch(url, {
+        headers: { Authorization: 'Bearer ' + token }
+      });
+      if (!response.ok) throw new Error('No se pudo exportar el archivo.');
+      const blob = await response.blob();
+      const blobUrl = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = blobUrl;
+      a.download = 'licitaciones.csv';
+      a.click();
+      URL.revokeObjectURL(blobUrl);
+    } catch (error) {
+      alert(error.message);
+    }
+  });
+
+  searchInput?.addEventListener('input', loadData);
+  estadoSelect?.addEventListener('change', loadData);
+  tipoSelect?.addEventListener('change', loadData);
+
+  loadData();
+})();
+</script>
 
 </body>
 </html>
