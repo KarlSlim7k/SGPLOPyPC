@@ -213,6 +213,7 @@
 
   const licSelect = document.querySelector('select[aria-label="Seleccionar licitación"]');
   const tbody = document.querySelector('table tbody');
+  const downloadBtn = document.querySelector('.ph-download-simple')?.closest('button');
   const titleEl = document.querySelector('h2.text-lg.font-bold');
   const subtitleEl = document.querySelector('h2.text-lg.font-bold + p');
   const winnerEl = document.querySelector('.bg-emerald-50 p.text-sm.font-semibold');
@@ -302,6 +303,17 @@
     } catch (error) {
       alert(error.message + (error.errors?.length ? '\n' + error.errors.join('\n') : ''));
     }
+  });
+
+  downloadBtn?.addEventListener('click', function () {
+    if (!evaluaciones.length) {
+      alert('No hay evaluaciones para descargar.');
+      return;
+    }
+    const rows = evaluaciones.map(function (e) {
+      return [e.id_evaluacion, e.id_licitacion, e.numero_licitacion, e.nombre_empresa, e.puntaje_tecnico, e.puntaje_economico, e.puntaje_total, e.dictamen || ''];
+    });
+    window.SGPLAdmin.downloadCsv('evaluaciones.csv', ['id_evaluacion', 'id_licitacion', 'numero_licitacion', 'nombre_empresa', 'puntaje_tecnico', 'puntaje_economico', 'puntaje_total', 'dictamen'], rows);
   });
 
   licSelect.addEventListener('change', loadEvaluaciones);

@@ -302,7 +302,10 @@
             + '<td class="px-6 py-4 font-bold text-slate-800 whitespace-nowrap">' + window.SGPLAdmin.formatCurrency(item.monto_propuesta) + '</td>'
             + '<td class="px-6 py-4 text-slate-500 text-xs whitespace-nowrap">' + window.SGPLAdmin.formatDate(item.fecha_envio) + '</td>'
             + '<td class="px-6 py-4 whitespace-nowrap"><span class="px-2.5 py-1 rounded-full text-xs font-semibold border ' + badgeClass(item.estatus) + '">' + item.estatus + '</span></td>'
-            + '<td class="px-6 py-4 text-right"><button class="p-2 text-slate-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg" data-id="' + item.id_propuesta + '" aria-label="Ver propuesta"><i class="ph ph-eye text-base"></i></button></td>'
+            + '<td class="px-6 py-4 text-right"><div class="flex justify-end gap-1">'
+            + '<button class="btn-ver p-2 text-slate-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg" data-id="' + item.id_propuesta + '" aria-label="Ver propuesta"><i class="ph ph-eye text-base"></i></button>'
+            + '<button class="btn-csv p-2 text-slate-400 hover:text-primary-600 hover:bg-primary-50 rounded-lg" data-id="' + item.id_propuesta + '" aria-label="Descargar propuesta"><i class="ph ph-download-simple text-base"></i></button>'
+            + '</div></td>'
             + '</tr>';
         }).join('')
       : '<tr><td colspan="7" class="px-6 py-8 text-center text-slate-500">Sin propuestas para los filtros seleccionados.</td></tr>';
@@ -315,6 +318,23 @@
       stats[2].textContent = items.filter(i => i.estatus === 'EN_REVISION').length;
       stats[3].textContent = items.filter(i => i.estatus === 'ACEPTADA' || i.estatus === 'RECHAZADA').length;
     }
+
+    document.querySelectorAll('.btn-ver').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        const id = btn.getAttribute('data-id');
+        const p = items.find(function (x) { return String(x.id_propuesta) === String(id); });
+        if (!p) return;
+        alert('Propuesta #' + p.id_propuesta + '\nProveedor: ' + p.nombre_empresa + '\nLicitacion: ' + p.numero_licitacion + '\nMonto: ' + window.SGPLAdmin.formatCurrency(p.monto_propuesta) + '\nEstatus: ' + p.estatus);
+      });
+    });
+    document.querySelectorAll('.btn-csv').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        const id = btn.getAttribute('data-id');
+        const p = items.find(function (x) { return String(x.id_propuesta) === String(id); });
+        if (!p) return;
+        window.SGPLAdmin.downloadCsv('propuesta_' + p.id_propuesta + '.csv', ['id_propuesta', 'numero_licitacion', 'nombre_empresa', 'registro_fiscal', 'monto_propuesta', 'estatus', 'fecha_envio'], [[p.id_propuesta, p.numero_licitacion, p.nombre_empresa, p.registro_fiscal, p.monto_propuesta, p.estatus, p.fecha_envio || '']]);
+      });
+    });
   }
 
   async function load() {

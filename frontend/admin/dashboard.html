@@ -282,7 +282,7 @@
                             </div>
                         </div>
                         <div class="px-6 py-3 border-t border-slate-100 bg-slate-50/50 rounded-b-2xl">
-                            <a href="#" class="text-sm font-semibold text-primary-600 hover:text-primary-700 block text-center transition-colors cursor-pointer">Ver historial completo</a>
+                            <a href="/frontend/admin/reportes/index.html" class="text-sm font-semibold text-primary-600 hover:text-primary-700 block text-center transition-colors cursor-pointer">Ver historial completo</a>
                         </div>
                     </div>
                 </div>
@@ -325,6 +325,8 @@
   const statValues = document.querySelectorAll('.grid.grid-cols-1.sm\\:grid-cols-2.lg\\:grid-cols-4 .text-2xl.font-extrabold');
   const tableBody = document.querySelector('table[aria-label="Licitaciones recientes"] tbody');
   const activityBody = document.querySelector('.bg-white.rounded-2xl.border.border-slate-200.flex.flex-col .p-5.space-y-5');
+  const menuBtn = document.querySelector('button[aria-label="Abrir menú"]');
+  const notifBtn = document.querySelector('button[aria-label^="Notificaciones"]');
 
   function estadoBadge(estado) {
     const map = {
@@ -384,6 +386,13 @@
       tableBody.innerHTML = '<tr><td colspan="4" class="px-6 py-6 text-center text-red-600">No se pudo cargar el dashboard.</td></tr>';
     }
   }
+
+  menuBtn?.addEventListener('click', function () {
+    alert('Menu movil disponible en versiones responsivas del panel.');
+  });
+  notifBtn?.addEventListener('click', function () {
+    alert('Bandeja de notificaciones en construccion. Revisa actividad en el panel.');
+  });
 
   loadDashboard();
 })();

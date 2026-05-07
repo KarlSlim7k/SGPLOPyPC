@@ -101,6 +101,26 @@
     if (el) el.textContent = value;
   }
 
+  function downloadCsv(filename, headers, rows) {
+    const esc = function (v) {
+      const s = String(v ?? '');
+      if (s.includes('"') || s.includes(',') || s.includes('\n')) {
+        return '"' + s.replace(/"/g, '""') + '"';
+      }
+      return s;
+    };
+    const content = [headers.map(esc).join(',')]
+      .concat(rows.map(function (r) { return r.map(esc).join(','); }))
+      .join('\n');
+    const blob = new Blob(["\uFEFF" + content], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = filename;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
   window.SGPLAdmin = {
     getToken,
     getUser,
@@ -112,5 +132,6 @@
     formatDate,
     attachLogoutHandlers,
     setText,
+    downloadCsv,
   };
 })();

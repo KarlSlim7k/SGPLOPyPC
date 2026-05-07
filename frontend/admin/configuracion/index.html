@@ -409,27 +409,18 @@
       btn.disabled = true;
       btn.innerHTML = '<i class="ph ph-spinner animate-spin text-base"></i> Guardando...';
 
-      try {
-        await window.SGPLAdmin.authFetch('/usuarios/' + (user.id_usuario || 'me'), {
-          method: 'PUT',
-          body: JSON.stringify({ nombre, email })
-        });
-        user.nombre = nombre;
-        user.email = email;
-        localStorage.setItem('sgplopypc_user', JSON.stringify(user));
-        setText('cfg-nombre', nombre);
-        setText('cfg-email', email);
-        editando = false;
-        perfilVista.classList.remove('hidden');
-        perfilForm.classList.add('hidden');
-        btnEditar.classList.remove('hidden');
-        showToast('Perfil actualizado correctamente');
-      } catch (err) {
-        showToast(err.message || 'Error al actualizar perfil', 'error');
-      } finally {
-        btn.disabled = false;
-        btn.innerHTML = original;
-      }
+      user.nombre = nombre;
+      user.email = email;
+      localStorage.setItem('sgplopypc_user', JSON.stringify(user));
+      setText('cfg-nombre', nombre);
+      setText('cfg-email', email);
+      editando = false;
+      perfilVista.classList.remove('hidden');
+      perfilForm.classList.add('hidden');
+      btnEditar.classList.remove('hidden');
+      showToast('Perfil local actualizado');
+      btn.disabled = false;
+      btn.innerHTML = original;
     });
 
     // Validar sesion
@@ -492,31 +483,17 @@
       btn.disabled = true;
       btn.innerHTML = '<i class="ph ph-spinner animate-spin text-base"></i> Actualizando...';
 
-      try {
-        await window.SGPLAdmin.authFetch('/usuarios/' + (user.id_usuario || 'me') + '/password', {
-          method: 'PUT',
-          body: JSON.stringify({ contrasena_actual: actual, contrasena_nueva: nueva })
-        });
-        e.target.reset();
-        checkStrength('');
-        showToast('Contrasena actualizada correctamente');
-      } catch (err) {
-        showToast(err.message || 'Error al cambiar contrasena', 'error');
-      } finally {
-        btn.disabled = false;
-        btn.innerHTML = original;
-      }
+      e.target.reset();
+      checkStrength('');
+      showToast('Cambio de contrasena no disponible en API actual', 'info');
+      btn.disabled = false;
+      btn.innerHTML = original;
     });
 
     // Cerrar otras sesiones
     document.getElementById('btn-cerrar-todas').addEventListener('click', async () => {
       if (!confirm('Esto cerrara todas las demas sesiones activas. Continuar?')) return;
-      try {
-        await window.SGPLAdmin.authFetch('/auth/sessions', { method: 'DELETE' });
-        showToast('Otras sesiones cerradas correctamente');
-      } catch (err) {
-        showToast('Sesiones locales limpiadas', 'info');
-      }
+      showToast('Revocacion global no disponible en API actual', 'warning');
     });
 
     // Preferencias

@@ -289,6 +289,8 @@
 
   const searchInput = document.querySelector('input[type="search"]');
   const statusSelect = document.querySelectorAll('select')[0];
+  const exportBtn = document.querySelector('.ph-download-simple')?.closest('button');
+  const registerBtn = document.querySelector('header button');
   const tbody = document.querySelector('tbody');
   const summary = document.querySelector('.border-t p.text-sm');
   const stats = document.querySelectorAll('.grid.grid-cols-2.md\\:grid-cols-4 .text-2xl.font-extrabold');
@@ -352,6 +354,13 @@
       stats[2].textContent = countByStatus(items, 'PENDIENTE');
       stats[3].textContent = countByStatus(items, 'SUSPENDIDO');
     }
+
+    document.querySelectorAll('button[aria-label="Ver proveedor"]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        const tr = btn.closest('tr');
+        alert('Detalle de proveedor:\\n' + tr.innerText.replace(/\n\n+/g, '\n'));
+      });
+    });
   }
 
   async function onChangeStatus(e) {
@@ -382,6 +391,15 @@
 
   searchInput?.addEventListener('input', function () { render(cache); });
   statusSelect?.addEventListener('change', function () { render(cache); });
+  registerBtn?.addEventListener('click', function () {
+    alert('Registro de proveedor desde admin no habilitado en API actual. El alta se realiza por flujo de usuario proveedor.');
+  });
+  exportBtn?.addEventListener('click', function () {
+    const rows = cache.map(function (p) {
+      return [p.id_proveedor, p.nombre_empresa, p.registro_fiscal, p.representante_legal || '', p.estatus, p.fecha_registro || ''];
+    });
+    window.SGPLAdmin.downloadCsv('proveedores.csv', ['id_proveedor', 'nombre_empresa', 'registro_fiscal', 'representante_legal', 'estatus', 'fecha_registro'], rows);
+  });
 
   load();
 })();

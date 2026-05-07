@@ -279,6 +279,7 @@
   const kpiValues = document.querySelectorAll('.grid.grid-cols-2.lg\\:grid-cols-4 .text-2xl.font-extrabold');
   const kpiSub = document.querySelectorAll('.grid.grid-cols-2.lg\\:grid-cols-4 .text-xs.text-slate-500.mt-0\\.5.font-medium');
   const exportBtn = document.querySelector('header button');
+  const reportButtons = document.querySelectorAll('.bg-white.rounded-2xl.border.border-slate-200.p-6 button');
   const breakdownRows = document.querySelectorAll('.bg-white.rounded-2xl.border.border-slate-200.p-6.flex.flex-col.gap-5 .space-y-4 > div');
 
   function updateBreakdown(items) {
@@ -341,6 +342,12 @@
     } catch (error) {
       alert(error.message);
     }
+  });
+
+  reportButtons.forEach(function (btn) {
+    btn.addEventListener('click', function () {
+      exportBtn?.click();
+    });
   });
 
   loadData();
