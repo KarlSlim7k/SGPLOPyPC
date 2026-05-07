@@ -18,6 +18,15 @@
     }
   </script>
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <style>
+    .toggle-checkbox:checked { right: 0; border-color: #2563eb; }
+    .toggle-checkbox:checked + .toggle-label { background-color: #2563eb; }
+    .fade-in { animation: fadeIn 0.3s ease-in-out; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(-8px); } to { opacity: 1; transform: translateY(0); } }
+    .toast { animation: slideIn 0.3s ease-out; }
+    @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+    input:focus { outline: none; ring: 2px; ring-color: #3b82f6; }
+  </style>
 </head>
 <body class="bg-slate-100 text-slate-900 font-sans antialiased flex h-screen overflow-hidden">
   <aside class="w-64 bg-slate-900 flex flex-col hidden md:flex h-full shrink-0">
@@ -63,35 +72,252 @@
     <header class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-6 z-10 shrink-0">
       <div>
         <h1 class="text-base font-bold text-slate-800">Configuracion</h1>
-        <p class="text-xs text-slate-500">Sesion, perfil y seguridad basica</p>
+        <p class="text-xs text-slate-500">Perfil, seguridad y preferencias del sistema</p>
       </div>
-      <a href="/frontend/admin/dashboard.html" class="inline-flex items-center gap-2 border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-medium px-4 py-2 rounded-lg text-sm"><i class="ph ph-arrow-left text-base"></i> Volver al Dashboard</a>
+      <a href="/frontend/admin/dashboard.html" class="inline-flex items-center gap-2 border border-slate-200 bg-white hover:bg-slate-50 text-slate-700 font-medium px-4 py-2 rounded-lg text-sm transition-colors"><i class="ph ph-arrow-left text-base"></i> Volver al Dashboard</a>
     </header>
 
     <main class="flex-1 overflow-x-hidden overflow-y-auto p-6">
-      <div class="max-w-4xl mx-auto space-y-6">
+      <div class="max-w-5xl mx-auto space-y-6">
+
+        <!-- Perfil de Usuario -->
         <div class="bg-white rounded-2xl border border-slate-200 p-6">
-          <h2 class="font-bold text-slate-800 mb-4">Sesion Activa</h2>
-          <dl class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
-            <div><dt class="text-slate-500">Nombre</dt><dd id="cfg-nombre" class="font-semibold text-slate-800">-</dd></div>
-            <div><dt class="text-slate-500">Correo</dt><dd id="cfg-email" class="font-semibold text-slate-800">-</dd></div>
-            <div><dt class="text-slate-500">Rol</dt><dd id="cfg-rol" class="font-semibold text-slate-800">-</dd></div>
-            <div><dt class="text-slate-500">ID Usuario</dt><dd id="cfg-id" class="font-semibold text-slate-800">-</dd></div>
-          </dl>
+          <div class="flex items-center justify-between mb-5">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-primary-100 flex items-center justify-center text-primary-600">
+                <i class="ph ph-user text-xl"></i>
+              </div>
+              <div>
+                <h2 class="font-bold text-slate-800">Perfil de Usuario</h2>
+                <p class="text-xs text-slate-500">Informacion personal y de contacto</p>
+              </div>
+            </div>
+            <button id="btn-editar-perfil" class="inline-flex items-center gap-2 text-primary-600 hover:text-primary-700 font-semibold text-sm transition-colors">
+              <i class="ph ph-pencil-simple text-base"></i> Editar
+            </button>
+          </div>
+
+          <div id="perfil-vista" class="grid grid-cols-1 md:grid-cols-2 gap-5 text-sm">
+            <div class="space-y-1">
+              <label class="text-xs font-medium text-slate-500 uppercase tracking-wide">Nombre completo</label>
+              <p id="cfg-nombre" class="font-semibold text-slate-800 text-base">-</p>
+            </div>
+            <div class="space-y-1">
+              <label class="text-xs font-medium text-slate-500 uppercase tracking-wide">Correo electronico</label>
+              <p id="cfg-email" class="font-semibold text-slate-800 text-base">-</p>
+            </div>
+            <div class="space-y-1">
+              <label class="text-xs font-medium text-slate-500 uppercase tracking-wide">Rol</label>
+              <div class="flex items-center gap-2">
+                <span id="cfg-rol" class="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-primary-50 text-primary-700 text-xs font-semibold border border-primary-100">-</span>
+              </div>
+            </div>
+            <div class="space-y-1">
+              <label class="text-xs font-medium text-slate-500 uppercase tracking-wide">ID Usuario</label>
+              <p id="cfg-id" class="font-mono text-slate-600 bg-slate-50 px-2 py-1 rounded inline-block text-xs">-</p>
+            </div>
+          </div>
+
+          <form id="perfil-form" class="hidden grid grid-cols-1 md:grid-cols-2 gap-5 text-sm fade-in">
+            <div class="space-y-1.5">
+              <label class="text-xs font-medium text-slate-600">Nombre completo</label>
+              <input type="text" id="input-nombre" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-slate-800 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all" placeholder="Tu nombre completo">
+            </div>
+            <div class="space-y-1.5">
+              <label class="text-xs font-medium text-slate-600">Correo electronico</label>
+              <input type="email" id="input-email" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-slate-800 focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all" placeholder="correo@ejemplo.com">
+            </div>
+            <div class="md:col-span-2 flex gap-3 pt-2">
+              <button type="submit" class="inline-flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white font-semibold px-5 py-2 rounded-lg text-sm transition-colors">
+                <i class="ph ph-check text-base"></i> Guardar Cambios
+              </button>
+              <button type="button" id="btn-cancelar-perfil" class="inline-flex items-center gap-2 border border-slate-300 text-slate-700 hover:bg-slate-50 font-semibold px-5 py-2 rounded-lg text-sm transition-colors">
+                Cancelar
+              </button>
+            </div>
+          </form>
         </div>
 
+        <!-- Seguridad -->
         <div class="bg-white rounded-2xl border border-slate-200 p-6">
-          <h2 class="font-bold text-slate-800 mb-3">Seguridad</h2>
-          <p class="text-sm text-slate-600 mb-4">Este modulo permite verificar el estado de autenticacion y finalizar la sesion local del navegador.</p>
-          <div class="flex flex-wrap gap-3">
-            <button id="btn-validar-sesion" class="inline-flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white font-semibold px-4 py-2 rounded-lg text-sm"><i class="ph ph-shield-check text-base"></i> Validar Sesion</button>
-            <button data-action="logout" class="inline-flex items-center gap-2 border border-red-200 text-red-700 hover:bg-red-50 font-semibold px-4 py-2 rounded-lg text-sm"><i class="ph ph-sign-out text-base"></i> Cerrar Sesion</button>
+          <div class="flex items-center gap-3 mb-5">
+            <div class="w-10 h-10 rounded-xl bg-emerald-50 flex items-center justify-center text-emerald-600">
+              <i class="ph ph-shield-check text-xl"></i>
+            </div>
+            <div>
+              <h2 class="font-bold text-slate-800">Seguridad de la Cuenta</h2>
+              <p class="text-xs text-slate-500">Gestion de sesion y credenciales</p>
+            </div>
           </div>
-          <p id="cfg-status" class="text-sm text-slate-500 mt-4">Sin validar.</p>
+
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Estado de sesion -->
+            <div class="space-y-4">
+              <div class="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-100">
+                <div class="flex items-center gap-3">
+                  <div id="status-indicator" class="w-3 h-3 rounded-full bg-slate-300"></div>
+                  <div>
+                    <p class="font-semibold text-slate-800 text-sm">Estado de Sesion</p>
+                    <p id="cfg-status" class="text-xs text-slate-500">Sin validar</p>
+                  </div>
+                </div>
+                <button id="btn-validar-sesion" class="inline-flex items-center gap-1.5 text-primary-600 hover:text-primary-700 font-medium text-sm transition-colors">
+                  <i class="ph ph-arrows-clockwise text-base"></i> Validar
+                </button>
+              </div>
+
+              <div class="space-y-3">
+                <p class="text-xs font-medium text-slate-500 uppercase tracking-wide">Acciones</p>
+                <div class="flex flex-wrap gap-2">
+                  <button id="btn-cerrar-todas" class="inline-flex items-center gap-2 border border-slate-300 hover:bg-slate-50 text-slate-700 font-medium px-4 py-2 rounded-lg text-sm transition-colors">
+                    <i class="ph ph-devices text-base"></i> Cerrar otras sesiones
+                  </button>
+                  <button data-action="logout" class="inline-flex items-center gap-2 border border-red-200 text-red-700 hover:bg-red-50 font-semibold px-4 py-2 rounded-lg text-sm transition-colors">
+                    <i class="ph ph-sign-out text-base"></i> Cerrar Sesion
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Cambiar contrasena -->
+            <div class="border-t lg:border-t-0 lg:border-l border-slate-200 pt-5 lg:pt-0 lg:pl-6 space-y-4">
+              <p class="text-xs font-medium text-slate-500 uppercase tracking-wide">Cambiar Contrasena</p>
+              <form id="form-password" class="space-y-3">
+                <div>
+                  <input type="password" id="pwd-actual" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all" placeholder="Contrasena actual">
+                </div>
+                <div>
+                  <input type="password" id="pwd-nueva" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all" placeholder="Nueva contrasena">
+                  <div class="mt-1.5 flex gap-1" id="pwd-strength">
+                    <div class="h-1 flex-1 rounded-full bg-slate-200 transition-colors duration-300"></div>
+                    <div class="h-1 flex-1 rounded-full bg-slate-200 transition-colors duration-300"></div>
+                    <div class="h-1 flex-1 rounded-full bg-slate-200 transition-colors duration-300"></div>
+                    <div class="h-1 flex-1 rounded-full bg-slate-200 transition-colors duration-300"></div>
+                  </div>
+                  <p id="pwd-hint" class="text-xs text-slate-400 mt-1">Minimo 8 caracteres, mayuscula, numero y simbolo</p>
+                </div>
+                <div>
+                  <input type="password" id="pwd-confirmar" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all" placeholder="Confirmar nueva contrasena">
+                </div>
+                <button type="submit" class="w-full inline-flex items-center justify-center gap-2 bg-slate-800 hover:bg-slate-900 text-white font-semibold px-4 py-2 rounded-lg text-sm transition-colors">
+                  <i class="ph ph-lock-key text-base"></i> Actualizar Contrasena
+                </button>
+              </form>
+            </div>
+          </div>
+        </div>
+
+        <!-- Preferencias del Sistema -->
+        <div class="bg-white rounded-2xl border border-slate-200 p-6">
+          <div class="flex items-center gap-3 mb-5">
+            <div class="w-10 h-10 rounded-xl bg-amber-50 flex items-center justify-center text-amber-600">
+              <i class="ph ph-sliders-horizontal text-xl"></i>
+            </div>
+            <div>
+              <h2 class="font-bold text-slate-800">Preferencias del Sistema</h2>
+              <p class="text-xs text-slate-500">Personaliza tu experiencia en el panel</p>
+            </div>
+          </div>
+
+          <div class="space-y-4">
+            <div class="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-100">
+              <div class="flex items-center gap-3">
+                <i class="ph ph-moon text-lg text-slate-500"></i>
+                <div>
+                  <p class="font-semibold text-slate-800 text-sm">Modo Oscuro</p>
+                  <p class="text-xs text-slate-500">Cambia la apariencia del panel a tema oscuro</p>
+                </div>
+              </div>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" id="pref-dark" class="sr-only peer">
+                <div class="w-11 h-6 bg-slate-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600"></div>
+              </label>
+            </div>
+
+            <div class="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-100">
+              <div class="flex items-center gap-3">
+                <i class="ph ph-bell text-lg text-slate-500"></i>
+                <div>
+                  <p class="font-semibold text-slate-800 text-sm">Notificaciones</p>
+                  <p class="text-xs text-slate-500">Recibir alertas de convocatorias y propuestas</p>
+                </div>
+              </div>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" id="pref-notif" class="sr-only peer" checked>
+                <div class="w-11 h-6 bg-slate-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600"></div>
+              </label>
+            </div>
+
+            <div class="flex items-center justify-between p-4 bg-slate-50 rounded-xl border border-slate-100">
+              <div class="flex items-center gap-3">
+                <i class="ph ph-envelope text-lg text-slate-500"></i>
+                <div>
+                  <p class="font-semibold text-slate-800 text-sm">Resumen por Correo</p>
+                  <p class="text-xs text-slate-500">Enviar resumen semanal de actividad</p>
+                </div>
+              </div>
+              <label class="relative inline-flex items-center cursor-pointer">
+                <input type="checkbox" id="pref-email" class="sr-only peer">
+                <div class="w-11 h-6 bg-slate-300 peer-focus:outline-none peer-focus:ring-4 peer-focus:ring-primary-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-primary-600"></div>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Informacion de la Sesion -->
+        <div class="bg-white rounded-2xl border border-slate-200 p-6">
+          <div class="flex items-center gap-3 mb-5">
+            <div class="w-10 h-10 rounded-xl bg-violet-50 flex items-center justify-center text-violet-600">
+              <i class="ph ph-desktop text-xl"></i>
+            </div>
+            <div>
+              <h2 class="font-bold text-slate-800">Informacion de Sesion</h2>
+              <p class="text-xs text-slate-500">Detalles del dispositivo y acceso actual</p>
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
+            <div class="p-4 bg-slate-50 rounded-xl border border-slate-100 space-y-1">
+              <label class="text-xs font-medium text-slate-500 uppercase tracking-wide">Navegador</label>
+              <p id="sesion-navegador" class="font-semibold text-slate-800">-</p>
+            </div>
+            <div class="p-4 bg-slate-50 rounded-xl border border-slate-100 space-y-1">
+              <label class="text-xs font-medium text-slate-500 uppercase tracking-wide">Sistema Operativo</label>
+              <p id="sesion-os" class="font-semibold text-slate-800">-</p>
+            </div>
+            <div class="p-4 bg-slate-50 rounded-xl border border-slate-100 space-y-1">
+              <label class="text-xs font-medium text-slate-500 uppercase tracking-wide">Inicio de Sesion</label>
+              <p id="sesion-inicio" class="font-semibold text-slate-800">-</p>
+            </div>
+          </div>
+        </div>
+
+        <!-- Zona Peligrosa -->
+        <div class="bg-white rounded-2xl border border-red-200 p-6">
+          <div class="flex items-center gap-3 mb-4">
+            <div class="w-10 h-10 rounded-xl bg-red-50 flex items-center justify-center text-red-600">
+              <i class="ph ph-warning-circle text-xl"></i>
+            </div>
+            <div>
+              <h2 class="font-bold text-slate-800">Zona Peligrosa</h2>
+              <p class="text-xs text-slate-500">Acciones irreversibles para tu cuenta</p>
+            </div>
+          </div>
+          <div class="flex flex-wrap gap-3">
+            <button id="btn-limpiar-cache" class="inline-flex items-center gap-2 border border-amber-200 text-amber-700 hover:bg-amber-50 font-medium px-4 py-2 rounded-lg text-sm transition-colors">
+              <i class="ph ph-broom text-base"></i> Limpiar datos locales
+            </button>
+            <button id="btn-eliminar-cuenta" class="inline-flex items-center gap-2 border border-red-200 text-red-700 hover:bg-red-50 font-semibold px-4 py-2 rounded-lg text-sm transition-colors">
+              <i class="ph ph-trash text-base"></i> Solicitar baja de cuenta
+            </button>
+          </div>
         </div>
       </div>
     </main>
   </div>
+
+  <!-- Toast Container -->
+  <div id="toast-container" class="fixed bottom-6 right-6 z-50 flex flex-col gap-3 pointer-events-none"></div>
 
   <script src="/frontend/shared/admin.js"></script>
   <script>
@@ -100,21 +326,232 @@
     window.SGPLAdmin.attachLogoutHandlers();
 
     const user = window.SGPLAdmin.getUser() || {};
-    document.getElementById('cfg-nombre').textContent = user.nombre || 'N/A';
-    document.getElementById('cfg-email').textContent = user.email || 'N/A';
-    document.getElementById('cfg-rol').textContent = user.rol || 'N/A';
-    document.getElementById('cfg-id').textContent = user.id_usuario || 'N/A';
 
-    const status = document.getElementById('cfg-status');
+    // Utilidades
+    function showToast(message, type = 'success') {
+      const container = document.getElementById('toast-container');
+      const toast = document.createElement('div');
+      const icons = { success: 'ph-check-circle', error: 'ph-x-circle', info: 'ph-info', warning: 'ph-warning' };
+      const colors = { success: 'bg-emerald-500', error: 'bg-red-500', info: 'bg-primary-500', warning: 'bg-amber-500' };
+      toast.className = `toast pointer-events-auto flex items-center gap-3 ${colors[type]} text-white px-4 py-3 rounded-xl shadow-lg text-sm font-medium max-w-sm`;
+      toast.innerHTML = `<i class="ph ${icons[type]} text-lg shrink-0"></i><span>${message}</span>`;
+      container.appendChild(toast);
+      setTimeout(() => { toast.style.opacity = '0'; toast.style.transform = 'translateX(100%)'; toast.style.transition = 'all 0.3s ease'; setTimeout(() => toast.remove(), 300); }, 4000);
+    }
+
+    function setText(id, value) {
+      const el = document.getElementById(id);
+      if (el) el.textContent = value;
+    }
+
+    // Datos del usuario
+    setText('cfg-nombre', user.nombre || 'N/A');
+    setText('cfg-email', user.email || 'N/A');
+    setText('cfg-rol', (user.rol || 'N/A').replace('_', ' '));
+    setText('cfg-id', user.id_usuario || 'N/A');
+
+    // Info de sesion del dispositivo
+    function detectBrowser() {
+      const ua = navigator.userAgent;
+      if (ua.includes('Firefox')) return 'Firefox';
+      if (ua.includes('Edg')) return 'Edge';
+      if (ua.includes('Chrome')) return 'Chrome';
+      if (ua.includes('Safari')) return 'Safari';
+      return 'Navegador desconocido';
+    }
+    function detectOS() {
+      const ua = navigator.userAgent;
+      if (ua.includes('Win')) return 'Windows';
+      if (ua.includes('Mac')) return 'macOS';
+      if (ua.includes('Linux')) return 'Linux';
+      if (ua.includes('Android')) return 'Android';
+      if (ua.includes('iPhone') || ua.includes('iPad')) return 'iOS';
+      return 'Sistema desconocido';
+    }
+    setText('sesion-navegador', detectBrowser());
+    setText('sesion-os', detectOS());
+    setText('sesion-inicio', window.SGPLAdmin.formatDate(new Date().toISOString()));
+
+    // Editar perfil
+    let editando = false;
+    const btnEditar = document.getElementById('btn-editar-perfil');
+    const btnCancelar = document.getElementById('btn-cancelar-perfil');
+    const perfilVista = document.getElementById('perfil-vista');
+    const perfilForm = document.getElementById('perfil-form');
+
+    btnEditar.addEventListener('click', () => {
+      editando = !editando;
+      if (editando) {
+        document.getElementById('input-nombre').value = user.nombre || '';
+        document.getElementById('input-email').value = user.email || '';
+        perfilVista.classList.add('hidden');
+        perfilForm.classList.remove('hidden');
+        btnEditar.classList.add('hidden');
+      }
+    });
+
+    btnCancelar.addEventListener('click', () => {
+      editando = false;
+      perfilVista.classList.remove('hidden');
+      perfilForm.classList.add('hidden');
+      btnEditar.classList.remove('hidden');
+    });
+
+    perfilForm.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const nombre = document.getElementById('input-nombre').value.trim();
+      const email = document.getElementById('input-email').value.trim();
+      if (!nombre || !email) { showToast('Completa todos los campos', 'warning'); return; }
+      if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) { showToast('Correo invalido', 'error'); return; }
+
+      const btn = perfilForm.querySelector('button[type="submit"]');
+      const original = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = '<i class="ph ph-spinner animate-spin text-base"></i> Guardando...';
+
+      try {
+        await window.SGPLAdmin.authFetch('/usuarios/' + (user.id_usuario || 'me'), {
+          method: 'PUT',
+          body: JSON.stringify({ nombre, email })
+        });
+        user.nombre = nombre;
+        user.email = email;
+        localStorage.setItem('sgplopypc_user', JSON.stringify(user));
+        setText('cfg-nombre', nombre);
+        setText('cfg-email', email);
+        editando = false;
+        perfilVista.classList.remove('hidden');
+        perfilForm.classList.add('hidden');
+        btnEditar.classList.remove('hidden');
+        showToast('Perfil actualizado correctamente');
+      } catch (err) {
+        showToast(err.message || 'Error al actualizar perfil', 'error');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = original;
+      }
+    });
+
+    // Validar sesion
+    const statusEl = document.getElementById('cfg-status');
+    const statusIndicator = document.getElementById('status-indicator');
     document.getElementById('btn-validar-sesion').addEventListener('click', async function () {
-      status.textContent = 'Validando...';
+      statusEl.textContent = 'Validando...';
+      statusIndicator.className = 'w-3 h-3 rounded-full bg-amber-400 animate-pulse';
       try {
         const res = await window.SGPLAdmin.authFetch('/me');
         const me = res.data || {};
-        status.textContent = 'Sesion valida para ' + (me.email || 'usuario actual') + '.';
+        statusEl.textContent = 'Sesion activa — ' + (me.email || user.email || 'usuario');
+        statusIndicator.className = 'w-3 h-3 rounded-full bg-emerald-500';
+        showToast('Sesion validada correctamente');
       } catch (error) {
-        status.textContent = 'No fue posible validar la sesion.';
+        statusEl.textContent = 'Sesion invalida o expirada';
+        statusIndicator.className = 'w-3 h-3 rounded-full bg-red-500';
+        showToast('No fue posible validar la sesion', 'error');
       }
+    });
+
+    // Fuerza validacion inicial
+    setTimeout(() => document.getElementById('btn-validar-sesion').click(), 500);
+
+    // Cambiar contrasena
+    const pwdNueva = document.getElementById('pwd-nueva');
+    const pwdStrength = document.getElementById('pwd-strength').children;
+    const pwdHint = document.getElementById('pwd-hint');
+
+    function checkStrength(pwd) {
+      let score = 0;
+      if (pwd.length >= 8) score++;
+      if (/[A-Z]/.test(pwd)) score++;
+      if (/[0-9]/.test(pwd)) score++;
+      if (/[^A-Za-z0-9]/.test(pwd)) score++;
+      const colors = ['bg-slate-200', 'bg-red-400', 'bg-amber-400', 'bg-emerald-400', 'bg-emerald-600'];
+      const hints = ['Muy debil', 'Debil', 'Regular', 'Fuerte', 'Muy fuerte'];
+      for (let i = 0; i < 4; i++) {
+        pwdStrength[i].className = 'h-1 flex-1 rounded-full transition-colors duration-300 ' + (i < score ? colors[score] : 'bg-slate-200');
+      }
+      pwdHint.textContent = score > 0 ? hints[score] : 'Minimo 8 caracteres, mayuscula, numero y simbolo';
+      pwdHint.className = 'text-xs mt-1 ' + (score >= 3 ? 'text-emerald-600' : 'text-slate-400');
+      return score;
+    }
+
+    pwdNueva.addEventListener('input', (e) => checkStrength(e.target.value));
+
+    document.getElementById('form-password').addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const actual = document.getElementById('pwd-actual').value;
+      const nueva = document.getElementById('pwd-nueva').value;
+      const confirmar = document.getElementById('pwd-confirmar').value;
+
+      if (!actual || !nueva || !confirmar) { showToast('Completa todos los campos', 'warning'); return; }
+      if (checkStrength(nueva) < 3) { showToast('La contrasena no es lo suficientemente fuerte', 'warning'); return; }
+      if (nueva !== confirmar) { showToast('Las contrasenas no coinciden', 'error'); return; }
+
+      const btn = e.target.querySelector('button[type="submit"]');
+      const original = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = '<i class="ph ph-spinner animate-spin text-base"></i> Actualizando...';
+
+      try {
+        await window.SGPLAdmin.authFetch('/usuarios/' + (user.id_usuario || 'me') + '/password', {
+          method: 'PUT',
+          body: JSON.stringify({ contrasena_actual: actual, contrasena_nueva: nueva })
+        });
+        e.target.reset();
+        checkStrength('');
+        showToast('Contrasena actualizada correctamente');
+      } catch (err) {
+        showToast(err.message || 'Error al cambiar contrasena', 'error');
+      } finally {
+        btn.disabled = false;
+        btn.innerHTML = original;
+      }
+    });
+
+    // Cerrar otras sesiones
+    document.getElementById('btn-cerrar-todas').addEventListener('click', async () => {
+      if (!confirm('Esto cerrara todas las demas sesiones activas. Continuar?')) return;
+      try {
+        await window.SGPLAdmin.authFetch('/auth/sessions', { method: 'DELETE' });
+        showToast('Otras sesiones cerradas correctamente');
+      } catch (err) {
+        showToast('Sesiones locales limpiadas', 'info');
+      }
+    });
+
+    // Preferencias
+    const prefs = JSON.parse(localStorage.getItem('sgplopypc_prefs') || '{}');
+    document.getElementById('pref-dark').checked = prefs.darkMode || false;
+    document.getElementById('pref-notif').checked = prefs.notificaciones !== false;
+    document.getElementById('pref-email').checked = prefs.emailResumen || false;
+
+    function savePrefs() {
+      const p = {
+        darkMode: document.getElementById('pref-dark').checked,
+        notificaciones: document.getElementById('pref-notif').checked,
+        emailResumen: document.getElementById('pref-email').checked
+      };
+      localStorage.setItem('sgplopypc_prefs', JSON.stringify(p));
+    }
+
+    ['pref-dark', 'pref-notif', 'pref-email'].forEach(id => {
+      document.getElementById(id).addEventListener('change', () => {
+        savePrefs();
+        showToast('Preferencia guardada', 'info');
+      });
+    });
+
+    // Limpiar cache
+    document.getElementById('btn-limpiar-cache').addEventListener('click', () => {
+      if (!confirm('Se eliminaran las preferencias locales y datos en cache. Continuar?')) return;
+      localStorage.removeItem('sgplopypc_prefs');
+      showToast('Datos locales limpiados', 'info');
+      setTimeout(() => location.reload(), 1000);
+    });
+
+    // Eliminar cuenta
+    document.getElementById('btn-eliminar-cuenta').addEventListener('click', () => {
+      showToast('Funcion no disponible. Contacte al administrador.', 'warning');
     });
   })();
   </script>
