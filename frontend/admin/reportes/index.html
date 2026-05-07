@@ -308,13 +308,13 @@
       if (kpiValues.length >= 4) {
         kpiValues[0].textContent = r.total_licitaciones ?? 0;
         kpiValues[1].textContent = r.total_adjudicadas ?? 0;
-        kpiValues[2].textContent = window.SGPLAdmin.formatCurrency(r.total_contratos ?? 0);
+        kpiValues[2].textContent = r.total_contratos ?? 0;
         kpiValues[3].textContent = (r.tiempo_promedio_publicacion_adjudicacion_dias ?? 0) + ' dias';
       }
       if (kpiSub.length >= 4) {
         kpiSub[0].textContent = 'Licitaciones totales';
         kpiSub[1].textContent = 'Licitaciones adjudicadas';
-        kpiSub[2].textContent = 'Contratos (conteo en MXN referencial)';
+        kpiSub[2].textContent = 'Contratos registrados';
         kpiSub[3].textContent = 'Tiempo promedio del proceso';
       }
 

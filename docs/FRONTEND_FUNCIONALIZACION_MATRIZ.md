@@ -48,3 +48,18 @@ Convertir las vistas de `frontend/admin` de mockup visual a flujos operativos co
 - Validación cliente + manejo de `4xx/5xx`.
 - Botones críticos conectados (crear/editar/cambiar estado/exportar).
 - Navegación protegida por sesión y rol.
+
+## Estado actual (cierre de fase)
+
+- `auth/login.html`: funcional (login + sesión local).
+- `admin/convocatorias/index.html`: funcional con listado real, filtros, cambio de estado y export.
+- `admin/convocatorias/create.html`: funcional con alta de licitación y carga de documentos.
+- `admin/dashboard.html`: funcional con KPIs y tabla desde API.
+- `admin/proveedores/index.html`: funcional con listado, filtros y cambio de estatus.
+- `admin/propuestas/index.html`: funcional con listado global, filtros y métricas (endpoint agregado).
+- `admin/evaluacion/index.html`: funcional con carga por licitación, dictamen y adjudicación.
+- `admin/adjudicaciones/index.html`: funcional con listado de contratos y cambio de estatus (endpoint agregado).
+- `admin/reportes/index.html`: funcional con KPIs dinámicos, desglose y export.
+
+Pendiente de cierre total:
+- Ejecución E2E completa en entorno con BD configurada (`DB_*`), documentada en `docs/FASE_CIERRE_VALIDACION.md`.
