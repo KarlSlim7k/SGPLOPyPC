@@ -303,6 +303,92 @@
           </div>
         </div>
 
+        <!-- Bandeja de Soporte -->
+        <div id="support-section" class="bg-white rounded-2xl border border-slate-200 p-6">
+          <div class="flex flex-wrap items-center justify-between gap-3 mb-5">
+            <div class="flex items-center gap-3">
+              <div class="w-10 h-10 rounded-xl bg-cyan-50 flex items-center justify-center text-cyan-600">
+                <i class="ph ph-headset text-xl"></i>
+              </div>
+              <div>
+                <h2 class="font-bold text-slate-800">Bandeja de Soporte Publico</h2>
+                <p class="text-xs text-slate-500">Atencion de tickets enviados desde el portal de visitantes</p>
+              </div>
+            </div>
+            <button id="support-refresh" class="inline-flex items-center gap-2 border border-slate-300 text-slate-700 hover:bg-slate-50 font-semibold px-4 py-2 rounded-lg text-sm transition-colors">
+              <i class="ph ph-arrows-clockwise text-base"></i> Actualizar
+            </button>
+          </div>
+
+          <div class="grid grid-cols-2 md:grid-cols-4 gap-3 mb-5">
+            <div class="rounded-xl border border-slate-200 bg-slate-50 px-4 py-3">
+              <p id="support-stat-total" class="text-lg font-extrabold text-slate-800">0</p>
+              <p class="text-xs text-slate-500 font-medium">Total</p>
+            </div>
+            <div class="rounded-xl border border-amber-100 bg-amber-50 px-4 py-3">
+              <p id="support-stat-nuevo" class="text-lg font-extrabold text-amber-700">0</p>
+              <p class="text-xs text-amber-700/80 font-medium">Nuevos</p>
+            </div>
+            <div class="rounded-xl border border-blue-100 bg-blue-50 px-4 py-3">
+              <p id="support-stat-proceso" class="text-lg font-extrabold text-blue-700">0</p>
+              <p class="text-xs text-blue-700/80 font-medium">En proceso</p>
+            </div>
+            <div class="rounded-xl border border-emerald-100 bg-emerald-50 px-4 py-3">
+              <p id="support-stat-cerrado" class="text-lg font-extrabold text-emerald-700">0</p>
+              <p class="text-xs text-emerald-700/80 font-medium">Cerrados</p>
+            </div>
+          </div>
+
+          <form id="support-filter-form" class="flex flex-wrap items-end gap-3 mb-4">
+            <div class="flex-1 min-w-[220px]">
+              <label for="support-search" class="block text-xs font-medium text-slate-500 uppercase tracking-wide mb-1">Busqueda</label>
+              <input id="support-search" type="search" placeholder="Folio, nombre, correo o asunto" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-sm focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all">
+            </div>
+            <div class="w-full sm:w-56">
+              <label for="support-estado" class="block text-xs font-medium text-slate-500 uppercase tracking-wide mb-1">Estado</label>
+              <select id="support-estado" class="w-full px-3 py-2 bg-slate-50 border border-slate-300 rounded-lg text-sm focus:border-primary-500 focus:ring-2 focus:ring-primary-200 transition-all">
+                <option value="">Todos</option>
+                <option value="NUEVO">NUEVO</option>
+                <option value="EN_PROCESO">EN_PROCESO</option>
+                <option value="CERRADO">CERRADO</option>
+              </select>
+            </div>
+            <button type="submit" class="inline-flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white font-semibold px-4 py-2 rounded-lg text-sm transition-colors">
+              <i class="ph ph-funnel text-base"></i> Aplicar
+            </button>
+          </form>
+
+          <div class="border border-slate-200 rounded-xl overflow-hidden">
+            <div class="overflow-x-auto">
+              <table class="min-w-full text-sm">
+                <thead>
+                  <tr class="bg-slate-50 border-b border-slate-200">
+                    <th class="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">Folio / Fecha</th>
+                    <th class="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">Contacto</th>
+                    <th class="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">Asunto</th>
+                    <th class="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">Mensaje</th>
+                    <th class="text-left px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">Estado</th>
+                    <th class="text-right px-4 py-3 text-xs font-semibold text-slate-500 uppercase tracking-wide">Accion</th>
+                  </tr>
+                </thead>
+                <tbody id="support-table-body" class="divide-y divide-slate-100">
+                  <tr>
+                    <td colspan="6" class="px-4 py-8 text-center text-slate-500">Cargando tickets...</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+            <div class="flex flex-wrap items-center justify-between gap-3 px-4 py-3 border-t border-slate-200 bg-slate-50">
+              <p id="support-summary" class="text-xs text-slate-500">Mostrando 0 de 0 tickets</p>
+              <div class="inline-flex items-center gap-2">
+                <button id="support-prev" class="px-3 py-1.5 border border-slate-300 rounded-lg text-xs font-semibold text-slate-700 hover:bg-white disabled:opacity-50 disabled:cursor-not-allowed" type="button">Anterior</button>
+                <span id="support-page-info" class="text-xs text-slate-500">Pagina 1 de 1</span>
+                <button id="support-next" class="px-3 py-1.5 border border-slate-300 rounded-lg text-xs font-semibold text-slate-700 hover:bg-white disabled:opacity-50 disabled:cursor-not-allowed" type="button">Siguiente</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <!-- Informacion de la Sesion -->
         <div class="bg-white rounded-2xl border border-slate-200 p-6">
           <div class="flex items-center gap-3 mb-5">
@@ -381,6 +467,192 @@
     function setText(id, value) {
       const el = document.getElementById(id);
       if (el) el.textContent = value;
+    }
+
+    const supportState = {
+      page: 1,
+      limit: 10,
+      total: 0,
+      estado: '',
+      q: ''
+    };
+
+    const supportElements = {
+      section: document.getElementById('support-section'),
+      filterForm: document.getElementById('support-filter-form'),
+      search: document.getElementById('support-search'),
+      estado: document.getElementById('support-estado'),
+      refresh: document.getElementById('support-refresh'),
+      tbody: document.getElementById('support-table-body'),
+      summary: document.getElementById('support-summary'),
+      prev: document.getElementById('support-prev'),
+      next: document.getElementById('support-next'),
+      pageInfo: document.getElementById('support-page-info'),
+      statTotal: document.getElementById('support-stat-total'),
+      statNuevo: document.getElementById('support-stat-nuevo'),
+      statProceso: document.getElementById('support-stat-proceso'),
+      statCerrado: document.getElementById('support-stat-cerrado')
+    };
+
+    function supportBadgeClass(estado) {
+      const map = {
+        NUEVO: 'bg-amber-100 text-amber-700 border-amber-200',
+        EN_PROCESO: 'bg-blue-100 text-blue-700 border-blue-200',
+        CERRADO: 'bg-emerald-100 text-emerald-700 border-emerald-200'
+      };
+      return map[estado] || 'bg-slate-100 text-slate-700 border-slate-200';
+    }
+
+    function supportStatusLabel(estado) {
+      const labels = {
+        NUEVO: 'Nuevo',
+        EN_PROCESO: 'En proceso',
+        CERRADO: 'Cerrado'
+      };
+      return labels[estado] || estado;
+    }
+
+    function truncateText(value, max = 100) {
+      const text = String(value || '');
+      if (text.length <= max) return text;
+      return text.slice(0, max - 3) + '...';
+    }
+
+    function renderSupportRows(items) {
+      if (!supportElements.tbody) return;
+      if (!items.length) {
+        supportElements.tbody.innerHTML = '<tr><td colspan="6" class="px-4 py-8 text-center text-slate-500">No hay tickets para los filtros actuales.</td></tr>';
+        return;
+      }
+
+      supportElements.tbody.innerHTML = items.map((ticket) => {
+        const safeMsg = window.SGPLAdmin.escapeHtml(ticket.mensaje || '');
+        return ''
+          + '<tr class="hover:bg-slate-50">'
+          + '<td class="px-4 py-3 align-top whitespace-nowrap"><p class="font-semibold text-slate-800">' + window.SGPLAdmin.escapeHtml(ticket.folio) + '</p><p class="text-xs text-slate-500 mt-0.5">' + window.SGPLAdmin.formatDateTime(ticket.created_at) + '</p></td>'
+          + '<td class="px-4 py-3 align-top"><p class="font-medium text-slate-700">' + window.SGPLAdmin.escapeHtml(ticket.nombre) + '</p><p class="text-xs text-slate-500">' + window.SGPLAdmin.escapeHtml(ticket.email) + '</p><p class="text-xs text-slate-400">' + window.SGPLAdmin.escapeHtml(ticket.telefono || 'Sin telefono') + '</p></td>'
+          + '<td class="px-4 py-3 align-top text-slate-700">' + window.SGPLAdmin.escapeHtml(ticket.asunto) + '</td>'
+          + '<td class="px-4 py-3 align-top text-slate-600"><p>' + window.SGPLAdmin.escapeHtml(truncateText(ticket.mensaje, 120)) + '</p><details class="mt-1 text-xs text-slate-500"><summary class="cursor-pointer hover:text-slate-700">Ver mensaje completo</summary><p class="mt-1 whitespace-pre-line">' + safeMsg + '</p></details></td>'
+          + '<td class="px-4 py-3 align-top"><span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold border ' + supportBadgeClass(ticket.estado) + '">' + supportStatusLabel(ticket.estado) + '</span></td>'
+          + '<td class="px-4 py-3 align-top text-right"><div class="inline-flex items-center gap-2"><select data-ticket-status="' + ticket.id_soporte_ticket + '" class="px-2 py-1.5 border border-slate-300 rounded-lg text-xs bg-white">'
+          + '<option value="NUEVO"' + (ticket.estado === 'NUEVO' ? ' selected' : '') + '>NUEVO</option>'
+          + '<option value="EN_PROCESO"' + (ticket.estado === 'EN_PROCESO' ? ' selected' : '') + '>EN_PROCESO</option>'
+          + '<option value="CERRADO"' + (ticket.estado === 'CERRADO' ? ' selected' : '') + '>CERRADO</option>'
+          + '</select><button type="button" data-ticket-save="' + ticket.id_soporte_ticket + '" class="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-900 text-white text-xs font-semibold">Guardar</button></div></td>'
+          + '</tr>';
+      }).join('');
+
+      supportElements.tbody.querySelectorAll('[data-ticket-save]').forEach((btn) => {
+        btn.addEventListener('click', () => updateSupportEstado(Number(btn.getAttribute('data-ticket-save'))));
+      });
+    }
+
+    function renderSupportMeta(total) {
+      if (!supportElements.summary || !supportElements.pageInfo || !supportElements.prev || !supportElements.next) return;
+      const totalPages = Math.max(1, Math.ceil(total / supportState.limit));
+      const currentPage = Math.min(supportState.page, totalPages);
+      supportState.page = currentPage;
+
+      const start = total === 0 ? 0 : ((currentPage - 1) * supportState.limit) + 1;
+      const end = Math.min(total, currentPage * supportState.limit);
+      supportElements.summary.textContent = 'Mostrando ' + start + '-' + end + ' de ' + total + ' tickets';
+      supportElements.pageInfo.textContent = 'Pagina ' + currentPage + ' de ' + totalPages;
+      supportElements.prev.disabled = currentPage <= 1;
+      supportElements.next.disabled = currentPage >= totalPages;
+    }
+
+    function hydrateSupportStats(resumen) {
+      if (!resumen) return;
+      if (supportElements.statTotal) supportElements.statTotal.textContent = String(resumen.total || 0);
+      if (supportElements.statNuevo) supportElements.statNuevo.textContent = String(resumen.nuevo || 0);
+      if (supportElements.statProceso) supportElements.statProceso.textContent = String(resumen.en_proceso || 0);
+      if (supportElements.statCerrado) supportElements.statCerrado.textContent = String(resumen.cerrado || 0);
+    }
+
+    async function loadSupportTickets(resetPage = false) {
+      if (!supportElements.section || !supportElements.tbody) return;
+      if (resetPage) supportState.page = 1;
+
+      supportElements.tbody.innerHTML = '<tr><td colspan="6" class="px-4 py-8 text-center text-slate-500">Cargando tickets...</td></tr>';
+
+      const params = new URLSearchParams({
+        page: String(supportState.page),
+        limit: String(supportState.limit)
+      });
+      if (supportState.estado) params.set('estado', supportState.estado);
+      if (supportState.q) params.set('q', supportState.q);
+
+      try {
+        const res = await window.SGPLAdmin.authFetch('/soporte/tickets?' + params.toString());
+        const payload = res.data || {};
+        const items = Array.isArray(payload.items) ? payload.items : [];
+        supportState.total = Number(payload.total || 0);
+        renderSupportRows(items);
+        renderSupportMeta(supportState.total);
+        hydrateSupportStats(payload.resumen || {});
+      } catch (error) {
+        supportElements.tbody.innerHTML = '<tr><td colspan="6" class="px-4 py-8 text-center text-red-600">No fue posible cargar tickets: ' + window.SGPLAdmin.escapeHtml(error.message || 'Error desconocido') + '</td></tr>';
+        renderSupportMeta(0);
+      }
+    }
+
+    async function updateSupportEstado(ticketId) {
+      const select = supportElements.tbody.querySelector('[data-ticket-status="' + ticketId + '"]');
+      const button = supportElements.tbody.querySelector('[data-ticket-save="' + ticketId + '"]');
+      if (!select || !button) return;
+      const estado = select.value;
+
+      const original = button.textContent;
+      button.disabled = true;
+      select.disabled = true;
+      button.textContent = 'Guardando...';
+
+      try {
+        await window.SGPLAdmin.authFetch('/soporte/tickets/' + ticketId + '/estado', {
+          method: 'PATCH',
+          body: JSON.stringify({ estado })
+        });
+        showToast('Estado de ticket actualizado');
+        await loadSupportTickets(false);
+      } catch (error) {
+        showToast(error.message || 'No se pudo actualizar el ticket', 'error');
+      } finally {
+        button.disabled = false;
+        select.disabled = false;
+        button.textContent = original;
+      }
+    }
+
+    function initSupportEvents() {
+      if (!supportElements.section || !supportElements.filterForm) return;
+      if ((user.rol || '') !== 'ADMINISTRADOR') {
+        supportElements.section.classList.add('hidden');
+        return;
+      }
+
+      supportElements.filterForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        supportState.q = (supportElements.search.value || '').trim();
+        supportState.estado = supportElements.estado.value || '';
+        loadSupportTickets(true);
+      });
+
+      supportElements.refresh.addEventListener('click', () => loadSupportTickets(false));
+      supportElements.prev.addEventListener('click', () => {
+        if (supportState.page > 1) {
+          supportState.page -= 1;
+          loadSupportTickets(false);
+        }
+      });
+      supportElements.next.addEventListener('click', () => {
+        const totalPages = Math.max(1, Math.ceil(supportState.total / supportState.limit));
+        if (supportState.page < totalPages) {
+          supportState.page += 1;
+          loadSupportTickets(false);
+        }
+      });
+
+      loadSupportTickets(true);
     }
 
     // Info de sesion del dispositivo
@@ -602,6 +874,7 @@
       setText('sesion-inicio', data.ultimo_acceso ? window.SGPLAdmin.formatDateTime(data.ultimo_acceso) : 'Sin registro');
     }
 
+    initSupportEvents();
     hydrateUser(user);
   })();
   </script>

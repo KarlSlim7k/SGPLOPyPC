@@ -573,3 +573,30 @@ Marca una notificación como leída.
 **Response 200 / 403 / 404**
 
 **Auditoría:** se registra la lectura.
+
+---
+
+## Soporte (ADMINISTRADOR)
+
+### GET /api/v1/soporte/tickets
+Lista tickets de soporte con paginación y filtros.
+
+Query params opcionales:
+- `page`, `limit`
+- `estado` (`NUEVO`, `EN_PROCESO`, `CERRADO`)
+- `q` (folio, nombre, correo o asunto)
+
+Devuelve también `resumen` global por estado.
+
+### GET /api/v1/soporte/tickets/{id}
+Obtiene el detalle completo de un ticket de soporte.
+
+### PATCH /api/v1/soporte/tickets/{id}/estado
+Actualiza el estado operativo de un ticket.
+
+Body:
+```json
+{ "estado": "NUEVO | EN_PROCESO | CERRADO" }
+```
+
+**Auditoría:** registra cambios de estado en `historial_cambio`.

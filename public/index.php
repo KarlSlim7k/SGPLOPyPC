@@ -48,6 +48,7 @@ require_once __DIR__ . '/../app/controllers/ContratoController.php';
 require_once __DIR__ . '/../app/controllers/ReporteController.php';
 require_once __DIR__ . '/../app/controllers/PublicController.php';
 require_once __DIR__ . '/../app/controllers/NotificacionController.php';
+require_once __DIR__ . '/../app/controllers/SupportTicketController.php';
 
 // Middlewares
 require_once __DIR__ . '/../app/middlewares/AuthMiddleware.php';
@@ -451,6 +452,25 @@ try {
         case preg_match('#^/notificaciones/(\d+)/leida$#', $route, $m) && $requestMethod === 'PATCH':
             AuthMiddleware::handle();
             (new NotificacionController())->marcarLeida((int) $m[1]);
+            break;
+
+        // Soporte (bandeja administrativa)
+        case $route === '/soporte/tickets' && $requestMethod === 'GET':
+            AuthMiddleware::handle();
+            RoleMiddleware::handle('ADMINISTRADOR');
+            (new SupportTicketController())->list();
+            break;
+
+        case preg_match('#^/soporte/tickets/(\d+)$#', $route, $m) && $requestMethod === 'GET':
+            AuthMiddleware::handle();
+            RoleMiddleware::handle('ADMINISTRADOR');
+            (new SupportTicketController())->get((int) $m[1]);
+            break;
+
+        case preg_match('#^/soporte/tickets/(\d+)/estado$#', $route, $m) && $requestMethod === 'PATCH':
+            AuthMiddleware::handle();
+            RoleMiddleware::handle('ADMINISTRADOR');
+            (new SupportTicketController())->changeEstado((int) $m[1]);
             break;
 
         default:
