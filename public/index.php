@@ -81,6 +81,32 @@ try {
             (new AuthController())->login();
             break;
 
+        case $route === '/auth/password/forgot' && $requestMethod === 'POST':
+            $rl = new RateLimiter(
+                (int) env('RATE_LIMIT_FORGOT_MAX', '5'),
+                (int) env('RATE_LIMIT_FORGOT_WINDOW', '300')
+            );
+            $ip = getClientIp();
+            if (!$rl->isAllowed('auth-forgot:' . $ip)) {
+                $logger->security('Rate limit exceeded on forgot password', ['ip' => $ip]);
+                jsonResponse(false, 'Demasiadas solicitudes de recuperación. Intente más tarde.', null, null, 429);
+            }
+            (new AuthController())->forgotPassword();
+            break;
+
+        case $route === '/auth/password/reset' && $requestMethod === 'POST':
+            $rl = new RateLimiter(
+                (int) env('RATE_LIMIT_RESET_MAX', '10'),
+                (int) env('RATE_LIMIT_RESET_WINDOW', '300')
+            );
+            $ip = getClientIp();
+            if (!$rl->isAllowed('auth-reset:' . $ip)) {
+                $logger->security('Rate limit exceeded on reset password', ['ip' => $ip]);
+                jsonResponse(false, 'Demasiadas solicitudes de restablecimiento. Intente más tarde.', null, null, 429);
+            }
+            (new AuthController())->resetPassword();
+            break;
+
         case $route === '/me' && $requestMethod === 'GET':
             AuthMiddleware::handle();
             (new UserController())->me();
@@ -355,6 +381,52 @@ try {
 
         case $route === '/public/contratos' && $requestMethod === 'GET':
             (new PublicController())->listContratos();
+            break;
+
+        case $route === '/public/evaluaciones' && $requestMethod === 'GET':
+            (new PublicController())->listEvaluaciones();
+            break;
+
+        case $route === '/public/historial' && $requestMethod === 'GET':
+            (new PublicController())->listHistorial();
+            break;
+
+        case $route === '/public/estadisticas' && $requestMethod === 'GET':
+            (new PublicController())->estadisticas();
+            break;
+
+        case preg_match('#^/public/convocatorias/(\d+)/documentos$#', $route, $m) && $requestMethod === 'GET':
+            (new PublicController())->listConvocatoriaDocumentos((int) $m[1]);
+            break;
+
+        case preg_match('#^/public/documentos/(\d+)/download$#', $route, $m) && $requestMethod === 'GET':
+            (new PublicController())->downloadDocumentoPublico((int) $m[1]);
+            break;
+
+        case $route === '/public/proveedores/registro' && $requestMethod === 'POST':
+            $rl = new RateLimiter(
+                (int) env('RATE_LIMIT_PUBLIC_REGISTER_MAX', '5'),
+                (int) env('RATE_LIMIT_PUBLIC_REGISTER_WINDOW', '300')
+            );
+            $ip = getClientIp();
+            if (!$rl->isAllowed('public-register:' . $ip)) {
+                $logger->security('Rate limit exceeded on public register', ['ip' => $ip]);
+                jsonResponse(false, 'Demasiados intentos de registro. Intente más tarde.', null, null, 429);
+            }
+            (new PublicController())->registerProveedor();
+            break;
+
+        case $route === '/public/soporte' && $requestMethod === 'POST':
+            $rl = new RateLimiter(
+                (int) env('RATE_LIMIT_PUBLIC_SUPPORT_MAX', '5'),
+                (int) env('RATE_LIMIT_PUBLIC_SUPPORT_WINDOW', '300')
+            );
+            $ip = getClientIp();
+            if (!$rl->isAllowed('public-support:' . $ip)) {
+                $logger->security('Rate limit exceeded on support', ['ip' => $ip]);
+                jsonResponse(false, 'Demasiadas solicitudes de soporte. Intente más tarde.', null, null, 429);
+            }
+            (new PublicController())->supportTicket();
             break;
 
         // Historial de licitación

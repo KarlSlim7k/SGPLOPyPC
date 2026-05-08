@@ -85,22 +85,22 @@
         <div class="grid grid-cols-2 lg:grid-cols-4 gap-4 mb-10">
             <div class="bg-white border border-slate-200 rounded-xl p-5">
                 <p class="text-xs text-slate-400 mb-1">Total Ejercicio 2026</p>
-                <p class="text-2xl font-extrabold text-slate-900">145</p>
+                <p id="contratos-summary-total" class="text-2xl font-extrabold text-slate-900">0</p>
                 <p class="text-emerald-600 text-xs font-medium mt-1"><i class="ph ph-arrow-up"></i> +12 vs 2025</p>
             </div>
             <div class="bg-white border border-slate-200 rounded-xl p-5">
                 <p class="text-xs text-slate-400 mb-1">Monto Adjudicado</p>
-                <p class="text-2xl font-extrabold text-slate-900">$280M</p>
+                <p id="contratos-summary-monto" class="text-2xl font-extrabold text-slate-900">$0</p>
                 <p class="text-slate-500 text-xs mt-1">MXN</p>
             </div>
             <div class="bg-white border border-slate-200 rounded-xl p-5">
                 <p class="text-xs text-slate-400 mb-1">En Ejecución</p>
-                <p class="text-2xl font-extrabold text-slate-900">78</p>
+                <p id="contratos-summary-ejecucion" class="text-2xl font-extrabold text-slate-900">0</p>
                 <p class="text-blue-600 text-xs font-medium mt-1">54% del total</p>
             </div>
             <div class="bg-white border border-slate-200 rounded-xl p-5">
                 <p class="text-xs text-slate-400 mb-1">Concluidos</p>
-                <p class="text-2xl font-extrabold text-slate-900">67</p>
+                <p id="contratos-summary-concluidos" class="text-2xl font-extrabold text-slate-900">0</p>
                 <p class="text-emerald-600 text-xs font-medium mt-1">46% del total</p>
             </div>
         </div>
@@ -111,11 +111,12 @@
                 <h2 class="font-bold text-slate-800">Contratos Recientes</h2>
                 <div class="flex items-center gap-2 text-sm">
                     <span class="text-slate-500">Filtrar:</span>
-                    <select class="border border-slate-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500">
-                        <option>Todos los estados</option>
-                        <option>En ejecución</option>
-                        <option>Concluido</option>
-                        <option>Suspendido</option>
+                    <select id="contratos-estatus" class="border border-slate-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500">
+                        <option value="">Todos los estados</option>
+                        <option value="EN_EJECUCION">En ejecución</option>
+                        <option value="CONCLUIDO">Concluido</option>
+                        <option value="VIGENTE">Vigente</option>
+                        <option value="RESCINDIDO">Rescindido</option>
                     </select>
                 </div>
             </div>
@@ -131,111 +132,19 @@
                             <th class="text-left px-6 py-3 font-semibold">Estado</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-slate-100">
-                        <tr class="hover:bg-slate-50 transition-colors">
-                            <td class="px-6 py-4">
-                                <p class="font-mono text-xs text-slate-400">CT-2026-001</p>
-                                <p class="font-semibold text-slate-800">Construcción Centro Comunitario Sur</p>
-                            </td>
-                            <td class="px-6 py-4">
-                                <p class="text-slate-700">Constructora del Valle S.A. de C.V.</p>
-                                <p class="text-xs text-slate-400">RFC: CVA-180523-XX8</p>
-                            </td>
-                            <td class="px-6 py-4 hidden md:table-cell">
-                                <p class="font-semibold text-slate-800">$8,500,000</p>
-                            </td>
-                            <td class="px-6 py-4 hidden lg:table-cell">
-                                <p class="text-slate-600">15 Ene 2026</p>
-                            </td>
-                            <td class="px-6 py-4">
-                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-700 border border-blue-200">En ejecución</span>
-                            </td>
-                        </tr>
-                        <tr class="hover:bg-slate-50 transition-colors">
-                            <td class="px-6 py-4">
-                                <p class="font-mono text-xs text-slate-400">CT-2026-002</p>
-                                <p class="font-semibold text-slate-800">Pavimentación Av. Principal Tramo 2</p>
-                            </td>
-                            <td class="px-6 py-4">
-                                <p class="text-slate-700">Infraestructura y Proyectos MX</p>
-                                <p class="text-xs text-slate-400">RFC: IPR-190812-XX3</p>
-                            </td>
-                            <td class="px-6 py-4 hidden md:table-cell">
-                                <p class="font-semibold text-slate-800">$14,200,000</p>
-                            </td>
-                            <td class="px-6 py-4 hidden lg:table-cell">
-                                <p class="text-slate-600">01 Feb 2026</p>
-                            </td>
-                            <td class="px-6 py-4">
-                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-700 border border-blue-200">En ejecución</span>
-                            </td>
-                        </tr>
-                        <tr class="hover:bg-slate-50 transition-colors">
-                            <td class="px-6 py-4">
-                                <p class="font-mono text-xs text-slate-400">CT-2025-089</p>
-                                <p class="font-semibold text-slate-800">Remodelación Escuela Benito Juárez</p>
-                            </td>
-                            <td class="px-6 py-4">
-                                <p class="text-slate-700">Edificaciones del Bajío S.C.</p>
-                                <p class="text-xs text-slate-400">RFC: EBA-170305-XX1</p>
-                            </td>
-                            <td class="px-6 py-4 hidden md:table-cell">
-                                <p class="font-semibold text-slate-800">$4,750,000</p>
-                            </td>
-                            <td class="px-6 py-4 hidden lg:table-cell">
-                                <p class="text-slate-600">15 Sep 2025</p>
-                            </td>
-                            <td class="px-6 py-4">
-                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700 border border-emerald-200">Concluido</span>
-                            </td>
-                        </tr>
-                        <tr class="hover:bg-slate-50 transition-colors">
-                            <td class="px-6 py-4">
-                                <p class="font-mono text-xs text-slate-400">CT-2025-078</p>
-                                <p class="font-semibold text-slate-800">Sistema de Agua Potable Colonia Centro</p>
-                            </td>
-                            <td class="px-6 py-4">
-                                <p class="text-slate-700">Hidroingeniería del Centro</p>
-                                <p class="text-xs text-slate-400">RFC: HIC-160928-XX7</p>
-                            </td>
-                            <td class="px-6 py-4 hidden md:table-cell">
-                                <p class="font-semibold text-slate-800">$22,100,000</p>
-                            </td>
-                            <td class="px-6 py-4 hidden lg:table-cell">
-                                <p class="text-slate-600">01 Ago 2025</p>
-                            </td>
-                            <td class="px-6 py-4">
-                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700 border border-emerald-200">Concluido</span>
-                            </td>
-                        </tr>
-                        <tr class="hover:bg-slate-50 transition-colors">
-                            <td class="px-6 py-4">
-                                <p class="font-mono text-xs text-slate-400">CT-2026-015</p>
-                                <p class="font-semibold text-slate-800">Electrificación Zona Rural Sector 7</p>
-                            </td>
-                            <td class="px-6 py-4">
-                                <p class="text-slate-700">Energy Solutions Guanajuato</p>
-                                <p class="text-xs text-slate-400">RFC: ESG-200115-XX4</p>
-                            </td>
-                            <td class="px-6 py-4 hidden md:table-cell">
-                                <p class="font-semibold text-slate-800">$6,800,000</p>
-                            </td>
-                            <td class="px-6 py-4 hidden lg:table-cell">
-                                <p class="text-slate-600">10 Mar 2026</p>
-                            </td>
-                            <td class="px-6 py-4">
-                                <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-700 border border-blue-200">En ejecución</span>
-                            </td>
+                    <tbody id="contratos-list" class="divide-y divide-slate-100">
+                        <tr>
+                            <td colspan="5" class="px-6 py-6 text-center text-slate-500">Cargando contratos...</td>
                         </tr>
                     </tbody>
                 </table>
             </div>
 
             <div class="px-6 py-4 border-t border-slate-100 flex justify-between items-center">
-                <p class="text-sm text-slate-500">Mostrando 5 de 145 contratos</p>
+                <p id="contratos-page-info" class="text-sm text-slate-500">0 resultados</p>
                 <div class="flex gap-2">
-                    <button class="px-3 py-1.5 border border-slate-200 rounded-lg text-sm text-slate-400 cursor-not-allowed" disabled>Anterior</button>
-                    <button class="px-3 py-1.5 border border-slate-200 rounded-lg text-sm text-slate-700 hover:bg-slate-50 transition-colors">Siguiente</button>
+                    <button id="contratos-prev" class="px-3 py-1.5 border border-slate-200 rounded-lg text-sm text-slate-700 hover:bg-slate-50 transition-colors">Anterior</button>
+                    <button id="contratos-next" class="px-3 py-1.5 border border-slate-200 rounded-lg text-sm text-slate-700 hover:bg-slate-50 transition-colors">Siguiente</button>
                 </div>
             </div>
         </div>
@@ -304,5 +213,6 @@
         </div>
     </footer>
 
+    <script src="/frontend/shared/public.js"></script>
 </body>
 </html>

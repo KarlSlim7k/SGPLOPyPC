@@ -183,19 +183,19 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
             <div class="grid grid-cols-2 lg:grid-cols-4 gap-6">
                 <div class="text-center">
-                    <p class="text-3xl font-extrabold text-slate-900">12</p>
+                    <p id="landing-stat-licitaciones" class="text-3xl font-extrabold text-slate-900">0</p>
                     <p class="text-sm text-slate-500 mt-1 font-medium">Licitaciones Activas</p>
                 </div>
                 <div class="text-center">
-                    <p class="text-3xl font-extrabold text-slate-900">84</p>
+                    <p id="landing-stat-proveedores" class="text-3xl font-extrabold text-slate-900">0</p>
                     <p class="text-sm text-slate-500 mt-1 font-medium">Proveedores Registrados</p>
                 </div>
                 <div class="text-center">
-                    <p class="text-3xl font-extrabold text-slate-900">145</p>
+                    <p id="landing-stat-contratos" class="text-3xl font-extrabold text-slate-900">0</p>
                     <p class="text-sm text-slate-500 mt-1 font-medium">Contratos Adjudicados</p>
                 </div>
                 <div class="text-center">
-                    <p class="text-3xl font-extrabold text-slate-900">$280M</p>
+                    <p id="landing-stat-monto" class="text-3xl font-extrabold text-slate-900">$0</p>
                     <p class="text-sm text-slate-500 mt-1 font-medium">MXN en Contratos 2026</p>
                 </div>
             </div>
@@ -267,105 +267,17 @@
                     <h2 class="text-3xl font-bold text-slate-900">Convocatorias Vigentes</h2>
                     <p class="text-slate-500 mt-1 text-sm">Licitaciones abiertas disponibles para participar</p>
                 </div>
-                <a href="/frontend/admin/convocatorias/index.html" class="inline-flex items-center gap-2 text-primary-600 hover:text-primary-700 font-semibold text-sm border border-primary-200 hover:border-primary-300 px-4 py-2 rounded-lg hover:bg-primary-50 transition-all cursor-pointer">
+                <a href="/historial.php" class="inline-flex items-center gap-2 text-primary-600 hover:text-primary-700 font-semibold text-sm border border-primary-200 hover:border-primary-300 px-4 py-2 rounded-lg hover:bg-primary-50 transition-all cursor-pointer">
                     Ver todas <i class="ph ph-arrow-right" aria-hidden="true"></i>
                 </a>
             </div>
 
-            <div class="space-y-4">
-                <!-- Convocatoria 1 -->
-                <article class="bg-white border border-slate-200 rounded-2xl p-6 hover:border-primary-200 hover:shadow-md transition-all duration-200 cursor-pointer group">
-                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                        <div class="flex-1">
-                            <div class="flex flex-wrap items-center gap-2 mb-2">
-                                <span class="text-xs font-bold text-slate-400 font-mono">LO-902002994-E5-2026</span>
-                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700 border border-emerald-200">Publicada</span>
-                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100">Licitación Pública Nacional</span>
-                            </div>
-                            <h3 class="font-bold text-slate-800 text-base group-hover:text-primary-700 transition-colors">Construcción de Centro Comunitario Zona Sur — Etapa 1</h3>
-                            <p class="text-slate-500 text-sm mt-1">Municipio de Salamanca, Guanajuato · Obra de infraestructura social comunitaria</p>
-                        </div>
-                        <div class="flex flex-row md:flex-col items-start md:items-end gap-3 md:gap-1 shrink-0">
-                            <div class="text-right">
-                                <p class="text-xs text-slate-400">Presupuesto estimado</p>
-                                <p class="font-bold text-slate-800 text-sm">$8,500,000 MXN</p>
-                            </div>
-                            <div class="text-right">
-                                <p class="text-xs text-slate-400">Recepción de prop.</p>
-                                <p class="font-semibold text-slate-700 text-sm">05 May 2026</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="mt-4 pt-4 border-t border-slate-100 flex flex-wrap gap-4 text-xs text-slate-500">
-                        <span class="flex items-center gap-1.5"><i class="ph ph-calendar-check text-slate-400" aria-hidden="true"></i> Junta Aclaraciones: 22 Abr 2026</span>
-                        <span class="flex items-center gap-1.5"><i class="ph ph-folder-open text-slate-400" aria-hidden="true"></i> Apertura Prop.: 05 May 2026</span>
-                        <span class="flex items-center gap-1.5"><i class="ph ph-gavel text-slate-400" aria-hidden="true"></i> Fallo: 20 May 2026</span>
-                    </div>
-                </article>
-
-                <!-- Convocatoria 2 -->
-                <article class="bg-white border border-slate-200 rounded-2xl p-6 hover:border-primary-200 hover:shadow-md transition-all duration-200 cursor-pointer group">
-                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                        <div class="flex-1">
-                            <div class="flex flex-wrap items-center gap-2 mb-2">
-                                <span class="text-xs font-bold text-slate-400 font-mono">IR-902002994-E6-2026</span>
-                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700 border border-emerald-200">Publicada</span>
-                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100">Invitación Restringida</span>
-                            </div>
-                            <h3 class="font-bold text-slate-800 text-base group-hover:text-primary-700 transition-colors">Rehabilitación de Caminos Rurales Tramo 3 — Región Norte</h3>
-                            <p class="text-slate-500 text-sm mt-1">Municipio de Dolores Hidalgo, Guanajuato · Mantenimiento y pavimentación</p>
-                        </div>
-                        <div class="flex flex-row md:flex-col items-start md:items-end gap-3 md:gap-1 shrink-0">
-                            <div class="text-right">
-                                <p class="text-xs text-slate-400">Presupuesto estimado</p>
-                                <p class="font-bold text-slate-800 text-sm">$3,200,000 MXN</p>
-                            </div>
-                            <div class="text-right">
-                                <p class="text-xs text-slate-400">Recepción de prop.</p>
-                                <p class="font-semibold text-slate-700 text-sm">28 Abr 2026</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="mt-4 pt-4 border-t border-slate-100 flex flex-wrap gap-4 text-xs text-slate-500">
-                        <span class="flex items-center gap-1.5"><i class="ph ph-calendar-check text-slate-400" aria-hidden="true"></i> Junta Aclaraciones: 15 Abr 2026</span>
-                        <span class="flex items-center gap-1.5"><i class="ph ph-folder-open text-slate-400" aria-hidden="true"></i> Apertura Prop.: 28 Abr 2026</span>
-                        <span class="flex items-center gap-1.5"><i class="ph ph-gavel text-slate-400" aria-hidden="true"></i> Fallo: 12 May 2026</span>
-                    </div>
-                </article>
-
-                <!-- Convocatoria 3 -->
-                <article class="bg-white border border-slate-200 rounded-2xl p-6 hover:border-primary-200 hover:shadow-md transition-all duration-200 cursor-pointer group">
-                    <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                        <div class="flex-1">
-                            <div class="flex flex-wrap items-center gap-2 mb-2">
-                                <span class="text-xs font-bold text-slate-400 font-mono">LO-902002994-E7-2026</span>
-                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-emerald-100 text-emerald-700 border border-emerald-200">Publicada</span>
-                                <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100">Licitación Pública Nacional</span>
-                            </div>
-                            <h3 class="font-bold text-slate-800 text-base group-hover:text-primary-700 transition-colors">Construcción Sistema de Drenaje Pluvial Colonia Norte</h3>
-                            <p class="text-slate-500 text-sm mt-1">Municipio de León, Guanajuato · Infraestructura hidráulica y sanitaria</p>
-                        </div>
-                        <div class="flex flex-row md:flex-col items-start md:items-end gap-3 md:gap-1 shrink-0">
-                            <div class="text-right">
-                                <p class="text-xs text-slate-400">Presupuesto estimado</p>
-                                <p class="font-bold text-slate-800 text-sm">$12,750,000 MXN</p>
-                            </div>
-                            <div class="text-right">
-                                <p class="text-xs text-slate-400">Recepción de prop.</p>
-                                <p class="font-semibold text-slate-700 text-sm">15 May 2026</p>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="mt-4 pt-4 border-t border-slate-100 flex flex-wrap gap-4 text-xs text-slate-500">
-                        <span class="flex items-center gap-1.5"><i class="ph ph-calendar-check text-slate-400" aria-hidden="true"></i> Junta Aclaraciones: 02 May 2026</span>
-                        <span class="flex items-center gap-1.5"><i class="ph ph-folder-open text-slate-400" aria-hidden="true"></i> Apertura Prop.: 15 May 2026</span>
-                        <span class="flex items-center gap-1.5"><i class="ph ph-gavel text-slate-400" aria-hidden="true"></i> Fallo: 30 May 2026</span>
-                    </div>
-                </article>
+            <div id="landing-convocatorias-list" class="space-y-4">
+                <div class="p-6 rounded-xl border border-slate-200 bg-slate-50 text-slate-500 text-sm">Cargando convocatorias...</div>
             </div>
 
             <div class="mt-8 text-center">
-                <a href="/frontend/admin/convocatorias/index.html" class="inline-flex items-center gap-2 bg-slate-900 hover:bg-slate-700 text-white font-semibold px-6 py-3 rounded-xl transition-colors duration-200 text-sm cursor-pointer">
+                <a href="/historial.php" class="inline-flex items-center gap-2 bg-slate-900 hover:bg-slate-700 text-white font-semibold px-6 py-3 rounded-xl transition-colors duration-200 text-sm cursor-pointer">
                     Ver todas las convocatorias
                     <i class="ph ph-arrow-right" aria-hidden="true"></i>
                 </a>
@@ -423,7 +335,7 @@
             </div>
 
             <div class="mt-10 text-center">
-                <a href="#registro" class="inline-flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white font-semibold px-6 py-3 rounded-xl transition-colors duration-200 text-sm shadow-md cursor-pointer">
+                <a href="/registro.php" class="inline-flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white font-semibold px-6 py-3 rounded-xl transition-colors duration-200 text-sm shadow-md cursor-pointer">
                     <i class="ph ph-user-plus text-base" aria-hidden="true"></i>
                     Iniciar Registro de Proveedor
                 </a>
@@ -446,11 +358,11 @@
                     <p class="text-slate-400 text-sm font-medium">Trazabilidad Registrada</p>
                 </div>
                 <div class="bg-white/5 rounded-2xl p-6 border border-white/10 text-center">
-                    <p class="text-4xl font-extrabold text-white mb-1">+50</p>
+                    <p id="landing-tr-activas" class="text-4xl font-extrabold text-white mb-1">+0</p>
                     <p class="text-slate-400 text-sm font-medium">Proyectos Activos</p>
                 </div>
                 <div class="bg-white/5 rounded-2xl p-6 border border-white/10 text-center">
-                    <p class="text-4xl font-extrabold text-white mb-1">$280M</p>
+                    <p id="landing-tr-monto" class="text-4xl font-extrabold text-white mb-1">$0</p>
                     <p class="text-slate-400 text-sm font-medium">MXN Adjudicados</p>
                 </div>
                 <div class="bg-white/5 rounded-2xl p-6 border border-white/10 text-center">
@@ -569,6 +481,7 @@
         </div>
     </footer>
 
+    <script src="/frontend/shared/public.js"></script>
     <script>
         const btn = document.getElementById('mobile-menu-btn');
         const menu = document.getElementById('mobile-menu');

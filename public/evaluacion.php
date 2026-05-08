@@ -91,132 +91,8 @@
         </div>
 
         <!-- Processes List -->
-        <div class="space-y-4">
-            <!-- Process 1 -->
-            <article class="bg-white border border-slate-200 rounded-2xl p-6 hover:shadow-md transition-all">
-                <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-                    <div class="flex-1">
-                        <div class="flex items-center gap-2 mb-2">
-                            <span class="text-xs font-bold text-slate-400 font-mono">IR-902002994-E6-2026</span>
-                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-700 border border-amber-200">
-                                <span class="w-1.5 h-1.5 rounded-full bg-amber-500 mr-1.5 animate-pulse"></span>
-                                En Evaluación
-                            </span>
-                        </div>
-                        <h3 class="font-bold text-slate-800 text-lg">Rehabilitación de Caminos Rurales Tramo 3 — Región Norte</h3>
-                        <p class="text-slate-500 text-sm mt-1">Municipio de Dolores Hidalgo, Guanajuato</p>
-                    </div>
-                </div>
-                <div class="mt-5 pt-5 border-t border-slate-100 grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div>
-                        <p class="text-xs text-slate-400 mb-1">Propuestas Recibidas</p>
-                        <p class="font-bold text-slate-800 text-lg">4</p>
-                    </div>
-                    <div>
-                        <p class="text-xs text-slate-400 mb-1">Presupuesto</p>
-                        <p class="font-bold text-slate-800 text-sm">$3,200,000 MXN</p>
-                    </div>
-                    <div>
-                        <p class="text-xs text-slate-400 mb-1">Cierre de Recepción</p>
-                        <p class="font-semibold text-slate-700 text-sm">28 Abr 2026</p>
-                    </div>
-                    <div>
-                        <p class="text-xs text-slate-400 mb-1">Fallo Estimado</p>
-                        <p class="font-semibold text-slate-700 text-sm">12 May 2026</p>
-                    </div>
-                </div>
-                <div class="mt-4">
-                    <p class="text-xs text-slate-500 mb-2">Avance del proceso de evaluación</p>
-                    <div class="w-full bg-slate-100 rounded-full h-2">
-                        <div class="bg-amber-500 h-2 rounded-full" style="width: 60%"></div>
-                    </div>
-                    <p class="text-xs text-amber-600 font-medium mt-1">60% — Revisión técnica en curso</p>
-                </div>
-            </article>
-
-            <!-- Process 2 -->
-            <article class="bg-white border border-slate-200 rounded-2xl p-6 hover:shadow-md transition-all">
-                <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-                    <div class="flex-1">
-                        <div class="flex items-center gap-2 mb-2">
-                            <span class="text-xs font-bold text-slate-400 font-mono">LO-902002994-E3-2026</span>
-                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-100 text-amber-700 border border-amber-200">
-                                <span class="w-1.5 h-1.5 rounded-full bg-amber-500 mr-1.5 animate-pulse"></span>
-                                En Evaluación
-                            </span>
-                        </div>
-                        <h3 class="font-bold text-slate-800 text-lg">Mantenimiento de Unidades Habitacionales Fase IV</h3>
-                        <p class="text-slate-500 text-sm mt-1">Municipio de Irapuato, Guanajuato</p>
-                    </div>
-                </div>
-                <div class="mt-5 pt-5 border-t border-slate-100 grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div>
-                        <p class="text-xs text-slate-400 mb-1">Propuestas Recibidas</p>
-                        <p class="font-bold text-slate-800 text-lg">6</p>
-                    </div>
-                    <div>
-                        <p class="text-xs text-slate-400 mb-1">Presupuesto</p>
-                        <p class="font-bold text-slate-800 text-sm">$5,100,000 MXN</p>
-                    </div>
-                    <div>
-                        <p class="text-xs text-slate-400 mb-1">Cierre de Recepción</p>
-                        <p class="font-semibold text-slate-700 text-sm">20 Abr 2026</p>
-                    </div>
-                    <div>
-                        <p class="text-xs text-slate-400 mb-1">Fallo Estimado</p>
-                        <p class="font-semibold text-slate-700 text-sm">05 May 2026</p>
-                    </div>
-                </div>
-                <div class="mt-4">
-                    <p class="text-xs text-slate-500 mb-2">Avance del proceso de evaluación</p>
-                    <div class="w-full bg-slate-100 rounded-full h-2">
-                        <div class="bg-amber-500 h-2 rounded-full" style="width: 85%"></div>
-                    </div>
-                    <p class="text-xs text-amber-600 font-medium mt-1">85% — Dictamen en firma</p>
-                </div>
-            </article>
-
-            <!-- Process 3 -->
-            <article class="bg-white border border-slate-200 rounded-2xl p-6 hover:shadow-md transition-all">
-                <div class="flex flex-col lg:flex-row lg:items-center justify-between gap-4">
-                    <div class="flex-1">
-                        <div class="flex items-center gap-2 mb-2">
-                            <span class="text-xs font-bold text-slate-400 font-mono">LO-902002994-E8-2026</span>
-                            <span class="inline-flex items-center px-2.5 py-1 rounded-full text-xs font-semibold bg-blue-100 text-blue-700 border border-blue-200">
-                                <span class="w-1.5 h-1.5 rounded-full bg-blue-500 mr-1.5 animate-pulse"></span>
-                                Recepción de Propuestas
-                            </span>
-                        </div>
-                        <h3 class="font-bold text-slate-800 text-lg">Ampliación de Red Eléctrica Zona Industrial</h3>
-                        <p class="text-slate-500 text-sm mt-1">Municipio de Celaya, Guanajuato</p>
-                    </div>
-                </div>
-                <div class="mt-5 pt-5 border-t border-slate-100 grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div>
-                        <p class="text-xs text-slate-400 mb-1">Propuestas Recibidas</p>
-                        <p class="font-bold text-slate-800 text-lg">2</p>
-                    </div>
-                    <div>
-                        <p class="text-xs text-slate-400 mb-1">Presupuesto</p>
-                        <p class="font-bold text-slate-800 text-sm">$18,400,000 MXN</p>
-                    </div>
-                    <div>
-                        <p class="text-xs text-slate-400 mb-1">Cierre de Recepción</p>
-                        <p class="font-semibold text-slate-700 text-sm">10 May 2026</p>
-                    </div>
-                    <div>
-                        <p class="text-xs text-slate-400 mb-1">Fallo Estimado</p>
-                        <p class="font-semibold text-slate-700 text-sm">28 May 2026</p>
-                    </div>
-                </div>
-                <div class="mt-4">
-                    <p class="text-xs text-slate-500 mb-2">Avance del proceso de evaluación</p>
-                    <div class="w-full bg-slate-100 rounded-full h-2">
-                        <div class="bg-blue-500 h-2 rounded-full" style="width: 25%"></div>
-                    </div>
-                    <p class="text-xs text-blue-600 font-medium mt-1">25% — Recepción abierta hasta 10 May</p>
-                </div>
-            </article>
+        <div id="evaluacion-list" class="space-y-4">
+            <div class="p-6 rounded-xl border border-slate-200 bg-slate-50 text-slate-500 text-sm">Cargando procesos públicos...</div>
         </div>
 
         <!-- CTA -->
@@ -281,5 +157,6 @@
         </div>
     </footer>
 
+    <script src="/frontend/shared/public.js"></script>
 </body>
 </html>

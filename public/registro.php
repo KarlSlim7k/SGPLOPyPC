@@ -91,7 +91,7 @@
         </div>
 
         <!-- Form -->
-        <form class="space-y-6">
+        <form id="registro-form" class="space-y-6">
             <!-- Section: Datos Fiscales -->
             <div class="bg-white border border-slate-200 rounded-2xl p-6">
                 <h2 class="font-bold text-slate-800 text-lg mb-1 flex items-center gap-2">
@@ -103,18 +103,18 @@
                 <div class="space-y-4">
                     <div>
                         <label for="razon-social" class="block text-sm font-semibold text-slate-700 mb-1.5">Razón Social <span class="text-red-500">*</span></label>
-                        <input type="text" id="razon-social" required placeholder="Ej: Constructora del Valle S.A. de C.V." class="w-full border border-slate-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                        <input type="text" name="nombre_empresa" id="razon-social" required placeholder="Ej: Constructora del Valle S.A. de C.V." class="w-full border border-slate-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
                     </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <label for="rfc" class="block text-sm font-semibold text-slate-700 mb-1.5">RFC <span class="text-red-500">*</span></label>
-                            <input type="text" id="rfc" required placeholder="CVA180523XX8" maxlength="13" class="w-full border border-slate-200 rounded-lg px-4 py-2.5 text-sm uppercase focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                            <input type="text" name="registro_fiscal" id="rfc" required placeholder="CVA180523XX8" maxlength="13" class="w-full border border-slate-200 rounded-lg px-4 py-2.5 text-sm uppercase focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
                             <p class="text-xs text-slate-400 mt-1">Sin espacios ni caracteres especiales</p>
                         </div>
                         <div>
                             <label for="regimen" class="block text-sm font-semibold text-slate-700 mb-1.5">Régimen Fiscal <span class="text-red-500">*</span></label>
-                            <select id="regimen" required class="w-full border border-slate-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500">
+                            <select name="regimen_fiscal" id="regimen" required class="w-full border border-slate-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500">
                                 <option value="">Seleccionar...</option>
                                 <option>Persona Moral - General</option>
                                 <option>Persona Moral - CONSTRUCTORA</option>
@@ -127,7 +127,7 @@
 
                     <div>
                         <label for="domicilio-fiscal" class="block text-sm font-semibold text-slate-700 mb-1.5">Domicilio Fiscal <span class="text-red-500">*</span></label>
-                        <input type="text" id="domicilio-fiscal" required placeholder="Calle, Número, Colonia, C.P., Ciudad, Estado" class="w-full border border-slate-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                        <input type="text" name="domicilio" id="domicilio-fiscal" required placeholder="Calle, Número, Colonia, C.P., Ciudad, Estado" class="w-full border border-slate-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
                     </div>
                 </div>
             </div>
@@ -144,23 +144,27 @@
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <label for="nombre-contacto" class="block text-sm font-semibold text-slate-700 mb-1.5">Nombre Completo <span class="text-red-500">*</span></label>
-                            <input type="text" id="nombre-contacto" required placeholder="Juan Pérez García" class="w-full border border-slate-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                            <input type="text" name="nombre_contacto" id="nombre-contacto" required placeholder="Juan Pérez García" class="w-full border border-slate-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
                         </div>
                         <div>
                             <label for="cargo" class="block text-sm font-semibold text-slate-700 mb-1.5">Cargo <span class="text-red-500">*</span></label>
-                            <input type="text" id="cargo" required placeholder="Representante Legal" class="w-full border border-slate-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                            <input type="text" name="cargo" id="cargo" required placeholder="Representante Legal" class="w-full border border-slate-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
                         </div>
                     </div>
 
                     <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div>
                             <label for="email" class="block text-sm font-semibold text-slate-700 mb-1.5">Correo Electrónico <span class="text-red-500">*</span></label>
-                            <input type="email" id="email" required placeholder="contacto@empresa.com" class="w-full border border-slate-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                            <input type="email" name="email" id="email" required placeholder="contacto@empresa.com" class="w-full border border-slate-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
                         </div>
                         <div>
                             <label for="telefono" class="block text-sm font-semibold text-slate-700 mb-1.5">Teléfono <span class="text-red-500">*</span></label>
-                            <input type="tel" id="telefono" required placeholder="(477) 123-4567" class="w-full border border-slate-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
+                            <input type="tel" name="telefono" id="telefono" required placeholder="(477) 123-4567" class="w-full border border-slate-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
                         </div>
+                    </div>
+                    <div>
+                        <label for="password" class="block text-sm font-semibold text-slate-700 mb-1.5">Contraseña de acceso <span class="text-red-500">*</span></label>
+                        <input type="password" name="password" id="password" required minlength="8" placeholder="Mínimo 8 caracteres" class="w-full border border-slate-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500 focus:border-transparent">
                     </div>
                 </div>
             </div>
@@ -175,35 +179,35 @@
 
                 <div class="space-y-3">
                     <label class="flex items-center gap-3 p-3 border border-slate-200 rounded-lg hover:bg-slate-50 cursor-pointer transition-colors">
-                        <input type="checkbox" class="w-4 h-4 text-primary-600 rounded border-slate-300 focus:ring-primary-500">
+                        <input type="checkbox" name="especialidad[]" value="CONSTRUCCION_EDIFICACIONES" class="w-4 h-4 text-primary-600 rounded border-slate-300 focus:ring-primary-500">
                         <div>
                             <p class="font-semibold text-slate-700 text-sm">Construcción de Edificaciones</p>
                             <p class="text-xs text-slate-400">Vivienda, comercial, institucional, industrial</p>
                         </div>
                     </label>
                     <label class="flex items-center gap-3 p-3 border border-slate-200 rounded-lg hover:bg-slate-50 cursor-pointer transition-colors">
-                        <input type="checkbox" class="w-4 h-4 text-primary-600 rounded border-slate-300 focus:ring-primary-500">
+                        <input type="checkbox" name="especialidad[]" value="INFRAESTRUCTURA_VIAL" class="w-4 h-4 text-primary-600 rounded border-slate-300 focus:ring-primary-500">
                         <div>
                             <p class="font-semibold text-slate-700 text-sm">Infraestructura Vial</p>
                             <p class="text-xs text-slate-400">Caminos, puentes, pavimentación, señalización</p>
                         </div>
                     </label>
                     <label class="flex items-center gap-3 p-3 border border-slate-200 rounded-lg hover:bg-slate-50 cursor-pointer transition-colors">
-                        <input type="checkbox" class="w-4 h-4 text-primary-600 rounded border-slate-300 focus:ring-primary-500">
+                        <input type="checkbox" name="especialidad[]" value="INFRAESTRUCTURA_HIDRAULICA" class="w-4 h-4 text-primary-600 rounded border-slate-300 focus:ring-primary-500">
                         <div>
                             <p class="font-semibold text-slate-700 text-sm">Infraestructura Hidráulica</p>
                             <p class="text-xs text-slate-400">Drenaje, agua potable, sistemas de riego</p>
                         </div>
                     </label>
                     <label class="flex items-center gap-3 p-3 border border-slate-200 rounded-lg hover:bg-slate-50 cursor-pointer transition-colors">
-                        <input type="checkbox" class="w-4 h-4 text-primary-600 rounded border-slate-300 focus:ring-primary-500">
+                        <input type="checkbox" name="especialidad[]" value="INSTALACIONES_ELECTRICAS" class="w-4 h-4 text-primary-600 rounded border-slate-300 focus:ring-primary-500">
                         <div>
                             <p class="font-semibold text-slate-700 text-sm">Instalaciones Eléctricas y Especiales</p>
                             <p class="text-xs text-slate-400">Electrificación, telecomunicaciones, alumbrado</p>
                         </div>
                     </label>
                     <label class="flex items-center gap-3 p-3 border border-slate-200 rounded-lg hover:bg-slate-50 cursor-pointer transition-colors">
-                        <input type="checkbox" class="w-4 h-4 text-primary-600 rounded border-slate-300 focus:ring-primary-500">
+                        <input type="checkbox" name="especialidad[]" value="MANTENIMIENTO_CONSERVACION" class="w-4 h-4 text-primary-600 rounded border-slate-300 focus:ring-primary-500">
                         <div>
                             <p class="font-semibold text-slate-700 text-sm">Mantenimiento y Conservación</p>
                             <p class="text-xs text-slate-400">Mantenimiento de edificios, áreas verdes, limpieza</p>
@@ -225,19 +229,19 @@
                         <i class="ph ph-upload-simple text-2xl text-slate-400 mb-2"></i>
                         <p class="font-semibold text-slate-700 text-sm">Acta Constitutiva</p>
                         <p class="text-xs text-slate-400 mt-1">Arrastra o <span class="text-primary-600 font-medium">selecciona un archivo</span> (PDF)</p>
-                        <input type="file" accept=".pdf" class="hidden">
+                        <input id="doc-acta" type="file" accept=".pdf" class="mt-3 mx-auto text-xs text-slate-500">
                     </div>
                     <div class="border-2 border-dashed border-slate-200 rounded-xl p-6 text-center hover:border-primary-300 transition-colors cursor-pointer">
                         <i class="ph ph-upload-simple text-2xl text-slate-400 mb-2"></i>
                         <p class="font-semibold text-slate-700 text-sm">Constancia de Situación Fiscal (SAT)</p>
                         <p class="text-xs text-slate-400 mt-1">Arrastra o <span class="text-primary-600 font-medium">selecciona un archivo</span> (PDF)</p>
-                        <input type="file" accept=".pdf" class="hidden">
+                        <input id="doc-constancia" type="file" accept=".pdf" class="mt-3 mx-auto text-xs text-slate-500">
                     </div>
                     <div class="border-2 border-dashed border-slate-200 rounded-xl p-6 text-center hover:border-primary-300 transition-colors cursor-pointer">
                         <i class="ph ph-upload-simple text-2xl text-slate-400 mb-2"></i>
                         <p class="font-semibold text-slate-700 text-sm">Identificación del Representante Legal</p>
                         <p class="text-xs text-slate-400 mt-1">Arrastra o <span class="text-primary-600 font-medium">selecciona un archivo</span> (PDF o imagen)</p>
-                        <input type="file" accept=".pdf,.jpg,.png" class="hidden">
+                        <input id="doc-identificacion" type="file" accept=".pdf,.jpg,.png" class="mt-3 mx-auto text-xs text-slate-500">
                     </div>
                 </div>
 
@@ -257,13 +261,14 @@
 
             <!-- Submit -->
             <div class="flex flex-col sm:flex-row gap-3 pt-2">
-                <button type="submit" class="flex-1 bg-primary-600 hover:bg-primary-700 text-white font-semibold px-6 py-3 rounded-xl transition-colors duration-200 shadow-sm text-sm">
+                <button id="registro-submit" type="submit" class="flex-1 bg-primary-600 hover:bg-primary-700 text-white font-semibold px-6 py-3 rounded-xl transition-colors duration-200 shadow-sm text-sm">
                     <i class="ph ph-check-circle mr-1"></i> Enviar Registro
                 </button>
                 <a href="/" class="flex-1 text-center border border-slate-200 hover:bg-slate-50 text-slate-700 font-semibold px-6 py-3 rounded-xl transition-colors duration-200 text-sm">
                     Cancelar
                 </a>
             </div>
+            <div id="registro-status" class="hidden"></div>
         </form>
     </main>
 
@@ -318,5 +323,6 @@
         </div>
     </footer>
 
+    <script src="/frontend/shared/public.js"></script>
 </body>
 </html>

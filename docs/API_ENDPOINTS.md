@@ -285,6 +285,74 @@ Obtiene metadatos de un documento.
 
 ---
 
+## Transparencia Pública (sin autenticación)
+
+### GET /api/v1/public/convocatorias
+Lista convocatorias públicas con paginación y filtros.
+
+Query params opcionales:
+- `page`, `limit`
+- `sort` (`fecha_creacion`, `numero_licitacion`, `tipo_procedimiento`, `presupuesto_estimado`)
+- `order` (`ASC`, `DESC`)
+- `q`, `estado`, `tipo`, `dependencia`, `year`
+
+### GET /api/v1/public/convocatorias/{id}
+Obtiene detalle de convocatoria pública.
+
+### GET /api/v1/public/convocatorias/{id}/documentos
+Lista documentos públicos de una convocatoria.
+
+### GET /api/v1/public/documentos/{id}/download
+Descarga un documento público.
+
+### GET /api/v1/public/resultados
+Resultados de adjudicación (con paginación, `q`).
+
+### GET /api/v1/public/contratos
+Contratos públicos (con paginación y filtros `estatus`, `year`).
+
+### GET /api/v1/public/evaluaciones
+Procesos públicos en `RECEPCION_PROPUESTAS` y `EN_EVALUACION`.
+
+### GET /api/v1/public/historial
+Historial de licitaciones concluidas con filtros (`year`, `tipo`, `q`).
+
+### GET /api/v1/public/estadisticas
+Devuelve KPIs públicos principales.
+
+### POST /api/v1/public/proveedores/registro
+Registro público transaccional:
+- crea `usuario` rol `PROVEEDOR`
+- crea `proveedor` con estatus `PENDIENTE`
+- devuelve JWT + usuario + proveedor
+
+### POST /api/v1/public/soporte
+Registra ticket de soporte público y devuelve `folio`.
+
+---
+
+## Recuperación de contraseña
+
+### POST /api/v1/auth/password/forgot
+Solicita recuperación por correo/token con respuesta neutra.
+
+Body:
+```json
+{ "email": "usuario@dominio.mx" }
+```
+
+### POST /api/v1/auth/password/reset
+Restablece contraseña usando token válido.
+
+Body:
+```json
+{
+  "token": "token-recibido",
+  "password": "NuevaPassword#2026"
+}
+```
+
+
 ## Auditoría
 
 Todas las operaciones críticas generan registros en `historial_cambio`:
