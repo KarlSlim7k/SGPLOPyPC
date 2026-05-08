@@ -20,6 +20,26 @@ class ParticipacionController {
         jsonResponse(true, 'Listado de participaciones', $data, null, 200);
     }
 
+    public function list(): never {
+        AuthMiddleware::handle();
+        RoleMiddleware::handle('ADMINISTRADOR');
+
+        $page = isset($_GET['page']) ? (int) $_GET['page'] : 1;
+        $limit = isset($_GET['limit']) ? (int) $_GET['limit'] : 20;
+        $idLicitacion = isset($_GET['licitacion']) ? (int) $_GET['licitacion'] : null;
+        $estatus = $_GET['estatus'] ?? null;
+        $search = $_GET['q'] ?? null;
+
+        $data = $this->service->listAll(
+            $page,
+            $limit,
+            ($idLicitacion !== null && $idLicitacion > 0) ? $idLicitacion : null,
+            $estatus,
+            $search
+        );
+        jsonResponse(true, 'Listado general de participaciones', $data, null, 200);
+    }
+
     public function inscribir(int $idLicitacion): never {
         AuthMiddleware::handle();
         $user = AuthMiddleware::getAuthenticatedUser();

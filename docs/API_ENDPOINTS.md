@@ -142,6 +142,15 @@ Cambia estatus de validación (`PENDIENTE`, `VALIDADO`, `RECHAZADO`, `SUSPENDIDO
 
 ## Participaciones y Propuestas
 
+### GET /api/v1/participaciones
+Lista general de participaciones (ADMINISTRADOR) con paginación y filtros.
+
+Query params opcionales:
+- `page`, `limit`
+- `licitacion` (id_licitacion)
+- `estatus`
+- `q` (razón social, RFC o número de licitación)
+
 ### GET /api/v1/licitaciones/{id}/participaciones
 Lista participaciones de una licitación (ADMINISTRADOR).
 
@@ -320,11 +329,38 @@ Historial de licitaciones concluidas con filtros (`year`, `tipo`, `q`).
 ### GET /api/v1/public/estadisticas
 Devuelve KPIs públicos principales.
 
+Incluye:
+- `proveedores_registrados_total`: total de proveedores registrados (todos los estatus).
+- `proveedores_activos`: proveedores en `PENDIENTE` o `VALIDADO`.
+- `proveedores_registrados`: alias de compatibilidad mapeado a `proveedores_registrados_total`.
+
 ### POST /api/v1/public/proveedores/registro
 Registro público transaccional:
 - crea `usuario` rol `PROVEEDOR`
 - crea `proveedor` con estatus `PENDIENTE`
 - devuelve JWT + usuario + proveedor
+
+Body mínimo relevante:
+```json
+{
+  "nombre_empresa": "Constructora Demo SA de CV",
+  "representante_legal": "Nombre Apellido",
+  "registro_fiscal": "AAA010101AAA",
+  "regimen_fiscal": "601",
+  "domicilio": "Calle 1, Ciudad, Estado",
+  "nombre_contacto": "Nombre Apellido",
+  "cargo": "Director",
+  "email": "proveedor@demo.mx",
+  "telefono": "5551234567",
+  "password": "passwordSegura123",
+  "accepted_terms": true
+}
+```
+
+Compatibilidad legacy:
+- Se acepta `terms: true` si `accepted_terms` no viene en el payload.
+- Si ambos vienen, prevalece `accepted_terms`.
+- `terms` queda deprecado y se recomienda usar únicamente `accepted_terms`.
 
 ### POST /api/v1/public/soporte
 Registra ticket de soporte público y devuelve `folio`.

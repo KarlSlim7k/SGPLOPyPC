@@ -83,7 +83,10 @@
       const tMonto = qs('#landing-tr-monto');
 
       if (licActivas) licActivas.textContent = String(stats.licitaciones_activas || 0);
-      if (provRegs) provRegs.textContent = String(stats.proveedores_registrados || 0);
+      if (provRegs) {
+        const totalProveedores = stats.proveedores_registrados_total ?? stats.proveedores_registrados ?? 0;
+        provRegs.textContent = String(totalProveedores);
+      }
       if (contratos) contratos.textContent = String(stats.contratos_adjudicados || 0);
       if (monto) monto.textContent = formatCurrency(stats.monto_total_contratado || 0);
       if (tActivos) tActivos.textContent = '+' + String(stats.licitaciones_activas || 0);

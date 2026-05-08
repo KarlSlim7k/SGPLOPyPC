@@ -22,6 +22,64 @@ class ParticipacionRepository {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public function findAllForAdmin(
+        int $page,
+        int $limit,
+        ?int $idLicitacion = null,
+        ?string $estatus = null,
+        ?string $search = null
+    ): array {
+        $offset = ($page - 1) * $limit;
+
+        $where = ['1=1'];
+        $params = [];
+
+        if ($idLicitacion !== null && $idLicitacion > 0) {
+            $where[] = 'pa.id_licitacion = :id_licitacion';
+            $params['id_licitacion'] = $idLicitacion;
+        }
+        if ($estatus !== null && trim($estatus) !== '') {
+            $where[] = 'pa.estatus = :estatus';
+            $params['estatus'] = trim($estatus);
+        }
+        if ($search !== null && trim($search) !== '') {
+            $where[] = '(p.nombre_empresa LIKE :search OR p.registro_fiscal LIKE :search OR li.numero_licitacion LIKE :search)';
+            $params['search'] = '%' . trim($search) . '%';
+        }
+
+        $whereSql = ' WHERE ' . implode(' AND ', $where);
+
+        $sql = 'SELECT pa.id_participacion, pa.id_licitacion, li.numero_licitacion, pa.id_proveedor, '
+             . 'p.nombre_empresa, p.registro_fiscal, pa.estatus, pa.fecha_inscripcion '
+             . 'FROM participacion pa '
+             . 'JOIN proveedor p ON pa.id_proveedor = p.id_proveedor '
+             . 'JOIN licitacion li ON pa.id_licitacion = li.id_licitacion '
+             . $whereSql
+             . ' ORDER BY pa.fecha_inscripcion DESC LIMIT :limit OFFSET :offset';
+
+        $stmt = $this->db->prepare($sql);
+        foreach ($params as $k => $v) {
+            $stmt->bindValue($k, $v);
+        }
+        $stmt->bindValue('limit', $limit, PDO::PARAM_INT);
+        $stmt->bindValue('offset', $offset, PDO::PARAM_INT);
+        $stmt->execute();
+        $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $countSql = 'SELECT COUNT(*) FROM participacion pa '
+                  . 'JOIN proveedor p ON pa.id_proveedor = p.id_proveedor '
+                  . 'JOIN licitacion li ON pa.id_licitacion = li.id_licitacion '
+                  . $whereSql;
+        $countStmt = $this->db->prepare($countSql);
+        foreach ($params as $k => $v) {
+            $countStmt->bindValue($k, $v);
+        }
+        $countStmt->execute();
+        $total = (int) $countStmt->fetchColumn();
+
+        return ['items' => $items, 'total' => $total, 'page' => $page, 'limit' => $limit];
+    }
+
     public function findByProveedorAndLicitacion(int $idProveedor, int $idLicitacion): ?array {
         $stmt = $this->db->prepare(
             'SELECT * FROM participacion WHERE id_proveedor = :id_proveedor AND id_licitacion = :id_licitacion LIMIT 1'

@@ -129,3 +129,27 @@ Los principales puntos de atención son:
 2. Existe un error 500 persistente en el módulo de soporte/tickets.
 3. La discrepancia entre el conteo de proveedores en el panel admin vs. las estadísticas públicas puede generar confusión administrativa.
 4. No hay un endpoint de listado general de participaciones disponible para admin (404).
+
+---
+10. Actualización Posterior - Hardening PROVEEDOR (2026-05-08)
+Cambios aplicados sobre el flujo del rol PROVEEDOR / CONTRATISTA:
+
+1) Registro público - términos y privacidad
+- Se normalizó la validación para aceptar `accepted_terms` (canónico) y `terms` (legacy).
+- Si ambos vienen en payload, prevalece `accepted_terms`.
+- Se mantiene validación estricta: debe ser `true`; de lo contrario responde 422 con el mismo mensaje de términos.
+
+2) Participaciones - endpoint administrativo general
+- Se incorporó `GET /api/v1/participaciones` (solo ADMINISTRADOR).
+- Incluye paginación y filtros: `page`, `limit`, `licitacion`, `estatus`, `q`.
+- El endpoint existente `GET /api/v1/licitaciones/{id}/participaciones` se mantiene sin cambios.
+
+3) Estadísticas públicas de proveedores
+- Se amplió `GET /api/v1/public/estadisticas` con:
+  - `proveedores_registrados_total` (todos los estatus).
+  - `proveedores_activos` (`PENDIENTE` + `VALIDADO`).
+- Se conserva `proveedores_registrados` por compatibilidad y se mapea al total.
+- La landing pública ahora consume `proveedores_registrados_total` (con fallback a la clave legacy).
+
+Resultado del hardening:
+- Quedan resueltas las brechas funcionales de términos de registro, 404 de participaciones generales y discrepancia de criterio público/admin para conteo de proveedores.

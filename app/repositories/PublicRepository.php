@@ -277,14 +277,25 @@ class PublicRepository {
             . 'FROM licitacion'
         )->fetch(PDO::FETCH_ASSOC);
 
-        $proveedores = $this->db->query("SELECT COUNT(*) AS total FROM proveedor WHERE estatus IN ('PENDIENTE','VALIDADO')")->fetch(PDO::FETCH_ASSOC);
+        $proveedores = $this->db->query(
+            "SELECT "
+            . 'COUNT(*) AS total, '
+            . "SUM(CASE WHEN estatus IN ('PENDIENTE','VALIDADO') THEN 1 ELSE 0 END) AS activos "
+            . 'FROM proveedor'
+        )->fetch(PDO::FETCH_ASSOC);
         $contratos = $this->db->query('SELECT COUNT(*) AS total, COALESCE(SUM(monto_contrato),0) AS monto_total FROM contrato')->fetch(PDO::FETCH_ASSOC);
+
+        $proveedoresTotal = (int) ($proveedores['total'] ?? 0);
+        $proveedoresActivos = (int) ($proveedores['activos'] ?? 0);
 
         return [
             'licitaciones_activas' => (int) ($totales['licitaciones_activas'] ?? 0),
             'licitaciones_adjudicadas' => (int) ($totales['licitaciones_adjudicadas'] ?? 0),
             'licitaciones_en_evaluacion' => (int) ($totales['licitaciones_en_evaluacion'] ?? 0),
-            'proveedores_registrados' => (int) ($proveedores['total'] ?? 0),
+            // Compatibilidad hacia atrás: se conserva la clave histórica.
+            'proveedores_registrados' => $proveedoresTotal,
+            'proveedores_registrados_total' => $proveedoresTotal,
+            'proveedores_activos' => $proveedoresActivos,
             'contratos_adjudicados' => (int) ($contratos['total'] ?? 0),
             'monto_total_contratado' => (float) ($contratos['monto_total'] ?? 0),
         ];

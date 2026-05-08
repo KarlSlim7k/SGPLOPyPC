@@ -23,6 +23,21 @@ class ParticipacionService {
         return $this->partRepo->findByLicitacion($idLicitacion);
     }
 
+    public function listAll(
+        int $page,
+        int $limit,
+        ?int $idLicitacion = null,
+        ?string $estatus = null,
+        ?string $search = null
+    ): array {
+        $page = max(1, $page);
+        $limit = min(100, max(1, $limit));
+        $normalizedEstatus = ($estatus !== null && trim($estatus) !== '') ? strtoupper(trim($estatus)) : null;
+        $normalizedSearch = ($search !== null && trim($search) !== '') ? trim($search) : null;
+
+        return $this->partRepo->findAllForAdmin($page, $limit, $idLicitacion, $normalizedEstatus, $normalizedSearch);
+    }
+
     public function inscribir(int $idLicitacion, int $idUsuario): array {
         $proveedor = $this->provRepo->findByUsuario($idUsuario);
         if (!$proveedor) {

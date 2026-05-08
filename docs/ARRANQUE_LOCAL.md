@@ -116,6 +116,7 @@
 
 | Método | Ruta | Descripción | Protección |
 |--------|------|-------------|------------|
+| GET | `/api/v1/participaciones` | Listado general de participaciones (paginado/filtrable) | Autenticado + ADMINISTRADOR |
 | GET | `/api/v1/licitaciones/{id}/participaciones` | Listar inscripciones de una licitación | Autenticado + ADMINISTRADOR |
 | POST | `/api/v1/licitaciones/{id}/participaciones` | Inscribir proveedor en licitación | Autenticado + PROVEEDOR |
 | POST | `/api/v1/participaciones/{id}/propuesta` | Enviar propuesta (una por participación) | Autenticado + PROVEEDOR |

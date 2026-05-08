@@ -193,6 +193,12 @@ try {
             break;
 
         // Participaciones y propuestas
+        case $route === '/participaciones' && $requestMethod === 'GET':
+            AuthMiddleware::handle();
+            RoleMiddleware::handle('ADMINISTRADOR');
+            (new ParticipacionController())->list();
+            break;
+
         case preg_match('#^/licitaciones/(\d+)/participaciones$#', $route, $m) && $requestMethod === 'GET':
             AuthMiddleware::handle();
             RoleMiddleware::handle('ADMINISTRADOR');

@@ -187,7 +187,15 @@ class PublicAccountService {
             $errors[] = 'La contraseña debe tener al menos 8 caracteres.';
         }
 
-        $acceptedTerms = (bool) ($input['accepted_terms'] ?? false);
+        // Campo canónico: accepted_terms. Campo legacy: terms.
+        // Se exige booleano true de forma estricta.
+        if (array_key_exists('accepted_terms', $input)) {
+            $acceptedTerms = ($input['accepted_terms'] === true);
+        } elseif (array_key_exists('terms', $input)) {
+            $acceptedTerms = ($input['terms'] === true);
+        } else {
+            $acceptedTerms = false;
+        }
         if (!$acceptedTerms) {
             $errors[] = 'Debes aceptar los términos de uso y aviso de privacidad.';
         }
