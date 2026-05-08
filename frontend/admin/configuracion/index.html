@@ -26,6 +26,45 @@
     .toast { animation: slideIn 0.3s ease-out; }
     @keyframes slideIn { from { transform: translateX(100%); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
     input:focus { outline: none; ring: 2px; ring-color: #3b82f6; }
+
+    /* Tema oscuro local (preferencia del navegador) */
+    body.theme-dark {
+      background-color: #020617;
+      color: #e2e8f0;
+    }
+    body.theme-dark .bg-white {
+      background-color: #0f172a !important;
+      border-color: #334155 !important;
+    }
+    body.theme-dark .bg-slate-100,
+    body.theme-dark .bg-slate-50 {
+      background-color: #1e293b !important;
+      border-color: #334155 !important;
+    }
+    body.theme-dark .border-slate-200,
+    body.theme-dark .border-slate-100,
+    body.theme-dark .border-slate-300 {
+      border-color: #334155 !important;
+    }
+    body.theme-dark .text-slate-900,
+    body.theme-dark .text-slate-800 {
+      color: #f1f5f9 !important;
+    }
+    body.theme-dark .text-slate-700,
+    body.theme-dark .text-slate-600,
+    body.theme-dark .text-slate-500,
+    body.theme-dark .text-slate-400 {
+      color: #cbd5e1 !important;
+    }
+    body.theme-dark input,
+    body.theme-dark select {
+      background-color: #0b1220 !important;
+      color: #e2e8f0 !important;
+      border-color: #475569 !important;
+    }
+    body.theme-dark input::placeholder {
+      color: #94a3b8 !important;
+    }
   </style>
 </head>
 <body class="bg-slate-100 text-slate-900 font-sans antialiased flex h-screen overflow-hidden">
@@ -508,10 +547,26 @@
     });
 
     // Preferencias
-    const prefs = JSON.parse(localStorage.getItem('sgplopypc_prefs') || '{}');
-    document.getElementById('pref-dark').checked = prefs.darkMode || false;
+    const PREFS_KEY = 'sgplopypc_prefs';
+    function readPrefsSafe() {
+      try {
+        const raw = localStorage.getItem(PREFS_KEY);
+        return raw ? JSON.parse(raw) : {};
+      } catch (_) {
+        localStorage.removeItem(PREFS_KEY);
+        return {};
+      }
+    }
+
+    function applyDarkMode(enabled) {
+      document.body.classList.toggle('theme-dark', !!enabled);
+    }
+
+    const prefs = readPrefsSafe();
+    document.getElementById('pref-dark').checked = Boolean(prefs.darkMode);
     document.getElementById('pref-notif').checked = prefs.notificaciones !== false;
-    document.getElementById('pref-email').checked = prefs.emailResumen || false;
+    document.getElementById('pref-email').checked = Boolean(prefs.emailResumen);
+    applyDarkMode(prefs.darkMode);
 
     function savePrefs() {
       const p = {
@@ -519,7 +574,8 @@
         notificaciones: document.getElementById('pref-notif').checked,
         emailResumen: document.getElementById('pref-email').checked
       };
-      localStorage.setItem('sgplopypc_prefs', JSON.stringify(p));
+      localStorage.setItem(PREFS_KEY, JSON.stringify(p));
+      applyDarkMode(p.darkMode);
     }
 
     ['pref-dark', 'pref-notif', 'pref-email'].forEach(id => {
@@ -532,7 +588,8 @@
     // Limpiar cache
     document.getElementById('btn-limpiar-cache').addEventListener('click', () => {
       if (!confirm('Se eliminaran las preferencias locales y datos en cache. Continuar?')) return;
-      localStorage.removeItem('sgplopypc_prefs');
+      localStorage.removeItem(PREFS_KEY);
+      applyDarkMode(false);
       showToast('Datos locales limpiados', 'info');
       setTimeout(() => location.reload(), 1000);
     });

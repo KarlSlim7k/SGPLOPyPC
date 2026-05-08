@@ -135,6 +135,26 @@ test.describe('Admin deep flows', () => {
     await expect(page.locator('#cfg-nombre')).toHaveText(originalName, { timeout: 15000 });
   });
 
+  test('dark mode preference applies and persists', async ({ page }) => {
+    await loginAsAdmin(page);
+    await page.goto('/frontend/admin/configuracion/index.html');
+
+    const darkToggle = page.locator('#pref-dark');
+    const darkSwitch = page.locator('label:has(#pref-dark)');
+    const initial = await darkToggle.isChecked();
+
+    await darkSwitch.click();
+
+    await expect.poll(async () => page.evaluate(() => document.body.classList.contains('theme-dark')), { timeout: 10000 }).toBe(!initial);
+
+    await page.reload();
+    await expect.poll(async () => page.evaluate(() => document.body.classList.contains('theme-dark')), { timeout: 10000 }).toBe(!initial);
+
+    await darkSwitch.click();
+
+    await expect.poll(async () => page.evaluate(() => document.body.classList.contains('theme-dark')), { timeout: 10000 }).toBe(initial);
+  });
+
   test('export report CSV', async ({ page }) => {
     await loginAsAdmin(page);
     await page.goto('/frontend/admin/reportes/index.html');
