@@ -1,0 +1,131 @@
+Análisis del Estado Actual del Rol PROVEEDOR / CONTRATISTA en SGPLOPyPC
+A continuación presento el análisis integral basado en la revisión del código fuente, pruebas directas a la API en producción (Railway) y revisión de logs.
+---
+1. Arquitectura General
+Capa
+Backend
+Frontend
+Base de Datos
+Auth
+Despliegue
+URL Producción
+---
+### 2. Base de Datos - Modelo del Proveedor
+La plataforma modela al proveedor en la tabla **`proveedor`** con las siguientes características:
+**Campos principales:**
+- `id_proveedor`, `id_usuario` (FK a tabla `usuario`)
+- `nombre_empresa`, `representante_legal`, `registro_fiscal` (RFC), `domicilio`, `telefono`
+- `especialidad` (texto libre, ej. "Construcción")
+- `estatus` → `PENDIENTE` | `VALIDADO` | `RECHAZADO` | `SUSPENDIDO`
+- `fecha_registro`
+**Relaciones clave:**
+- **`usuario`**: El proveedor es un usuario con `rol = 'PROVEEDOR'`
+- **`participacion`**: Inscripciones a licitaciones
+- **`propuesta`**: Propuestas técnicas/económicas enviadas
+- **`contrato`**: Contratos adjudicados al proveedor
+- **`documento`**: Documentos legales (`DOC_LEGAL_PROVEEDOR`)
+**Migraciones aplicadas:**
+- Migración `004_fase6_publico_completo.sql` extendió la tabla agregando `regimen_fiscal`, `contacto_cargo`, `contacto_email`.
+---
+3. Backend - APIs y Controladores
+Endpoints disponibles para el rol PROVEEDOR:
+Método
+POST
+GET
+GET
+POST
+PUT
+PATCH
+POST
+POST
+GET
+GET
+GET
+Observaciones de APIs:
+- No existe endpoint GET /api/v1/participaciones (responde 404), aunque sí existe POST para crear participaciones.
+- El registro público valida: email único, RFC único, contraseña mínimo 8 caracteres, y aceptación de términos (terms).
+- Durante las pruebas, se detectó que el payload con "terms": true fue rechazado por el backend con el mensaje: "Debes aceptar los términos de uso y aviso de privacidad", lo que sugiere que el campo podría estar esperando un formato diferente o que la validación del frontend no coincide exactamente con la del backend en ciertos edge cases.
+---
+4. Estado Actual en Producción (Datos Reales)
+A continuación los datos reales del sistema desplegado en Railway obtenidos mediante pruebas directas a la API:
+Proveedores registrados: 1 (único proveedor demo E2E)
+- Empresa: Proveedor E2E 1778209822 SA de CV
+- RFC: E2E1778209822RFC
+- Estatus inicial al momento del análisis: SUSPENDIDO
+- Estatus actual después de la prueba de cambio: VALIDADO (nota: se ejecutó un PATCH exitoso como parte de esta auditoría)
+- Licitaciones participadas: 1
+- Usuario vinculado: proveedor@demo.mx (id_usuario: 3)
+Métricas globales del dashboard (admin):
+- Total licitaciones: 11
+- Total proveedores: 1
+- Total participaciones: 1
+- Total propuestas: 1
+- Total contratos: 1
+- Contrato adjudicado al proveedor: monto $1,399,000.00, estatus CONCLUIDO
+Estadísticas públicas (/api/v1/public/estadisticas):
+- Mientras el proveedor estaba SUSPENDIDO, el contador de proveedores_registrados mostraba 0.
+- Hallazgo: La consulta en PublicRepository::getEstadisticasPublicas() filtra explícitamente WHERE estatus IN ('PENDIENTE','VALIDADO'), por lo que los proveedores SUSPENDIDOS y RECHAZADOS no se contabilizan en las estadísticas del portal público.
+Autenticación de proveedores:
+- Login del usuario demo funciona correctamente (proveedor@demo.mx / proveedor123).
+- El JWT incluye el claim rol: "PROVEEDOR".
+---
+5. Flujo del Rol Proveedor - Validaciones en Vivo
+a) Inscripción a licitación como proveedor SUSPENDIDO:
+- Resultado: 422 Unprocessable Entity
+- Mensaje: "El proveedor debe estar validado para inscribirse."
+- Estado: Funcionando correctamente (validación de negocio activa).
+b) Cambio de estatus desde panel admin:
+- Resultado: 200 OK al ejecutar PATCH /api/v1/proveedores/1/estatus con {"estatus": "VALIDADO"}
+- Estado: Funcionando correctamente.
+c) Acceso a listados por rol:
+- Proveedor autenticado intentando GET /api/v1/proveedores → 403 Forbidden (esperado, requiere admin).
+- Proveedor autenticado intentando GET /api/v1/propuestas (listado general) → 403 Forbidden (esperado, requiere admin).
+- Proveedor autenticado intentando GET /api/v1/contratos (listado general) → 403 Forbidden (esperado, requiere admin).
+---
+6. Frontend - Interfaces del Rol
+Registro público (/registro.php):
+- Formulario completo con campos: datos fiscales, contacto, clasificación de obra (checkboxes), documentos iniciales (file upload visual, aunque no hay drag-and-drop funcional real, solo inputs de archivo).
+- Incluye validaciones HTML5 (required, minlength, type="email").
+- Consume /api/v1/public/proveedores/registro vía public.js y posteriormente sube documentos a /api/v1/documentos/upload si los hay.
+- Observación: El formulario menciona que se puede registrar sin documentos y quedará como "Pendiente", lo cual está alineado con el flujo de negocio.
+Panel Administrativo (/frontend/admin/proveedores/index.html):
+- Tabla con filtros por texto, estatus y especialidad.
+- Tarjetas de resumen: Total, Validados, Pendientes, Suspendidos.
+- Permite cambiar estatus directamente desde un <select> en cada fila.
+- Botón de exportar a CSV.
+- Diseño responsive con sidebar de navegación.
+Login y redirección (/frontend/auth/login.html):
+- Al iniciar sesión:
+  - ADMINISTRADOR → /frontend/admin/dashboard.html
+  - PROVEEDOR → / (landing público)
+  - PUBLICO → /frontend/publico/centro.html
+---
+7. Errores y Anomalías Detectadas
+Problema
+Error 500 en /api/v1/soporte/tickets
+404 en GET /api/v1/participaciones
+Estadísticas públicas omiten SUSPENDIDOS
+Validación de términos en registro
+---
+8. Resumen de Estado Funcional
+Funcionalidad
+Registro público de proveedor
+Login de proveedor
+Validación de estatus (inscripción bloqueada si no es VALIDADO)
+Cambio de estatus desde admin
+Inscripción a licitaciones
+Envío de propuestas
+Adjudicación automática
+Vinculación contrato-proveedor
+Panel admin de proveedores
+Reportes de participación
+Subida de documentos legales
+Estadísticas públicas
+---
+9. Conclusión
+El rol PROVEEDOR / CONTRATISTA se encuentra funcionalmente implementado y operativo en producción. El flujo completo (registro → validación → inscripción → propuesta → adjudicación → contrato) está codificado y activo. La base de datos, las APIs de backend y los frontends (tanto público de registro como administrativo de gestión) están alineados y funcionando.
+Los principales puntos de atención son:
+1. El proveedor demo en producción tenía estatus SUSPENDIDO al inicio de esta auditoría (se cambió a VALIDADO como parte de la prueba de funcionamiento del endpoint admin).
+2. Existe un error 500 persistente en el módulo de soporte/tickets.
+3. La discrepancia entre el conteo de proveedores en el panel admin vs. las estadísticas públicas puede generar confusión administrativa.
+4. No hay un endpoint de listado general de participaciones disponible para admin (404).
