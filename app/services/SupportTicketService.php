@@ -3,14 +3,17 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../repositories/SupportTicketRepository.php';
 require_once __DIR__ . '/../helpers/audit.php';
+require_once __DIR__ . '/../helpers/Mailer.php';
 
 class SupportTicketService {
     private const ESTADOS_VALIDOS = ['NUEVO', 'EN_PROCESO', 'CERRADO'];
 
     private SupportTicketRepository $repo;
+    private Mailer $mailer;
 
     public function __construct() {
         $this->repo = new SupportTicketRepository();
+        $this->mailer = new Mailer();
     }
 
     public function listAdmin(int $page, int $limit, ?string $estado = null, ?string $search = null): array {
@@ -49,6 +52,7 @@ class SupportTicketService {
             $this->repo->updateEstado($id, $nextEstado);
             $updated = $this->repo->findById($id);
             if ($updated) {
+                $this->notifyStatusChange($updated, (string) $ticket['estado']);
                 auditLog(
                     $idUsuario,
                     'soporte_ticket',
@@ -64,5 +68,37 @@ class SupportTicketService {
         }
 
         return ['ok' => true, 'data' => $ticket];
+    }
+
+    private function notifyStatusChange(array $ticket, string $previousEstado): void {
+        if (env('SUPPORT_NOTIFY_STATUS_CHANGE', '0') !== '1') {
+            return;
+        }
+
+        $to = trim((string) ($ticket['email'] ?? ''));
+        $folio = (string) ($ticket['folio'] ?? '');
+        if ($to === '' || $folio === '') {
+            return;
+        }
+
+        $subject = 'Actualizacion de ticket de soporte ' . $folio;
+        $body = "Tu ticket de soporte fue actualizado.\n\n"
+              . "Folio: {$folio}\n"
+              . 'Estado anterior: ' . $this->estadoLabel($previousEstado) . "\n"
+              . 'Estado actual: ' . $this->estadoLabel((string) ($ticket['estado'] ?? '')) . "\n\n"
+              . "Asunto: " . (string) ($ticket['asunto'] ?? '') . "\n"
+              . "Mensaje original:\n" . (string) ($ticket['mensaje'] ?? '') . "\n\n"
+              . "Este correo es informativo.";
+
+        $this->mailer->send($to, $subject, $body);
+    }
+
+    private function estadoLabel(string $estado): string {
+        return match ($estado) {
+            'NUEVO' => 'Nuevo',
+            'EN_PROCESO' => 'En proceso',
+            'CERRADO' => 'Cerrado',
+            default => $estado,
+        };
     }
 }

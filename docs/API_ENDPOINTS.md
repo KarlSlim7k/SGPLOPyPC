@@ -600,3 +600,14 @@ Body:
 ```
 
 **Auditoría:** registra cambios de estado en `historial_cambio`.
+
+**Notificación opcional por correo:** si `MAIL_ENABLED=1` y `SUPPORT_NOTIFY_STATUS_CHANGE=1`, se envía correo al solicitante cuando cambia el estado.
+
+### Flujo operativo recomendado (SLA)
+- `NUEVO`: ticket recibido, pendiente de primera revisión.
+- `EN_PROCESO`: ticket en análisis/atención activa.
+- `CERRADO`: solicitud resuelta o concluida.
+
+Objetivos sugeridos de atención:
+- Primera respuesta (mover a `EN_PROCESO`): <= 1 día hábil.
+- Resolución objetivo (mover a `CERRADO`): <= 3 días hábiles.

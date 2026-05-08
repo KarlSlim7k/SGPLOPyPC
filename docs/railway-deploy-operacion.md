@@ -1,32 +1,50 @@
 # Railway Deploy - Operacion Rapida
 
-Ultima actualizacion: 2026-05-07 (America/Mexico_City)
+Ultima actualizacion: 2026-05-08 (America/Mexico_City)
 
-## Regla Temporal (Importante)
+## Politica actual
 
-Cuando Railway tenga cola larga o inestabilidad en builds de GitHub:
-
-1. Ir a Railway Dashboard.
-2. Abrir el servicio `SGPLOPyPC`.
-3. Entrar a `Settings` -> `Source`.
-4. Desactivar temporalmente auto-deploy de GitHub (en docs Railway aparece como `Disconnect` o deshabilitar trigger automatico).
+El despliegue productivo se realiza desde GitHub (auto-deploy de Railway).  
+No usar `railway up` para publicar cambios de aplicacion en flujo normal.
 
 Referencia oficial:
 - https://docs.railway.com/deployments/github-autodeploys
 - https://docs.railway.com/guides/github-autodeploys
 
-## Flujo recomendado en incidentes
+## Flujo de entrega (GitHub -> Railway)
 
-1. Confirmar rama y commits locales:
+1. Confirmar rama y cambios:
    - `git branch --show-current`
    - `git log --oneline -n 5`
-2. Desplegar por CLI:
-   - `railway up --detach -m "cli: deploy estable durante incidente github queue"`
-3. Verificar estado:
+2. Publicar a GitHub:
+   - `git push`
+3. Esperar build/deploy automatico en Railway Dashboard.
+4. Verificar estado del servicio (solo consulta):
    - `railway service status`
    - `railway deployment list --limit 10`
-4. Validar endpoint:
-   - `curl -fsSL https://sgplopypc-production.up.railway.app/ | head`
+
+## Smoke tecnico post-deploy
+
+Validar endpoints base:
+
+```bash
+curl -fsSL https://sgplopypc-production.up.railway.app/ | head
+curl -fsSL https://sgplopypc-production.up.railway.app/api/v1/health
+```
+
+Validar endpoints de soporte (admin):
+
+1. Obtener token de admin:
+```bash
+curl -fsSL -X POST https://sgplopypc-production.up.railway.app/api/v1/auth/login \
+  -H 'Content-Type: application/json' \
+  -d '{"email":"admin@sgplopypc.gob.mx","password":"admin123"}'
+```
+2. Consultar bandeja:
+```bash
+curl -fsSL 'https://sgplopypc-production.up.railway.app/api/v1/soporte/tickets?page=1&limit=5' \
+  -H "Authorization: Bearer <TOKEN_ADMIN>"
+```
 
 ## Smoke E2E de verificacion (Chrome)
 
@@ -40,17 +58,27 @@ E2E_BASE_URL='https://sgplopypc-production.up.railway.app' \
 npx playwright test \
   tests/admin-auth-and-navigation.spec.ts \
   tests/admin-deep-flows.spec.ts \
-  --grep "admin can login, navigate modules, and logout|dark mode preference applies and persists"
+  tests/admin-support-ticket-flow.spec.ts \
+  tests/public-basic-flows.spec.ts \
+  --grep "admin can login, navigate modules, and logout|dark mode preference applies and persists|admin can filter and update a public support ticket status"
 ```
 
 Resultado esperado:
 - Login/logout admin OK
 - Navegacion de modulos admin OK
 - Modo oscuro en Configuracion persiste tras recarga
+- Bandeja de soporte admin permite filtrar y actualizar estado
 
-## Volver a flujo normal
+## Checklist de entrega
 
-Cuando Railway estabilice GitHub builds:
-
-1. Reactivar auto-deploy en `Settings` -> `Source`.
-2. Mantener `railway up` solo como fallback/manual.
+1. Commit y push a GitHub completados.
+2. Deployment en Railway en estado `SUCCESS`.
+3. `GET /` y `GET /api/v1/health` responden `200`.
+4. Smoke admin de soporte validado:
+   - `/api/v1/soporte/tickets` responde con datos y resumen.
+   - cambio de estado (`PATCH /api/v1/soporte/tickets/{id}/estado`) funcional.
+5. Evidencia guardada:
+   - hash de commit,
+   - URL de produccion,
+   - salida de healthcheck,
+   - resultado de E2E/smoke.
