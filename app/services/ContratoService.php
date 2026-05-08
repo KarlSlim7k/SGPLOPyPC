@@ -4,7 +4,7 @@ declare(strict_types=1);
 require_once __DIR__ . '/../repositories/ContratoRepository.php';
 require_once __DIR__ . '/../repositories/LicitacionRepository.php';
 require_once __DIR__ . '/../repositories/ProveedorRepository.php';
-require_once __DIR__ . '/../repositories/PropuestaRepository.php';
+require_once __DIR__ . '/../repositories/ParticipacionRepository.php';
 require_once __DIR__ . '/../helpers/audit.php';
 
 class ContratoService {

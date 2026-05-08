@@ -6,8 +6,9 @@ class Logger {
 
     public function __construct() {
         $this->logDir = __DIR__ . '/../../storage/logs';
-        if (!is_dir($this->logDir)) {
-            mkdir($this->logDir, 0750, true);
+        if (!is_dir($this->logDir) && !@mkdir($this->logDir, 0750, true) && !is_dir($this->logDir)) {
+            // Evita warnings en carreras de creación concurrente del directorio.
+            return;
         }
     }
 
