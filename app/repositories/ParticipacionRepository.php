@@ -43,8 +43,11 @@ class ParticipacionRepository {
             $params['estatus'] = trim($estatus);
         }
         if ($search !== null && trim($search) !== '') {
-            $where[] = '(p.nombre_empresa LIKE :search OR p.registro_fiscal LIKE :search OR li.numero_licitacion LIKE :search)';
-            $params['search'] = '%' . trim($search) . '%';
+            $where[] = '(p.nombre_empresa LIKE :search_empresa OR p.registro_fiscal LIKE :search_registro_fiscal OR li.numero_licitacion LIKE :search_numero_licitacion)';
+            $searchLike = '%' . trim($search) . '%';
+            $params['search_empresa'] = $searchLike;
+            $params['search_registro_fiscal'] = $searchLike;
+            $params['search_numero_licitacion'] = $searchLike;
         }
 
         $whereSql = ' WHERE ' . implode(' AND ', $where);

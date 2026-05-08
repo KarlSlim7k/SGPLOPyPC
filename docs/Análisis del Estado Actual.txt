@@ -153,3 +153,7 @@ Cambios aplicados sobre el flujo del rol PROVEEDOR / CONTRATISTA:
 
 Resultado del hardening:
 - Quedan resueltas las brechas funcionales de términos de registro, 404 de participaciones generales y discrepancia de criterio público/admin para conteo de proveedores.
+
+Ajuste técnico complementario aplicado en producción:
+- Se corrigió el filtro `q` de `GET /api/v1/participaciones` para evitar error 500 causado por reutilización de placeholders SQL en búsquedas múltiples.
+- Se agregó compatibilidad de inserción en registro público de proveedor para entornos con diferencias de esquema (con y sin columnas extendidas de Fase 6), manteniendo el mismo contrato funcional del endpoint.

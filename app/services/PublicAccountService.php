@@ -63,11 +63,7 @@ class PublicAccountService {
             ]);
             $idUsuario = (int) $this->db->lastInsertId();
 
-            $stmtProv = $this->db->prepare(
-                'INSERT INTO proveedor (id_usuario, nombre_empresa, representante_legal, registro_fiscal, regimen_fiscal, domicilio, telefono, contacto_cargo, contacto_email, especialidad, estatus, fecha_registro) '
-                . 'VALUES (:id_usuario, :nombre_empresa, :representante_legal, :registro_fiscal, :regimen_fiscal, :domicilio, :telefono, :contacto_cargo, :contacto_email, :especialidad, :estatus, NOW())'
-            );
-            $stmtProv->execute([
+            $idProveedor = $this->insertProveedorPublico([
                 'id_usuario' => $idUsuario,
                 'nombre_empresa' => trim((string) $input['nombre_empresa']),
                 'representante_legal' => $representanteLegal,
@@ -80,7 +76,6 @@ class PublicAccountService {
                 'especialidad' => $especialidades,
                 'estatus' => 'PENDIENTE',
             ]);
-            $idProveedor = (int) $this->db->lastInsertId();
 
             $this->db->commit();
 
@@ -153,6 +148,46 @@ class PublicAccountService {
         }
 
         return ['ok' => true, 'data' => ['id_soporte_ticket' => $id, 'folio' => $folio]];
+    }
+
+    private function insertProveedorPublico(array $data): int {
+        $queries = [
+            [
+                'sql' => 'INSERT INTO proveedor (id_usuario, nombre_empresa, representante_legal, registro_fiscal, regimen_fiscal, domicilio, telefono, contacto_cargo, contacto_email, especialidad, estatus, fecha_registro) '
+                    . 'VALUES (:id_usuario, :nombre_empresa, :representante_legal, :registro_fiscal, :regimen_fiscal, :domicilio, :telefono, :contacto_cargo, :contacto_email, :especialidad, :estatus, NOW())',
+                'params' => $data,
+            ],
+            [
+                'sql' => 'INSERT INTO proveedor (id_usuario, nombre_empresa, representante_legal, registro_fiscal, domicilio, telefono, especialidad, estatus, fecha_registro) '
+                    . 'VALUES (:id_usuario, :nombre_empresa, :representante_legal, :registro_fiscal, :domicilio, :telefono, :especialidad, :estatus, NOW())',
+                'params' => [
+                    'id_usuario' => $data['id_usuario'],
+                    'nombre_empresa' => $data['nombre_empresa'],
+                    'representante_legal' => $data['representante_legal'],
+                    'registro_fiscal' => $data['registro_fiscal'],
+                    'domicilio' => $data['domicilio'],
+                    'telefono' => $data['telefono'],
+                    'especialidad' => $data['especialidad'],
+                    'estatus' => $data['estatus'],
+                ],
+            ],
+        ];
+
+        $lastError = null;
+        foreach ($queries as $attempt) {
+            try {
+                $stmtProv = $this->db->prepare($attempt['sql']);
+                $stmtProv->execute($attempt['params']);
+                return (int) $this->db->lastInsertId();
+            } catch (Throwable $e) {
+                $lastError = $e;
+            }
+        }
+
+        if ($lastError instanceof Throwable) {
+            throw $lastError;
+        }
+        throw new RuntimeException('No se pudo insertar el proveedor.');
     }
 
     private function validateRegistro(array $input): array {
