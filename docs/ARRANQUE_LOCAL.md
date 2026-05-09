@@ -159,6 +159,15 @@ curl -X POST http://localhost:8080/api/v1/documentos/upload \
 | PROVEEDOR | `proveedor@demo.mx` | `proveedor123` |
 | PUBLICO | `publico@demo.mx` | `publico123` |
 
+Redirecciones de inicio de sesión:
+- `ADMINISTRADOR` -> `/frontend/admin/dashboard.html`
+- `PROVEEDOR` -> `/frontend/proveedor/centro.html`
+- `PUBLICO` -> `/frontend/publico/centro.html`
+
+Módulos frontend del rol proveedor:
+- `/frontend/proveedor/centro.html`
+- `/frontend/proveedor/convocatorias.html`
+
 ## Dependencias de prueba (Fase 2)
 
 | ID | Nombre |

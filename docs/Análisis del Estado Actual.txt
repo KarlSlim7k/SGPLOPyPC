@@ -157,3 +157,9 @@ Resultado del hardening:
 Ajuste técnico complementario aplicado en producción:
 - Se corrigió el filtro `q` de `GET /api/v1/participaciones` para evitar error 500 causado por reutilización de placeholders SQL en búsquedas múltiples.
 - Se agregó compatibilidad de inserción en registro público de proveedor para entornos con diferencias de esquema (con y sin columnas extendidas de Fase 6), manteniendo el mismo contrato funcional del endpoint.
+
+Actualización de experiencia de rol PROVEEDOR:
+- El login de usuarios con `rol = PROVEEDOR` ahora redirige a `/frontend/proveedor/centro.html`.
+- Se habilitaron módulos frontend iniciales del proveedor:
+  - Centro del proveedor (`/frontend/proveedor/centro.html`) con acceso a notificaciones.
+  - Convocatorias del proveedor (`/frontend/proveedor/convocatorias.html`) con inscripción directa a licitaciones permitidas.

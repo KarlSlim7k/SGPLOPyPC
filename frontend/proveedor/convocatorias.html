@@ -1,0 +1,230 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Convocatorias Proveedor — SGPLOPyPC</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] },
+          colors: { primary: { 500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8' } }
+        }
+      }
+    }
+  </script>
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+<body class="bg-slate-50 text-slate-900 font-sans antialiased">
+  <nav class="bg-white border-b border-slate-200 sticky top-0 z-40">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+      <a href="/frontend/proveedor/centro.html" class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-lg bg-primary-700 text-white flex items-center justify-center font-bold text-sm">SG</div>
+        <div>
+          <p class="font-bold text-sm">SGPLOPyPC</p>
+          <p class="text-xs text-slate-500">Módulo Proveedor</p>
+        </div>
+      </a>
+      <div class="flex items-center gap-2">
+        <a href="/frontend/proveedor/centro.html" class="inline-flex items-center gap-2 text-sm font-semibold px-3 py-2 rounded-lg border border-slate-200 hover:bg-slate-50">
+          <i class="ph ph-house"></i>
+          Centro
+        </a>
+        <button data-action="logout" class="inline-flex items-center gap-2 text-sm font-semibold px-3 py-2 rounded-lg border border-slate-200 hover:bg-slate-50">
+          <i class="ph ph-sign-out"></i>
+          Cerrar sesión
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="max-w-6xl mx-auto px-4 py-8 space-y-6">
+    <section class="bg-white border border-slate-200 rounded-2xl p-6">
+      <p class="text-xs uppercase tracking-wide text-primary-700 font-semibold">Rol Proveedor</p>
+      <h1 class="text-2xl font-bold mt-1">Convocatorias disponibles</h1>
+      <p class="text-slate-500 text-sm mt-2">Filtra procesos activos e inscríbete directamente cuando la licitación lo permita.</p>
+    </section>
+
+    <section class="bg-white border border-slate-200 rounded-2xl p-4 md:p-5">
+      <form id="filters-form" class="grid md:grid-cols-4 gap-3">
+        <input id="f-q" type="search" placeholder="Buscar por número o descripción..." class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500">
+        <select id="f-estado" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary-500">
+          <option value="">Todos los estados</option>
+          <option value="PUBLICADA">PUBLICADA</option>
+          <option value="EN_ACLARACIONES">EN_ACLARACIONES</option>
+          <option value="RECEPCION_PROPUESTAS">RECEPCION_PROPUESTAS</option>
+          <option value="EN_EVALUACION">EN_EVALUACION</option>
+          <option value="ADJUDICADA">ADJUDICADA</option>
+        </select>
+        <select id="f-sort" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary-500">
+          <option value="fecha_creacion:DESC">Recientes primero</option>
+          <option value="fecha_creacion:ASC">Antiguas primero</option>
+          <option value="presupuesto_estimado:DESC">Mayor presupuesto</option>
+          <option value="presupuesto_estimado:ASC">Menor presupuesto</option>
+        </select>
+        <button type="submit" class="w-full bg-primary-600 hover:bg-primary-700 text-white font-semibold px-3 py-2 rounded-lg text-sm">
+          Aplicar filtros
+        </button>
+      </form>
+      <p id="flash" class="hidden mt-3 text-sm rounded-lg px-3 py-2"></p>
+    </section>
+
+    <section class="bg-white border border-slate-200 rounded-2xl overflow-hidden">
+      <div class="px-5 py-3 border-b border-slate-100 flex items-center justify-between">
+        <p class="font-semibold text-slate-800">Resultados</p>
+        <p id="summary" class="text-xs text-slate-500">Cargando...</p>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full min-w-[980px] text-sm">
+          <thead class="bg-slate-50 text-slate-600">
+            <tr>
+              <th class="px-4 py-3 text-left font-semibold">Licitación</th>
+              <th class="px-4 py-3 text-left font-semibold">Dependencia</th>
+              <th class="px-4 py-3 text-left font-semibold">Estado</th>
+              <th class="px-4 py-3 text-left font-semibold">Presupuesto</th>
+              <th class="px-4 py-3 text-left font-semibold">Creación</th>
+              <th class="px-4 py-3 text-right font-semibold">Acción</th>
+            </tr>
+          </thead>
+          <tbody id="rows">
+            <tr><td colspan="6" class="px-4 py-8 text-center text-slate-500">Cargando convocatorias...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script src="/frontend/shared/admin.js"></script>
+  <script>
+    SGPLAdmin.attachLogoutHandlers();
+
+    function estadoBadgeClass(estado) {
+      if (estado === 'PUBLICADA') return 'bg-blue-50 text-blue-700 border-blue-100';
+      if (estado === 'EN_ACLARACIONES') return 'bg-amber-50 text-amber-700 border-amber-100';
+      if (estado === 'RECEPCION_PROPUESTAS') return 'bg-violet-50 text-violet-700 border-violet-100';
+      if (estado === 'EN_EVALUACION') return 'bg-orange-50 text-orange-700 border-orange-100';
+      if (estado === 'ADJUDICADA') return 'bg-emerald-50 text-emerald-700 border-emerald-100';
+      return 'bg-slate-100 text-slate-700 border-slate-200';
+    }
+
+    function canInscribir(estado) {
+      return estado === 'PUBLICADA' || estado === 'EN_ACLARACIONES' || estado === 'RECEPCION_PROPUESTAS';
+    }
+
+    function setFlash(message, tone) {
+      const flash = document.getElementById('flash');
+      flash.className = 'mt-3 text-sm rounded-lg px-3 py-2 ' + (tone === 'ok'
+        ? 'bg-emerald-50 border border-emerald-200 text-emerald-700'
+        : 'bg-red-50 border border-red-200 text-red-700');
+      flash.textContent = message;
+      flash.classList.remove('hidden');
+    }
+
+    async function loadConvocatorias() {
+      const rows = document.getElementById('rows');
+      const summary = document.getElementById('summary');
+      rows.innerHTML = '<tr><td colspan="6" class="px-4 py-8 text-center text-slate-500">Cargando convocatorias...</td></tr>';
+
+      try {
+        const sortValue = document.getElementById('f-sort').value;
+        const sortParts = sortValue.split(':');
+        const params = new URLSearchParams({
+          limit: '50',
+          sort: sortParts[0] || 'fecha_creacion',
+          order: sortParts[1] || 'DESC',
+        });
+
+        const q = document.getElementById('f-q').value.trim();
+        const estado = document.getElementById('f-estado').value;
+        if (q) params.set('q', q);
+        if (estado) params.set('estado', estado);
+
+        const response = await SGPLAdmin.authFetch('/licitaciones?' + params.toString(), { method: 'GET' });
+        const items = (response && response.data) || [];
+
+        summary.textContent = 'Mostrando ' + items.length + ' convocatorias';
+
+        if (!items.length) {
+          rows.innerHTML = '<tr><td colspan="6" class="px-4 py-8 text-center text-slate-500">Sin convocatorias para los filtros seleccionados.</td></tr>';
+          return;
+        }
+
+        rows.innerHTML = items.map(function (item) {
+          const habilitada = canInscribir(item.estado_proceso);
+          return '<tr class="border-t border-slate-100">'
+            + '<td class="px-4 py-3"><p class="font-semibold text-slate-800">' + SGPLAdmin.escapeHtml(item.numero_licitacion || 'N/A') + '</p><p class="text-xs text-slate-500 mt-1">' + SGPLAdmin.escapeHtml(item.descripcion_proyecto || '') + '</p></td>'
+            + '<td class="px-4 py-3 text-slate-600">' + SGPLAdmin.escapeHtml(item.dependencia_nombre || 'N/A') + '</td>'
+            + '<td class="px-4 py-3"><span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold border ' + estadoBadgeClass(item.estado_proceso) + '">' + SGPLAdmin.escapeHtml(item.estado_proceso || 'N/A') + '</span></td>'
+            + '<td class="px-4 py-3 text-slate-700 font-semibold">' + SGPLAdmin.formatCurrency(item.presupuesto_estimado || 0) + '</td>'
+            + '<td class="px-4 py-3 text-slate-600">' + SGPLAdmin.formatDate(item.fecha_creacion) + '</td>'
+            + '<td class="px-4 py-3 text-right">'
+            + '<button data-action="inscribir" data-id="' + String(item.id_licitacion) + '" '
+            + (habilitada ? '' : 'disabled ')
+            + 'class="px-3 py-2 rounded-lg text-xs font-semibold '
+            + (habilitada ? 'bg-primary-600 hover:bg-primary-700 text-white' : 'bg-slate-100 text-slate-400 cursor-not-allowed')
+            + '">'
+            + (habilitada ? 'Inscribirme' : 'No disponible')
+            + '</button>'
+            + '</td>'
+            + '</tr>';
+        }).join('');
+      } catch (error) {
+        summary.textContent = 'Error al cargar';
+        rows.innerHTML = '<tr><td colspan="6" class="px-4 py-8 text-center text-red-600">No se pudieron cargar las convocatorias.</td></tr>';
+      }
+    }
+
+    document.getElementById('filters-form').addEventListener('submit', function (e) {
+      e.preventDefault();
+      loadConvocatorias();
+    });
+
+    document.getElementById('rows').addEventListener('click', async function (e) {
+      const btn = e.target.closest('button[data-action="inscribir"]');
+      if (!btn || btn.disabled) return;
+
+      const id = btn.getAttribute('data-id');
+      btn.disabled = true;
+      btn.textContent = 'Enviando...';
+      try {
+        const result = await SGPLAdmin.authFetch('/licitaciones/' + id + '/participaciones', { method: 'POST' });
+        setFlash((result && result.message) || 'Inscripción enviada correctamente.', 'ok');
+      } catch (error) {
+        const details = Array.isArray(error.errors) && error.errors.length ? ' ' + error.errors[0] : '';
+        setFlash((error.message || 'No se pudo completar la inscripción.') + details, 'error');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Inscribirme';
+      }
+    });
+
+    (async function init() {
+      if (!SGPLAdmin.protectRoute()) return;
+      const user = SGPLAdmin.getUser() || {};
+      if (user.rol !== 'PROVEEDOR') {
+        window.location.href = '/';
+        return;
+      }
+
+      try {
+        const meResp = await SGPLAdmin.authFetch('/me', { method: 'GET' });
+        const me = (meResp && meResp.data) || null;
+        if (!me || me.rol !== 'PROVEEDOR') {
+          window.location.href = '/';
+          return;
+        }
+        SGPLAdmin.setUser(me);
+      } catch (_) {
+        window.location.href = '/frontend/auth/login.html';
+        return;
+      }
+
+      loadConvocatorias();
+    })();
+  </script>
+</body>
+</html>
