@@ -19,7 +19,8 @@ test.describe('Bloque D: registro → validación → login + notificaciones', (
   const newPassword = 'BloqueDTest1!';
   let newProveedorId = 0;
   let adminToken = '';
-
+  let providerToken = '';
+  let providerMe: Record<string, unknown> = {};
   test.beforeAll(async ({ request }) => {
     adminToken = await loginToken(request, ADMIN_EMAIL, ADMIN_PASSWORD);
   });
@@ -45,9 +46,11 @@ test.describe('Bloque D: registro → validación → login + notificaciones', (
     const payload = await res.json();
     expect(payload?.data?.token).toBeTruthy();
 
-    // Obtener id_proveedor del nuevo usuario
+    // Cachear token inicial (proveedor PENDIENTE)
+    providerToken = payload.data.token;
+
     const meRes = await request.get('/api/v1/me', {
-      headers: { Authorization: `Bearer ${payload.data.token}` },
+      headers: { Authorization: `Bearer ${providerToken}` },
     });
     const me = (await meRes.json())?.data;
     expect(me?.rol).toBe('PROVEEDOR');
@@ -57,7 +60,7 @@ test.describe('Bloque D: registro → validación → login + notificaciones', (
   });
 
   test('API: proveedor PENDIENTE no puede inscribirse en licitaciones', async ({ request }) => {
-    const token = await loginToken(request, newEmail, newPassword);
+    const token = providerToken;
     const licRes = await request.get('/api/v1/licitaciones?limit=5', {
       headers: { Authorization: `Bearer ${token}` },
     });
@@ -83,13 +86,13 @@ test.describe('Bloque D: registro → validación → login + notificaciones', (
     });
     expect(patch.status()).toBe(200);
 
-    // Verificar desde el lado del proveedor
-    const token = await loginToken(request, newEmail, newPassword);
+    // Verificar desde el lado del proveedor y cachear token
+    providerToken = await loginToken(request, newEmail, newPassword);
     const meRes = await request.get('/api/v1/me', {
-      headers: { Authorization: `Bearer ${token}` },
+      headers: { Authorization: `Bearer ${providerToken}` },
     });
-    const me = (await meRes.json())?.data;
-    expect(me?.proveedor?.estatus).toBe('VALIDADO');
+    providerMe = (await meRes.json())?.data ?? {};
+    expect(providerMe?.proveedor?.estatus).toBe('VALIDADO');
   });
 
   // ── 3. Login y redirección ───────────────────────────────────────────────
@@ -132,7 +135,7 @@ test.describe('Bloque D: registro → validación → login + notificaciones', (
   });
 
   test('API: proveedor lista notificaciones y puede marcar como leída', async ({ request }) => {
-    const token = await loginToken(request, newEmail, newPassword);
+    const token = providerToken || await loginToken(request, newEmail, newPassword);
 
     const listRes = await request.get('/api/v1/notificaciones/mias', {
       headers: { Authorization: `Bearer ${token}` },
@@ -141,7 +144,6 @@ test.describe('Bloque D: registro → validación → login + notificaciones', (
     const items = ((await listRes.json())?.data || []) as Array<Record<string, unknown>>;
     expect(items.length).toBeGreaterThan(0);
 
-    // Marcar la primera no leída como leída
     const noLeida = items.find((n) => !n.leida);
     if (noLeida) {
       const patch = await request.patch(`/api/v1/notificaciones/${noLeida.id_notificacion}/leida`, {
@@ -149,7 +151,6 @@ test.describe('Bloque D: registro → validación → login + notificaciones', (
       });
       expect(patch.status()).toBe(200);
 
-      // Verificar que ahora aparece como leída
       const listRes2 = await request.get('/api/v1/notificaciones/mias', {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -159,9 +160,10 @@ test.describe('Bloque D: registro → validación → login + notificaciones', (
     }
   });
 
-  test('UI: página de notificaciones carga y muestra bandeja', async ({ page, request }) => {
-    const token = await loginToken(request, newEmail, newPassword);
-    const meData = (await (await request.get('/api/v1/me', { headers: { Authorization: `Bearer ${token}` } })).json())?.data;
+  test('UI: página de notificaciones carga y muestra bandeja', async ({ page }) => {
+    expect(providerToken, 'providerToken debe estar disponible').toBeTruthy();
+    const token = providerToken;
+    const meData = providerMe;
 
     await page.addInitScript(({ t, u }: { t: string; u: unknown }) => {
       localStorage.setItem('sgplopypc_token', t);
