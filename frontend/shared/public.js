@@ -317,6 +317,8 @@
         ? 'bg-red-50 border border-red-200 text-red-700'
         : tone === 'success'
           ? 'bg-emerald-50 border border-emerald-200 text-emerald-700'
+          : tone === 'warning'
+            ? 'bg-amber-50 border border-amber-200 text-amber-800'
           : 'bg-slate-50 border border-slate-200 text-slate-700');
       status.textContent = message;
       status.classList.remove('hidden');
@@ -365,6 +367,7 @@
           { id: 'doc-constancia', name: 'Constancia fiscal' },
           { id: 'doc-identificacion', name: 'Identificación' },
         ];
+        const failedUploads = [];
 
         for (var i = 0; i < docInputs.length; i += 1) {
           var doc = docInputs[i];
@@ -376,14 +379,25 @@
           fd.append('tipo_documento', 'DOC_LEGAL_PROVEEDOR');
           fd.append('id_proveedor', String(data.data.proveedor.id_proveedor));
 
-          await fetch('/api/v1/documentos/upload', {
-            method: 'POST',
-            headers: { Authorization: 'Bearer ' + data.data.token },
-            body: fd,
-          });
+          try {
+            const uploadResponse = await fetch('/api/v1/documentos/upload', {
+              method: 'POST',
+              headers: { Authorization: 'Bearer ' + data.data.token },
+              body: fd,
+            });
+            if (!uploadResponse.ok) {
+              failedUploads.push(doc.name);
+            }
+          } catch (_) {
+            failedUploads.push(doc.name);
+          }
         }
 
-        setStatus('Registro completado. Te redirigiremos al inicio para iniciar sesión con tu nueva cuenta.', 'success');
+        if (failedUploads.length > 0) {
+          setStatus('Registro completado, pero falló la subida de: ' + failedUploads.join(', ') + '. Podrás subirlos después de iniciar sesión.', 'warning');
+        } else {
+          setStatus('Registro completado. Te redirigiremos al inicio para iniciar sesión con tu nueva cuenta.', 'success');
+        }
         setTimeout(function () {
           window.location.href = '/frontend/auth/login.html';
         }, 1400);

@@ -67,6 +67,19 @@ function getClientIp(): string {
     return $_SERVER['HTTP_X_FORWARDED_FOR'] ?? $_SERVER['REMOTE_ADDR'] ?? '0.0.0.0';
 }
 
+function enforcePublicReadRateLimit(Logger $logger, string $routeKey): void {
+    $rl = new RateLimiter(
+        (int) env('RATE_LIMIT_PUBLIC_READ_MAX', '20'),
+        (int) env('RATE_LIMIT_PUBLIC_READ_WINDOW', '60')
+    );
+    $ip = getClientIp();
+    $key = 'public-read:' . $routeKey . ':' . $ip;
+    if (!$rl->isAllowed($key)) {
+        $logger->security('Rate limit exceeded on public read endpoint', ['ip' => $ip, 'route' => $routeKey]);
+        jsonResponse(false, 'Demasiadas solicitudes. Intente más tarde.', null, null, 429);
+    }
+}
+
 try {
     switch (true) {
         case $route === '/health' && $requestMethod === 'GET':
@@ -139,11 +152,19 @@ try {
         // Licitaciones
         case $route === '/licitaciones' && $requestMethod === 'GET':
             AuthMiddleware::handle();
+            $user = AuthMiddleware::getAuthenticatedUser();
+            if (($user['rol'] ?? '') === 'PUBLICO') {
+                jsonResponse(false, 'No tienes permisos para acceder a este recurso.', null, null, 403);
+            }
             (new LicitacionController())->list();
             break;
 
         case preg_match('#^/licitaciones/(\d+)$#', $route, $m) && $requestMethod === 'GET':
             AuthMiddleware::handle();
+            $user = AuthMiddleware::getAuthenticatedUser();
+            if (($user['rol'] ?? '') === 'PUBLICO') {
+                jsonResponse(false, 'No tienes permisos para acceder a este recurso.', null, null, 403);
+            }
             (new LicitacionController())->get((int) $m[1]);
             break;
 
@@ -422,30 +443,37 @@ try {
 
         // Transparencia pública
         case $route === '/public/convocatorias' && $requestMethod === 'GET':
+            enforcePublicReadRateLimit($logger, 'convocatorias');
             (new PublicController())->listConvocatorias();
             break;
 
         case preg_match('#^/public/convocatorias/(\d+)$#', $route, $m) && $requestMethod === 'GET':
+            enforcePublicReadRateLimit($logger, 'convocatorias-detalle');
             (new PublicController())->getConvocatoria((int) $m[1]);
             break;
 
         case $route === '/public/resultados' && $requestMethod === 'GET':
+            enforcePublicReadRateLimit($logger, 'resultados');
             (new PublicController())->listResultados();
             break;
 
         case $route === '/public/contratos' && $requestMethod === 'GET':
+            enforcePublicReadRateLimit($logger, 'contratos');
             (new PublicController())->listContratos();
             break;
 
         case $route === '/public/evaluaciones' && $requestMethod === 'GET':
+            enforcePublicReadRateLimit($logger, 'evaluaciones');
             (new PublicController())->listEvaluaciones();
             break;
 
         case $route === '/public/historial' && $requestMethod === 'GET':
+            enforcePublicReadRateLimit($logger, 'historial');
             (new PublicController())->listHistorial();
             break;
 
         case $route === '/public/estadisticas' && $requestMethod === 'GET':
+            enforcePublicReadRateLimit($logger, 'estadisticas');
             (new PublicController())->estadisticas();
             break;
 
