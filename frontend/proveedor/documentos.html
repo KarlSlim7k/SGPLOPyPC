@@ -34,6 +34,10 @@
           <i class="ph ph-file-text"></i>
           Propuestas
         </a>
+        <button data-action="back" class="inline-flex items-center gap-2 text-sm font-semibold px-3 py-2 rounded-lg border border-slate-200 hover:bg-slate-50" aria-label="Regresar">
+          <i class="ph ph-arrow-left"></i>
+          Atrás
+        </button>
         <button data-action="logout" class="inline-flex items-center gap-2 text-sm font-semibold px-3 py-2 rounded-lg border border-slate-200 hover:bg-slate-50">
           <i class="ph ph-sign-out"></i>
           Cerrar sesión
@@ -145,6 +149,7 @@
   <script src="/frontend/shared/admin.js"></script>
   <script>
     SGPLAdmin.attachLogoutHandlers();
+    SGPLAdmin.attachBackButton();
     let propuestas = [];
 
     function setFlash(message, tone) {

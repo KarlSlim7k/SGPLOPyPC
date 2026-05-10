@@ -149,6 +149,18 @@
     });
   }
 
+  function attachBackButton() {
+    document.querySelectorAll('[data-action="back"]').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        if (window.history.length > 1) {
+          window.history.back();
+        } else {
+          window.location.href = '/frontend/proveedor/centro.html';
+        }
+      });
+    });
+  }
+
   function setText(selector, value) {
     const el = document.querySelector(selector);
     if (el) el.textContent = value;
@@ -295,6 +307,7 @@
     escapeHtml,
     downloadApiFile,
     attachLogoutHandlers,
+    attachBackButton,
     setText,
     downloadCsv,
     // provider status helpers
