@@ -251,6 +251,66 @@ class PropuestaRepository {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public function findByProveedorForPortal(
+        int $idProveedor,
+        int $page,
+        int $limit,
+        ?string $estatus = null,
+        ?string $search = null
+    ): array {
+        $offset = ($page - 1) * $limit;
+
+        $where = ['pa.id_proveedor = :id_proveedor'];
+        $params = ['id_proveedor' => $idProveedor];
+
+        if ($estatus !== null && trim($estatus) !== '') {
+            $where[] = 'pr.estatus = :estatus';
+            $params['estatus'] = trim($estatus);
+        }
+        if ($search !== null && trim($search) !== '') {
+            $where[] = '(li.numero_licitacion LIKE :search_numero OR li.descripcion_proyecto LIKE :search_descripcion OR d.nombre LIKE :search_dependencia)';
+            $searchLike = '%' . trim($search) . '%';
+            $params['search_numero'] = $searchLike;
+            $params['search_descripcion'] = $searchLike;
+            $params['search_dependencia'] = $searchLike;
+        }
+
+        $whereSql = ' WHERE ' . implode(' AND ', $where);
+
+        $sql = 'SELECT pr.id_propuesta, pr.id_participacion, pr.monto_propuesta, pr.descripcion_tecnica, '
+             . 'pr.fecha_envio, pr.cumple_requisitos, pr.estatus, pa.id_licitacion, pa.estatus AS estatus_participacion, '
+             . 'li.numero_licitacion, li.descripcion_proyecto, li.estado_proceso, d.nombre AS dependencia_nombre '
+             . 'FROM propuesta pr '
+             . 'JOIN participacion pa ON pr.id_participacion = pa.id_participacion '
+             . 'JOIN licitacion li ON pa.id_licitacion = li.id_licitacion '
+             . 'JOIN dependencia d ON li.id_dependencia = d.id_dependencia '
+             . $whereSql
+             . ' ORDER BY pr.fecha_envio DESC LIMIT :limit OFFSET :offset';
+
+        $stmt = $this->db->prepare($sql);
+        foreach ($params as $k => $v) {
+            $stmt->bindValue($k, $v);
+        }
+        $stmt->bindValue('limit', $limit, PDO::PARAM_INT);
+        $stmt->bindValue('offset', $offset, PDO::PARAM_INT);
+        $stmt->execute();
+        $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $countSql = 'SELECT COUNT(*) FROM propuesta pr '
+                  . 'JOIN participacion pa ON pr.id_participacion = pa.id_participacion '
+                  . 'JOIN licitacion li ON pa.id_licitacion = li.id_licitacion '
+                  . 'JOIN dependencia d ON li.id_dependencia = d.id_dependencia '
+                  . $whereSql;
+        $countStmt = $this->db->prepare($countSql);
+        foreach ($params as $k => $v) {
+            $countStmt->bindValue($k, $v);
+        }
+        $countStmt->execute();
+        $total = (int) $countStmt->fetchColumn();
+
+        return ['items' => $items, 'total' => $total, 'page' => $page, 'limit' => $limit];
+    }
+
     public function updateEstatus(int $id, string $estatus): void {
         $stmt = $this->db->prepare('UPDATE propuesta SET estatus = :estatus WHERE id_propuesta = :id');
         $stmt->execute(['id' => $id, 'estatus' => $estatus]);

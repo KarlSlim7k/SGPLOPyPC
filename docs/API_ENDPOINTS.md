@@ -181,6 +181,16 @@ Envía propuesta para una participación (PROVEEDOR).
 ### GET /api/v1/propuestas/{id}
 Obtiene propuesta (ADMINISTRADOR o proveedor dueño).
 
+### GET /api/v1/propuestas/mias
+Lista propuestas del proveedor autenticado (PROVEEDOR) con paginación y filtros.
+
+Query params opcionales:
+- `page`, `limit`
+- `estatus`
+- `q` (número de licitación, descripción o dependencia)
+
+Incluye datos de la licitación, estatus de participación y seguimiento de propuesta.
+
 ---
 
 ## Evaluaciones

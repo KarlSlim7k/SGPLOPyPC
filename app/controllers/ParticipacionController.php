@@ -116,4 +116,24 @@ class ParticipacionController {
         $data = $this->service->listPropuestas($idLicitacion && $idLicitacion > 0 ? $idLicitacion : null);
         jsonResponse(true, 'Listado de propuestas', $data, null, 200);
     }
+
+    public function listPropuestasMias(): never {
+        AuthMiddleware::handle();
+        $user = AuthMiddleware::getAuthenticatedUser();
+        if ($user['rol'] !== 'PROVEEDOR') {
+            jsonResponse(false, 'Solo los proveedores pueden consultar sus propuestas.', null, null, 403);
+        }
+
+        $page = isset($_GET['page']) ? (int) $_GET['page'] : 1;
+        $limit = isset($_GET['limit']) ? (int) $_GET['limit'] : 20;
+        $estatus = $_GET['estatus'] ?? null;
+        $search = $_GET['q'] ?? null;
+
+        $result = $this->service->listPropuestasMias((int) $user['id_usuario'], $page, $limit, $estatus, $search);
+        if (!$result['ok']) {
+            jsonResponse(false, 'No se pudieron cargar las propuestas', null, $result['errors'], 422);
+        }
+
+        jsonResponse(true, 'Mis propuestas', $result['data'], null, 200);
+    }
 }

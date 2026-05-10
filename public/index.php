@@ -227,6 +227,11 @@ try {
             AuthMiddleware::handle();
             (new ParticipacionController())->getPropuesta((int) $m[1]);
             break;
+        case $route === '/propuestas/mias' && $requestMethod === 'GET':
+            AuthMiddleware::handle();
+            RoleMiddleware::handle('PROVEEDOR');
+            (new ParticipacionController())->listPropuestasMias();
+            break;
         case $route === '/propuestas' && $requestMethod === 'GET':
             AuthMiddleware::handle();
             RoleMiddleware::handle('ADMINISTRADOR');

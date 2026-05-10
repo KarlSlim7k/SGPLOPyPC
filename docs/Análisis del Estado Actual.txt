@@ -168,3 +168,8 @@ Actualización de módulo Mis participaciones:
 - Se incorporó `GET /api/v1/participaciones/mias` para proveedores autenticados.
 - El endpoint devuelve historial propio con datos de licitación, estatus de participación y datos básicos de propuesta cuando existe.
 - Se habilitó `/frontend/proveedor/participaciones.html` y acceso desde el centro del proveedor.
+
+Actualización de módulo Mis propuestas:
+- Se incorporó `GET /api/v1/propuestas/mias` para proveedores autenticados.
+- Se habilitó `/frontend/proveedor/propuestas.html` para consultar propuestas propias, revisar estatus y enviar propuesta desde participaciones en `RECEPCION_PROPUESTAS`.
+- La creación usa el endpoint existente `POST /api/v1/participaciones/{id}/propuesta` y conserva la regla de una propuesta por participación.

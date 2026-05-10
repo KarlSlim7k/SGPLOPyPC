@@ -1,0 +1,327 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mis Propuestas — SGPLOPyPC</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] },
+          colors: { primary: { 500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8' } }
+        }
+      }
+    }
+  </script>
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+<body class="bg-slate-50 text-slate-900 font-sans antialiased">
+  <nav class="bg-white border-b border-slate-200 sticky top-0 z-40">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+      <a href="/frontend/proveedor/centro.html" class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-lg bg-primary-700 text-white flex items-center justify-center font-bold text-sm">SG</div>
+        <div>
+          <p class="font-bold text-sm">SGPLOPyPC</p>
+          <p class="text-xs text-slate-500">Mis propuestas</p>
+        </div>
+      </a>
+      <div class="flex items-center gap-2">
+        <a href="/frontend/proveedor/participaciones.html" class="inline-flex items-center gap-2 text-sm font-semibold px-3 py-2 rounded-lg border border-slate-200 hover:bg-slate-50">
+          <i class="ph ph-list-checks"></i>
+          Participaciones
+        </a>
+        <button data-action="logout" class="inline-flex items-center gap-2 text-sm font-semibold px-3 py-2 rounded-lg border border-slate-200 hover:bg-slate-50">
+          <i class="ph ph-sign-out"></i>
+          Cerrar sesión
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="max-w-6xl mx-auto px-4 py-8 space-y-6">
+    <section class="bg-white border border-slate-200 rounded-2xl p-6">
+      <p class="text-xs uppercase tracking-wide text-primary-700 font-semibold">Rol Proveedor</p>
+      <h1 class="text-2xl font-bold mt-1">Mis propuestas</h1>
+      <p class="text-slate-500 text-sm mt-2">Envía propuestas para participaciones habilitadas y consulta el seguimiento de las que ya presentaste.</p>
+    </section>
+
+    <section class="grid md:grid-cols-3 gap-3">
+      <div class="bg-white border border-slate-200 rounded-xl p-4">
+        <p class="text-xs text-slate-500">Propuestas enviadas</p>
+        <p id="stat-total" class="text-2xl font-bold text-slate-900 mt-1">0</p>
+      </div>
+      <div class="bg-white border border-slate-200 rounded-xl p-4">
+        <p class="text-xs text-slate-500">En seguimiento</p>
+        <p id="stat-seguimiento" class="text-2xl font-bold text-slate-900 mt-1">0</p>
+      </div>
+      <div class="bg-white border border-slate-200 rounded-xl p-4">
+        <p class="text-xs text-slate-500">Participaciones listas</p>
+        <p id="stat-elegibles" class="text-2xl font-bold text-slate-900 mt-1">0</p>
+      </div>
+    </section>
+
+    <section class="bg-white border border-slate-200 rounded-2xl p-4 md:p-5">
+      <form id="create-form" class="grid lg:grid-cols-[1.4fr_0.8fr_1.2fr_auto] gap-3 items-end">
+        <label class="block">
+          <span class="text-xs font-semibold text-slate-600">Participación</span>
+          <select id="participacion-select" required class="mt-1 w-full px-3 py-2 border border-slate-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary-500">
+            <option value="">Cargando participaciones...</option>
+          </select>
+        </label>
+        <label class="block">
+          <span class="text-xs font-semibold text-slate-600">Monto</span>
+          <input id="monto-propuesta" type="number" min="1" step="0.01" required class="mt-1 w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500">
+        </label>
+        <label class="block">
+          <span class="text-xs font-semibold text-slate-600">Descripción técnica</span>
+          <input id="descripcion-tecnica" type="text" maxlength="1000" placeholder="Resumen técnico opcional" class="mt-1 w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500">
+        </label>
+        <button id="create-submit" type="submit" class="bg-primary-600 hover:bg-primary-700 text-white font-semibold px-4 py-2 rounded-lg text-sm">
+          Enviar propuesta
+        </button>
+      </form>
+      <p id="flash" class="hidden mt-3 text-sm rounded-lg px-3 py-2"></p>
+    </section>
+
+    <section class="bg-white border border-slate-200 rounded-2xl p-4 md:p-5">
+      <form id="filters-form" class="grid md:grid-cols-3 gap-3">
+        <input id="f-q" type="search" placeholder="Buscar por licitación, descripción o dependencia..." class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500">
+        <select id="f-estatus" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary-500">
+          <option value="">Todos los estatus</option>
+          <option value="RECIBIDA">RECIBIDA</option>
+          <option value="EN_REVISION">EN_REVISION</option>
+          <option value="ACEPTADA">ACEPTADA</option>
+          <option value="RECHAZADA">RECHAZADA</option>
+        </select>
+        <button type="submit" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-semibold px-3 py-2 rounded-lg text-sm">
+          Aplicar filtros
+        </button>
+      </form>
+    </section>
+
+    <section class="bg-white border border-slate-200 rounded-2xl overflow-hidden">
+      <div class="px-5 py-3 border-b border-slate-100 flex items-center justify-between">
+        <p class="font-semibold text-slate-800">Seguimiento</p>
+        <p id="summary" class="text-xs text-slate-500">Cargando...</p>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full min-w-[1100px] text-sm">
+          <thead class="bg-slate-50 text-slate-600">
+            <tr>
+              <th class="px-4 py-3 text-left font-semibold">Licitación</th>
+              <th class="px-4 py-3 text-left font-semibold">Dependencia</th>
+              <th class="px-4 py-3 text-left font-semibold">Proceso</th>
+              <th class="px-4 py-3 text-left font-semibold">Propuesta</th>
+              <th class="px-4 py-3 text-left font-semibold">Monto</th>
+              <th class="px-4 py-3 text-left font-semibold">Envío</th>
+              <th class="px-4 py-3 text-right font-semibold">Detalle</th>
+            </tr>
+          </thead>
+          <tbody id="rows">
+            <tr><td colspan="7" class="px-4 py-8 text-center text-slate-500">Cargando propuestas...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <dialog id="detail-dialog" class="w-[min(720px,calc(100%-32px))] rounded-xl border border-slate-200 p-0 backdrop:bg-slate-900/40">
+    <div class="p-5 border-b border-slate-100 flex items-center justify-between">
+      <p class="font-bold text-slate-900">Detalle de propuesta</p>
+      <button id="close-detail" class="w-9 h-9 rounded-lg border border-slate-200 hover:bg-slate-50" aria-label="Cerrar">
+        <i class="ph ph-x"></i>
+      </button>
+    </div>
+    <div id="detail-content" class="p-5 text-sm text-slate-700"></div>
+  </dialog>
+
+  <script src="/frontend/shared/admin.js"></script>
+  <script>
+    SGPLAdmin.attachLogoutHandlers();
+    let propuestas = [];
+    let participaciones = [];
+
+    function badgeClass(value) {
+      if (value === 'ACEPTADA' || value === 'ADJUDICADA') return 'bg-emerald-50 text-emerald-700 border-emerald-100';
+      if (value === 'RECIBIDA' || value === 'EN_REVISION' || value === 'RECEPCION_PROPUESTAS') return 'bg-blue-50 text-blue-700 border-blue-100';
+      if (value === 'RECHAZADA' || value === 'DESCALIFICADO') return 'bg-red-50 text-red-700 border-red-100';
+      return 'bg-slate-100 text-slate-700 border-slate-200';
+    }
+
+    function badge(value) {
+      return '<span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold border ' + badgeClass(value) + '">' + SGPLAdmin.escapeHtml(value || 'N/A') + '</span>';
+    }
+
+    function setFlash(message, tone) {
+      const flash = document.getElementById('flash');
+      flash.className = 'mt-3 text-sm rounded-lg px-3 py-2 ' + (tone === 'ok'
+        ? 'bg-emerald-50 border border-emerald-200 text-emerald-700'
+        : 'bg-red-50 border border-red-200 text-red-700');
+      flash.textContent = message;
+      flash.classList.remove('hidden');
+    }
+
+    function updateStats() {
+      document.getElementById('stat-total').textContent = String(propuestas.length);
+      document.getElementById('stat-seguimiento').textContent = String(propuestas.filter(function (x) {
+        return x.estatus === 'RECIBIDA' || x.estatus === 'EN_REVISION';
+      }).length);
+      document.getElementById('stat-elegibles').textContent = String(getElegibles().length);
+    }
+
+    function getElegibles() {
+      return participaciones.filter(function (item) {
+        return item.estado_proceso === 'RECEPCION_PROPUESTAS' && !item.id_propuesta;
+      });
+    }
+
+    function renderElegibles() {
+      const select = document.getElementById('participacion-select');
+      const elegibles = getElegibles();
+      if (!elegibles.length) {
+        select.innerHTML = '<option value="">Sin participaciones listas para propuesta</option>';
+        select.disabled = true;
+        document.getElementById('create-submit').disabled = true;
+        return;
+      }
+
+      select.disabled = false;
+      document.getElementById('create-submit').disabled = false;
+      select.innerHTML = '<option value="">Selecciona participación</option>' + elegibles.map(function (item) {
+        return '<option value="' + String(item.id_participacion) + '">' + SGPLAdmin.escapeHtml(item.numero_licitacion || 'Licitación') + ' - ' + SGPLAdmin.escapeHtml(item.dependencia_nombre || 'Dependencia') + '</option>';
+      }).join('');
+    }
+
+    async function loadParticipaciones() {
+      const response = await SGPLAdmin.authFetch('/participaciones/mias?page=1&limit=100', { method: 'GET' });
+      const payload = (response && response.data) || { items: [] };
+      participaciones = payload.items || [];
+      renderElegibles();
+      updateStats();
+    }
+
+    async function loadPropuestas() {
+      const rows = document.getElementById('rows');
+      const summary = document.getElementById('summary');
+      rows.innerHTML = '<tr><td colspan="7" class="px-4 py-8 text-center text-slate-500">Cargando propuestas...</td></tr>';
+
+      try {
+        const params = new URLSearchParams({ page: '1', limit: '100' });
+        const q = document.getElementById('f-q').value.trim();
+        const estatus = document.getElementById('f-estatus').value;
+        if (q) params.set('q', q);
+        if (estatus) params.set('estatus', estatus);
+
+        const response = await SGPLAdmin.authFetch('/propuestas/mias?' + params.toString(), { method: 'GET' });
+        const payload = (response && response.data) || { items: [], total: 0 };
+        propuestas = payload.items || [];
+        updateStats();
+        summary.textContent = 'Mostrando ' + propuestas.length + ' de ' + (payload.total || propuestas.length);
+
+        if (!propuestas.length) {
+          rows.innerHTML = '<tr><td colspan="7" class="px-4 py-8 text-center text-slate-500">Sin propuestas para los filtros seleccionados.</td></tr>';
+          return;
+        }
+
+        rows.innerHTML = propuestas.map(function (item) {
+          return '<tr class="border-t border-slate-100">'
+            + '<td class="px-4 py-3"><p class="font-semibold text-slate-800">' + SGPLAdmin.escapeHtml(item.numero_licitacion || 'N/A') + '</p><p class="text-xs text-slate-500 mt-1">' + SGPLAdmin.escapeHtml(item.descripcion_proyecto || '') + '</p></td>'
+            + '<td class="px-4 py-3 text-slate-600">' + SGPLAdmin.escapeHtml(item.dependencia_nombre || 'N/A') + '</td>'
+            + '<td class="px-4 py-3">' + badge(item.estado_proceso) + '</td>'
+            + '<td class="px-4 py-3">' + badge(item.estatus) + '</td>'
+            + '<td class="px-4 py-3 text-slate-700 font-semibold">' + SGPLAdmin.formatCurrency(item.monto_propuesta || 0) + '</td>'
+            + '<td class="px-4 py-3 text-slate-600">' + SGPLAdmin.formatDate(item.fecha_envio) + '</td>'
+            + '<td class="px-4 py-3 text-right"><button data-detail="' + String(item.id_propuesta) + '" class="px-3 py-2 rounded-lg text-xs font-semibold border border-slate-200 hover:bg-slate-50">Ver</button></td>'
+            + '</tr>';
+        }).join('');
+      } catch (error) {
+        summary.textContent = 'Error al cargar';
+        rows.innerHTML = '<tr><td colspan="7" class="px-4 py-8 text-center text-red-600">No se pudieron cargar las propuestas.</td></tr>';
+      }
+    }
+
+    document.getElementById('filters-form').addEventListener('submit', function (e) {
+      e.preventDefault();
+      loadPropuestas();
+    });
+
+    document.getElementById('create-form').addEventListener('submit', async function (e) {
+      e.preventDefault();
+      const submit = document.getElementById('create-submit');
+      const idParticipacion = document.getElementById('participacion-select').value;
+      const monto = Number(document.getElementById('monto-propuesta').value || 0);
+      const descripcion = document.getElementById('descripcion-tecnica').value.trim();
+      if (!idParticipacion || monto <= 0) return;
+
+      submit.disabled = true;
+      try {
+        await SGPLAdmin.authFetch('/participaciones/' + idParticipacion + '/propuesta', {
+          method: 'POST',
+          body: JSON.stringify({
+            monto_propuesta: monto,
+            descripcion_tecnica: descripcion || null,
+          }),
+        });
+        setFlash('Propuesta enviada correctamente.', 'ok');
+        document.getElementById('monto-propuesta').value = '';
+        document.getElementById('descripcion-tecnica').value = '';
+        await Promise.all([loadParticipaciones(), loadPropuestas()]);
+      } catch (error) {
+        const details = Array.isArray(error.errors) && error.errors.length ? ' ' + error.errors[0] : '';
+        setFlash((error.message || 'No se pudo enviar la propuesta.') + details, 'error');
+      } finally {
+        submit.disabled = false;
+      }
+    });
+
+    document.getElementById('rows').addEventListener('click', function (e) {
+      const btn = e.target.closest('button[data-detail]');
+      if (!btn) return;
+      const item = propuestas.find(function (x) { return String(x.id_propuesta) === String(btn.getAttribute('data-detail')); });
+      if (!item) return;
+
+      document.getElementById('detail-content').innerHTML =
+        '<div class="space-y-3">'
+        + '<p><span class="font-semibold text-slate-900">Licitación:</span> ' + SGPLAdmin.escapeHtml(item.numero_licitacion || 'N/A') + '</p>'
+        + '<p><span class="font-semibold text-slate-900">Dependencia:</span> ' + SGPLAdmin.escapeHtml(item.dependencia_nombre || 'N/A') + '</p>'
+        + '<p><span class="font-semibold text-slate-900">Monto:</span> ' + SGPLAdmin.formatCurrency(item.monto_propuesta || 0) + '</p>'
+        + '<p><span class="font-semibold text-slate-900">Estatus:</span> ' + SGPLAdmin.escapeHtml(item.estatus || 'N/A') + '</p>'
+        + '<p><span class="font-semibold text-slate-900">Descripción técnica:</span><br>' + SGPLAdmin.escapeHtml(item.descripcion_tecnica || 'Sin descripción registrada.') + '</p>'
+        + '</div>';
+      document.getElementById('detail-dialog').showModal();
+    });
+
+    document.getElementById('close-detail').addEventListener('click', function () {
+      document.getElementById('detail-dialog').close();
+    });
+
+    (async function init() {
+      if (!SGPLAdmin.protectRoute()) return;
+      const user = SGPLAdmin.getUser() || {};
+      if (user.rol !== 'PROVEEDOR') {
+        window.location.href = '/';
+        return;
+      }
+
+      try {
+        const meResp = await SGPLAdmin.authFetch('/me', { method: 'GET' });
+        const me = (meResp && meResp.data) || null;
+        if (!me || me.rol !== 'PROVEEDOR') {
+          window.location.href = '/';
+          return;
+        }
+        SGPLAdmin.setUser(me);
+      } catch (_) {
+        window.location.href = '/frontend/auth/login.html';
+        return;
+      }
+
+      await Promise.all([loadParticipaciones(), loadPropuestas()]);
+    })();
+  </script>
+</body>
+</html>

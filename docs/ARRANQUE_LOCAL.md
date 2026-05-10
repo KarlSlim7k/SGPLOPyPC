@@ -122,6 +122,7 @@
 | POST | `/api/v1/licitaciones/{id}/participaciones` | Inscribir proveedor en licitación | Autenticado + PROVEEDOR |
 | POST | `/api/v1/participaciones/{id}/propuesta` | Enviar propuesta (una por participación) | Autenticado + PROVEEDOR |
 | GET | `/api/v1/propuestas/{id}` | Ver propuesta | Autenticado (propietario o ADMIN) |
+| GET | `/api/v1/propuestas/mias` | Historial de propuestas del proveedor autenticado | Autenticado + PROVEEDOR |
 
 **Payload ejemplo (enviar propuesta):**
 ```json
@@ -169,6 +170,7 @@ Módulos frontend del rol proveedor:
 - `/frontend/proveedor/centro.html`
 - `/frontend/proveedor/convocatorias.html`
 - `/frontend/proveedor/participaciones.html`
+- `/frontend/proveedor/propuestas.html`
 
 ## Dependencias de prueba (Fase 2)
 
