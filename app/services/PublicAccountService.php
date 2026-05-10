@@ -187,8 +187,8 @@ class PublicAccountService {
         }
 
         $password = (string) ($input['password'] ?? '');
-        if (strlen($password) < 8) {
-            $errors[] = 'La contraseña debe tener al menos 8 caracteres.';
+        if (!$this->isStrongPassword($password)) {
+            $errors[] = 'La contraseña debe tener al menos 8 caracteres, una mayúscula, un número y un símbolo.';
         }
 
         // Campo canónico: accepted_terms. Campo legacy: terms.
@@ -205,5 +205,9 @@ class PublicAccountService {
         }
 
         return $errors;
+    }
+
+    private function isStrongPassword(string $password): bool {
+        return (bool) preg_match('/^(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/', $password);
     }
 }

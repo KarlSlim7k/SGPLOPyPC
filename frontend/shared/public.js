@@ -1,5 +1,33 @@
 (function () {
   const API_BASE = '/api/v1/public';
+  const SGPLFormat = window.SGPLFormat || {
+    formatCurrency: function (amount) {
+      const numeric = Number(amount || 0);
+      return new Intl.NumberFormat('es-MX', {
+        style: 'currency',
+        currency: 'MXN',
+        maximumFractionDigits: 0,
+      }).format(numeric);
+    },
+    formatDate: function (dateString) {
+      if (!dateString) return 'N/A';
+      const date = new Date(dateString);
+      if (Number.isNaN(date.getTime())) return 'N/A';
+      return new Intl.DateTimeFormat('es-MX', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+      }).format(date);
+    },
+    escapeHtml: function (value) {
+      return String(value || '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    },
+  };
 
   function qs(selector, root) {
     return (root || document).querySelector(selector);
@@ -20,32 +48,15 @@
   }
 
   function formatCurrency(amount) {
-    const n = Number(amount || 0);
-    return new Intl.NumberFormat('es-MX', {
-      style: 'currency',
-      currency: 'MXN',
-      maximumFractionDigits: 0,
-    }).format(n);
+    return SGPLFormat.formatCurrency(amount);
   }
 
   function formatDate(dateString) {
-    if (!dateString) return 'N/A';
-    const date = new Date(dateString);
-    if (Number.isNaN(date.getTime())) return 'N/A';
-    return new Intl.DateTimeFormat('es-MX', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
-    }).format(date);
+    return SGPLFormat.formatDate(dateString);
   }
 
   function escapeHtml(value) {
-    return String(value || '')
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#39;');
+    return SGPLFormat.escapeHtml(value);
   }
 
   function buildConvocatoriaHref(id) {
@@ -511,6 +522,13 @@
         accepted_terms: !!((qs('#terms') || {}).checked),
         especialidades: qsa('input[name="especialidad[]"]:checked').map(function (x) { return x.value; }),
       };
+
+      var passwordIsStrong = /^(?=.*[A-Z])(?=.*\d)(?=.*[^A-Za-z0-9]).{8,}$/.test(payload.password || '');
+      if (!passwordIsStrong) {
+        setStatus('La contraseña debe tener al menos 8 caracteres, una mayúscula, un número y un símbolo.', 'error');
+        if (submitBtn) submitBtn.disabled = false;
+        return;
+      }
 
       try {
         const response = await fetch('/api/v1/public/proveedores/registro', {

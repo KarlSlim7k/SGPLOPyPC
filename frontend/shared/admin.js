@@ -1,6 +1,46 @@
 (function () {
   const TOKEN_KEY = 'sgplopypc_token';
   const USER_KEY = 'sgplopypc_user';
+  const SGPLFormat = window.SGPLFormat || {
+    formatCurrency: function (amount) {
+      const numeric = Number(amount || 0);
+      return new Intl.NumberFormat('es-MX', {
+        style: 'currency',
+        currency: 'MXN',
+        maximumFractionDigits: 0,
+      }).format(numeric);
+    },
+    formatDate: function (dateString) {
+      if (!dateString) return 'N/A';
+      const date = new Date(dateString);
+      if (Number.isNaN(date.getTime())) return 'N/A';
+      return new Intl.DateTimeFormat('es-MX', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+      }).format(date);
+    },
+    formatDateTime: function (dateString) {
+      if (!dateString) return 'N/A';
+      const date = new Date(dateString);
+      if (Number.isNaN(date.getTime())) return 'N/A';
+      return new Intl.DateTimeFormat('es-MX', {
+        day: '2-digit',
+        month: 'short',
+        year: 'numeric',
+        hour: '2-digit',
+        minute: '2-digit',
+      }).format(date);
+    },
+    escapeHtml: function (value) {
+      return String(value ?? '')
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    },
+  };
 
   function getToken() {
     return localStorage.getItem(TOKEN_KEY);
@@ -75,45 +115,19 @@
   }
 
   function formatCurrency(amount) {
-    const numeric = Number(amount || 0);
-    return new Intl.NumberFormat('es-MX', {
-      style: 'currency',
-      currency: 'MXN',
-      maximumFractionDigits: 0,
-    }).format(numeric);
+    return SGPLFormat.formatCurrency(amount);
   }
 
   function formatDate(dateString) {
-    if (!dateString) return 'N/A';
-    const date = new Date(dateString);
-    if (Number.isNaN(date.getTime())) return 'N/A';
-    return new Intl.DateTimeFormat('es-MX', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
-    }).format(date);
+    return SGPLFormat.formatDate(dateString);
   }
 
   function formatDateTime(dateString) {
-    if (!dateString) return 'N/A';
-    const date = new Date(dateString);
-    if (Number.isNaN(date.getTime())) return 'N/A';
-    return new Intl.DateTimeFormat('es-MX', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
-      hour: '2-digit',
-      minute: '2-digit',
-    }).format(date);
+    return SGPLFormat.formatDateTime(dateString);
   }
 
   function escapeHtml(value) {
-    return String(value ?? '')
-      .replace(/&/g, '&amp;')
-      .replace(/</g, '&lt;')
-      .replace(/>/g, '&gt;')
-      .replace(/"/g, '&quot;')
-      .replace(/'/g, '&#39;');
+    return SGPLFormat.escapeHtml(value);
   }
 
   async function downloadApiFile(url, filename, options) {

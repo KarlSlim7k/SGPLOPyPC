@@ -50,6 +50,7 @@ require_once __DIR__ . '/../app/controllers/PublicController.php';
 require_once __DIR__ . '/../app/controllers/NotificacionController.php';
 require_once __DIR__ . '/../app/controllers/SupportTicketController.php';
 require_once __DIR__ . '/../app/controllers/AclaracionController.php';
+require_once __DIR__ . '/../app/routes/PublicRouteTable.php';
 
 // Middlewares
 require_once __DIR__ . '/../app/middlewares/AuthMiddleware.php';
@@ -81,7 +82,9 @@ function enforcePublicReadRateLimit(Logger $logger, string $routeKey): void {
 }
 
 try {
-    switch (true) {
+    $handledByRouteTable = dispatchPublicRouteTable($route, $requestMethod, $logger);
+    if (!$handledByRouteTable) {
+        switch (true) {
         case $route === '/health' && $requestMethod === 'GET':
             (new HealthController())->index();
             break;
@@ -94,32 +97,6 @@ try {
                 jsonResponse(false, 'Demasiados intentos de inicio de sesión. Intente más tarde.', null, null, 429);
             }
             (new AuthController())->login();
-            break;
-
-        case $route === '/auth/password/forgot' && $requestMethod === 'POST':
-            $rl = new RateLimiter(
-                (int) env('RATE_LIMIT_FORGOT_MAX', '5'),
-                (int) env('RATE_LIMIT_FORGOT_WINDOW', '300')
-            );
-            $ip = getClientIp();
-            if (!$rl->isAllowed('auth-forgot:' . $ip)) {
-                $logger->security('Rate limit exceeded on forgot password', ['ip' => $ip]);
-                jsonResponse(false, 'Demasiadas solicitudes de recuperación. Intente más tarde.', null, null, 429);
-            }
-            (new AuthController())->forgotPassword();
-            break;
-
-        case $route === '/auth/password/reset' && $requestMethod === 'POST':
-            $rl = new RateLimiter(
-                (int) env('RATE_LIMIT_RESET_MAX', '10'),
-                (int) env('RATE_LIMIT_RESET_WINDOW', '300')
-            );
-            $ip = getClientIp();
-            if (!$rl->isAllowed('auth-reset:' . $ip)) {
-                $logger->security('Rate limit exceeded on reset password', ['ip' => $ip]);
-                jsonResponse(false, 'Demasiadas solicitudes de restablecimiento. Intente más tarde.', null, null, 429);
-            }
-            (new AuthController())->resetPassword();
             break;
 
         case $route === '/me' && $requestMethod === 'GET':
@@ -441,76 +418,6 @@ try {
             (new ReporteController())->exportarContratosCsv();
             break;
 
-        // Transparencia pública
-        case $route === '/public/convocatorias' && $requestMethod === 'GET':
-            enforcePublicReadRateLimit($logger, 'convocatorias');
-            (new PublicController())->listConvocatorias();
-            break;
-
-        case preg_match('#^/public/convocatorias/(\d+)$#', $route, $m) && $requestMethod === 'GET':
-            enforcePublicReadRateLimit($logger, 'convocatorias-detalle');
-            (new PublicController())->getConvocatoria((int) $m[1]);
-            break;
-
-        case $route === '/public/resultados' && $requestMethod === 'GET':
-            enforcePublicReadRateLimit($logger, 'resultados');
-            (new PublicController())->listResultados();
-            break;
-
-        case $route === '/public/contratos' && $requestMethod === 'GET':
-            enforcePublicReadRateLimit($logger, 'contratos');
-            (new PublicController())->listContratos();
-            break;
-
-        case $route === '/public/evaluaciones' && $requestMethod === 'GET':
-            enforcePublicReadRateLimit($logger, 'evaluaciones');
-            (new PublicController())->listEvaluaciones();
-            break;
-
-        case $route === '/public/historial' && $requestMethod === 'GET':
-            enforcePublicReadRateLimit($logger, 'historial');
-            (new PublicController())->listHistorial();
-            break;
-
-        case $route === '/public/estadisticas' && $requestMethod === 'GET':
-            enforcePublicReadRateLimit($logger, 'estadisticas');
-            (new PublicController())->estadisticas();
-            break;
-
-        case preg_match('#^/public/convocatorias/(\d+)/documentos$#', $route, $m) && $requestMethod === 'GET':
-            (new PublicController())->listConvocatoriaDocumentos((int) $m[1]);
-            break;
-
-        case preg_match('#^/public/documentos/(\d+)/download$#', $route, $m) && $requestMethod === 'GET':
-            (new PublicController())->downloadDocumentoPublico((int) $m[1]);
-            break;
-
-        case $route === '/public/proveedores/registro' && $requestMethod === 'POST':
-            $rl = new RateLimiter(
-                (int) env('RATE_LIMIT_PUBLIC_REGISTER_MAX', '5'),
-                (int) env('RATE_LIMIT_PUBLIC_REGISTER_WINDOW', '300')
-            );
-            $ip = getClientIp();
-            if (!$rl->isAllowed('public-register:' . $ip)) {
-                $logger->security('Rate limit exceeded on public register', ['ip' => $ip]);
-                jsonResponse(false, 'Demasiados intentos de registro. Intente más tarde.', null, null, 429);
-            }
-            (new PublicController())->registerProveedor();
-            break;
-
-        case $route === '/public/soporte' && $requestMethod === 'POST':
-            $rl = new RateLimiter(
-                (int) env('RATE_LIMIT_PUBLIC_SUPPORT_MAX', '5'),
-                (int) env('RATE_LIMIT_PUBLIC_SUPPORT_WINDOW', '300')
-            );
-            $ip = getClientIp();
-            if (!$rl->isAllowed('public-support:' . $ip)) {
-                $logger->security('Rate limit exceeded on support', ['ip' => $ip]);
-                jsonResponse(false, 'Demasiadas solicitudes de soporte. Intente más tarde.', null, null, 429);
-            }
-            (new PublicController())->supportTicket();
-            break;
-
         // Historial de licitación
         case preg_match('#^/licitaciones/(\d+)/historial$#', $route, $m) && $requestMethod === 'GET':
             AuthMiddleware::handle();
@@ -570,8 +477,9 @@ try {
             (new AclaracionController())->responder((int) $m[1]);
             break;
 
-        default:
-            jsonResponse(false, 'Ruta no encontrada', null, null, 404);
+            default:
+                jsonResponse(false, 'Ruta no encontrada', null, null, 404);
+        }
     }
 } catch (Throwable $e) {
     $logger->error('Unhandled exception', [

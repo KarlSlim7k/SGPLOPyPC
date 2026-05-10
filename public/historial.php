@@ -176,6 +176,7 @@
         </div>
     </footer>
 
+    <script src="/frontend/shared/format.js"></script>
     <script src="/frontend/shared/public.js"></script>
 </body>
 </html>
