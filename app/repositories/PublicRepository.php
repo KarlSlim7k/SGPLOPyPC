@@ -63,8 +63,11 @@ class PublicRepository {
         $params = [];
 
         if ($search !== null && trim($search) !== '') {
-            $where[] = '(l.numero_licitacion LIKE :search OR l.descripcion_proyecto LIKE :search OR d.nombre LIKE :search)';
-            $params['search'] = '%' . trim($search) . '%';
+            $where[] = '(l.numero_licitacion LIKE :search_numero OR l.descripcion_proyecto LIKE :search_descripcion OR d.nombre LIKE :search_dependencia)';
+            $searchTerm = '%' . trim($search) . '%';
+            $params['search_numero'] = $searchTerm;
+            $params['search_descripcion'] = $searchTerm;
+            $params['search_dependencia'] = $searchTerm;
         }
         if ($estado !== null && $estado !== '') {
             $where[] = 'l.estado_proceso = :estado';
@@ -145,8 +148,11 @@ class PublicRepository {
         ];
         $params = [];
         if ($search !== null && trim($search) !== '') {
-            $where[] = '(l.numero_licitacion LIKE :search OR l.descripcion_proyecto LIKE :search OR p.nombre_empresa LIKE :search)';
-            $params['search'] = '%' . trim($search) . '%';
+            $where[] = '(l.numero_licitacion LIKE :search_numero OR l.descripcion_proyecto LIKE :search_descripcion OR p.nombre_empresa LIKE :search_proveedor)';
+            $searchTerm = '%' . trim($search) . '%';
+            $params['search_numero'] = $searchTerm;
+            $params['search_descripcion'] = $searchTerm;
+            $params['search_proveedor'] = $searchTerm;
         }
         $whereSql = ' WHERE ' . implode(' AND ', $where);
 
@@ -281,8 +287,10 @@ class PublicRepository {
             $params['tipo'] = $tipo;
         }
         if ($search !== null && trim($search) !== '') {
-            $where[] = '(l.numero_licitacion LIKE :search OR l.descripcion_proyecto LIKE :search)';
-            $params['search'] = '%' . trim($search) . '%';
+            $where[] = '(l.numero_licitacion LIKE :search_numero OR l.descripcion_proyecto LIKE :search_descripcion)';
+            $searchTerm = '%' . trim($search) . '%';
+            $params['search_numero'] = $searchTerm;
+            $params['search_descripcion'] = $searchTerm;
         }
 
         $whereSql = ' WHERE ' . implode(' AND ', $where);
