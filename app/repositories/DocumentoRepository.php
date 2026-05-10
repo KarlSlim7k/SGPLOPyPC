@@ -38,8 +38,11 @@ class DocumentoRepository {
         ?string $tipoDocumento = null
     ): array {
         $offset = ($page - 1) * $limit;
-        $where = ['(d.id_proveedor = :id_proveedor OR pa.id_proveedor = :id_proveedor)'];
-        $params = ['id_proveedor' => $idProveedor];
+        $where = ['(d.id_proveedor = :id_proveedor_documento OR pa.id_proveedor = :id_proveedor_propuesta)'];
+        $params = [
+            'id_proveedor_documento' => $idProveedor,
+            'id_proveedor_propuesta' => $idProveedor,
+        ];
 
         if ($context === 'proveedor') {
             $where[] = 'd.id_proveedor = :id_proveedor_context';
