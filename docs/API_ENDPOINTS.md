@@ -151,6 +151,16 @@ Query params opcionales:
 - `estatus`
 - `q` (razón social, RFC o número de licitación)
 
+### GET /api/v1/participaciones/mias
+Lista participaciones del proveedor autenticado (PROVEEDOR) con paginación y filtros.
+
+Query params opcionales:
+- `page`, `limit`
+- `estatus`
+- `q` (número de licitación, descripción o dependencia)
+
+Incluye datos de licitación, estatus de participación y, si existe, datos básicos de propuesta.
+
 ### GET /api/v1/licitaciones/{id}/participaciones
 Lista participaciones de una licitación (ADMINISTRADOR).
 

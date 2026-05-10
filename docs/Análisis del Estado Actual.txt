@@ -163,3 +163,8 @@ Actualización de experiencia de rol PROVEEDOR:
 - Se habilitaron módulos frontend iniciales del proveedor:
   - Centro del proveedor (`/frontend/proveedor/centro.html`) con acceso a notificaciones.
   - Convocatorias del proveedor (`/frontend/proveedor/convocatorias.html`) con inscripción directa a licitaciones permitidas.
+
+Actualización de módulo Mis participaciones:
+- Se incorporó `GET /api/v1/participaciones/mias` para proveedores autenticados.
+- El endpoint devuelve historial propio con datos de licitación, estatus de participación y datos básicos de propuesta cuando existe.
+- Se habilitó `/frontend/proveedor/participaciones.html` y acceso desde el centro del proveedor.

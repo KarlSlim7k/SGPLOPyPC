@@ -40,6 +40,26 @@ class ParticipacionController {
         jsonResponse(true, 'Listado general de participaciones', $data, null, 200);
     }
 
+    public function listMias(): never {
+        AuthMiddleware::handle();
+        $user = AuthMiddleware::getAuthenticatedUser();
+        if ($user['rol'] !== 'PROVEEDOR') {
+            jsonResponse(false, 'Solo los proveedores pueden consultar sus participaciones.', null, null, 403);
+        }
+
+        $page = isset($_GET['page']) ? (int) $_GET['page'] : 1;
+        $limit = isset($_GET['limit']) ? (int) $_GET['limit'] : 20;
+        $estatus = $_GET['estatus'] ?? null;
+        $search = $_GET['q'] ?? null;
+
+        $result = $this->service->listMias((int) $user['id_usuario'], $page, $limit, $estatus, $search);
+        if (!$result['ok']) {
+            jsonResponse(false, 'No se pudieron cargar las participaciones', null, $result['errors'], 422);
+        }
+
+        jsonResponse(true, 'Mis participaciones', $result['data'], null, 200);
+    }
+
     public function inscribir(int $idLicitacion): never {
         AuthMiddleware::handle();
         $user = AuthMiddleware::getAuthenticatedUser();

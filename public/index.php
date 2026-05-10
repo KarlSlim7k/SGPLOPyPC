@@ -193,6 +193,12 @@ try {
             break;
 
         // Participaciones y propuestas
+        case $route === '/participaciones/mias' && $requestMethod === 'GET':
+            AuthMiddleware::handle();
+            RoleMiddleware::handle('PROVEEDOR');
+            (new ParticipacionController())->listMias();
+            break;
+
         case $route === '/participaciones' && $requestMethod === 'GET':
             AuthMiddleware::handle();
             RoleMiddleware::handle('ADMINISTRADOR');
