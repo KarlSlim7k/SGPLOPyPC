@@ -108,4 +108,18 @@ class ContratoController {
         }
         jsonResponse(true, 'Estatus actualizado exitosamente', null, null, 200);
     }
+
+    public function firmar(int $id): never {
+        AuthMiddleware::handle();
+        RoleMiddleware::handle('PROVEEDOR');
+        $user = AuthMiddleware::getAuthenticatedUser();
+        $result = $this->service->firmar($id, (int) $user['id_usuario']);
+        if (!$result['ok']) {
+            if (in_array('Contrato no encontrado.', $result['errors'])) {
+                jsonResponse(false, 'Contrato no encontrado', null, $result['errors'], 404);
+            }
+            jsonResponse(false, 'No se pudo firmar el contrato', null, $result['errors'], 422);
+        }
+        jsonResponse(true, 'Contrato firmado exitosamente', null, null, 200);
+    }
 }

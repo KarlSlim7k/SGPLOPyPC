@@ -345,6 +345,12 @@ try {
             (new ContratoController())->cambiarEstatus((int) $m[1]);
             break;
 
+        case preg_match('#^/contratos/(\d+)/firma$#', $route, $m) && $requestMethod === 'POST':
+            AuthMiddleware::handle();
+            RoleMiddleware::handle('PROVEEDOR');
+            (new ContratoController())->firmar((int) $m[1]);
+            break;
+
         // Adjudicación
         case preg_match('#^/licitaciones/(\d+)/adjudicar$#', $route, $m) && $requestMethod === 'POST':
             AuthMiddleware::handle();

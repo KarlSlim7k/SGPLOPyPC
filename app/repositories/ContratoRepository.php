@@ -73,7 +73,7 @@ class ContratoRepository {
         $whereSql = ' WHERE ' . implode(' AND ', $where);
 
         $sql = 'SELECT c.id_contrato, c.id_licitacion, c.numero_contrato, c.monto_contrato, '
-             . 'c.fecha_adjudicacion, c.fecha_inicio, c.fecha_fin, c.estatus, c.fecha_creacion, '
+             . 'c.fecha_adjudicacion, c.fecha_inicio, c.fecha_fin, c.estatus, c.fecha_creacion, c.fecha_firma_proveedor, '
              . 'li.numero_licitacion, li.descripcion_proyecto, li.estado_proceso, d.nombre AS dependencia_nombre '
              . 'FROM contrato c '
              . 'JOIN licitacion li ON c.id_licitacion = li.id_licitacion '
@@ -159,5 +159,12 @@ class ContratoRepository {
         $sql = 'UPDATE contrato SET ' . implode(', ', $fields) . ' WHERE id_contrato = :id';
         $stmt = $this->db->prepare($sql);
         $stmt->execute($params);
+    }
+
+    public function firmar(int $id, int $idUsuario): void {
+        $stmt = $this->db->prepare(
+            'UPDATE contrato SET fecha_firma_proveedor = NOW(), firmado_por = :firmado_por WHERE id_contrato = :id'
+        );
+        $stmt->execute(['id' => $id, 'firmado_por' => $idUsuario]);
     }
 }

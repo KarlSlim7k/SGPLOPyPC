@@ -217,4 +217,24 @@ class ContratoService {
         }
         return $errors;
     }
+
+    public function firmar(int $idContrato, int $idUsuario): array {
+        $contrato = $this->repo->findById($idContrato);
+        if (!$contrato) {
+            return ['ok' => false, 'errors' => ['Contrato no encontrado.']];
+        }
+        $proveedor = $this->provRepo->findByUsuario($idUsuario);
+        if (!$proveedor || (int) $proveedor['id_proveedor'] !== (int) $contrato['id_proveedor']) {
+            return ['ok' => false, 'errors' => ['No tienes permiso para firmar este contrato.']];
+        }
+        if ($contrato['estatus'] !== 'EN_FORMALIZACION') {
+            return ['ok' => false, 'errors' => ['Solo se puede firmar un contrato en estatus EN_FORMALIZACION.']];
+        }
+        if (!empty($contrato['fecha_firma_proveedor'])) {
+            return ['ok' => false, 'errors' => ['El contrato ya fue firmado por el proveedor.']];
+        }
+        $this->repo->firmar($idContrato, $idUsuario);
+        auditLog($idUsuario, 'contrato', $idContrato, 'FIRMAR', null, ['firmado_por' => $idUsuario]);
+        return ['ok' => true];
+    }
 }

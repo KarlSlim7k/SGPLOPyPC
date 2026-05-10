@@ -51,6 +51,10 @@
           <p id="licitacion" class="text-slate-500 text-sm mt-2">Licitación relacionada</p>
         </div>
         <span id="estatus" class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold border bg-slate-100 text-slate-700 border-slate-200">N/A</span>
+        <span id="firma-badge" class="hidden inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold border"></span>
+        <button id="firmar-btn" class="hidden bg-primary-600 hover:bg-primary-700 text-white font-semibold px-4 py-2 rounded-lg text-sm">
+          <i class="ph ph-pen-nib"></i> Firmar contrato
+        </button>
       </div>
       <p id="flash" class="hidden mt-4 text-sm rounded-lg px-3 py-2"></p>
     </section>
@@ -175,6 +179,21 @@
       estatus.className = 'inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold border ' + badgeClass(contrato.estatus);
       estatus.textContent = contrato.estatus || 'N/A';
 
+      // Firma del proveedor
+      const firmaBadge = document.getElementById('firma-badge');
+      const firmarBtn = document.getElementById('firmar-btn');
+      if (contrato.fecha_firma_proveedor) {
+        firmaBadge.className = 'inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold border bg-emerald-50 text-emerald-700 border-emerald-200';
+        firmaBadge.innerHTML = '<i class="ph ph-seal-check"></i> Firmado ' + SGPLAdmin.formatDate(contrato.fecha_firma_proveedor);
+        firmaBadge.classList.remove('hidden');
+        firmarBtn.classList.add('hidden');
+      } else if (contrato.estatus === 'EN_FORMALIZACION') {
+        firmarBtn.classList.remove('hidden');
+        firmaBadge.className = 'inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold border bg-amber-50 text-amber-700 border-amber-200';
+        firmaBadge.innerHTML = '<i class="ph ph-clock"></i> Pendiente de firma';
+        firmaBadge.classList.remove('hidden');
+      }
+
       document.getElementById('general').innerHTML =
         field('ID contrato', contrato.id_contrato)
         + field('Número de contrato', contrato.numero_contrato)
@@ -209,6 +228,21 @@
       }
       renderContrato();
     }
+
+    document.getElementById('firmar-btn').addEventListener('click', async function () {
+      if (!confirm('¿Confirmas la firma y aceptación de este contrato? Esta acción no se puede deshacer.')) return;
+      this.disabled = true;
+      this.textContent = 'Firmando...';
+      try {
+        await SGPLAdmin.authFetch('/contratos/' + idContrato + '/firma', { method: 'POST' });
+        setFlash('Contrato firmado exitosamente.', 'ok');
+        await loadContrato();
+      } catch (error) {
+        setFlash(error.message || 'No se pudo firmar el contrato.', 'error');
+        this.disabled = false;
+        this.innerHTML = '<i class="ph ph-pen-nib"></i> Firmar contrato';
+      }
+    });
 
     document.getElementById('documentos').addEventListener('click', async function (e) {
       const btn = e.target.closest('button[data-download]');
