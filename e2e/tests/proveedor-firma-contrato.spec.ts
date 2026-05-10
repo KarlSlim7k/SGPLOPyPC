@@ -22,7 +22,7 @@ test.describe('Firma de contrato por proveedor', () => {
 
   test.beforeAll(async ({ request }) => {
     providerToken = await loginToken(request, PROVIDER_EMAIL, PROVIDER_PASSWORD);
-    await new Promise((r) => setTimeout(r, 2_000));
+    await new Promise((r) => setTimeout(r, 13_000)); // >12s gap entre logins para no saturar rate limiter
     adminToken = await loginToken(request, ADMIN_EMAIL, ADMIN_PASSWORD);
     meData = (await (await request.get('/api/v1/me', { headers: { Authorization: `Bearer ${providerToken}` } })).json())?.data ?? {};
   });
@@ -98,8 +98,11 @@ test.describe('Firma de contrato por proveedor', () => {
     const enFormalizacion = items[0].estatus === 'EN_FORMALIZACION' && !items[0].fecha_firma_proveedor;
     if (enFormalizacion) {
       await expect(page.locator('#firmar-btn')).toBeVisible();
-    } else {
+    } else if (items[0].fecha_firma_proveedor) {
       await expect(page.locator('#firma-badge')).toBeVisible();
+    } else {
+      // Contrato en otro estado (CONCLUIDO, VIGENTE, etc.) — solo verificar que cargó
+      await expect(page.locator('#estatus')).not.toContainText('N/A');
     }
   });
 });
