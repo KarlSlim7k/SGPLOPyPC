@@ -49,6 +49,7 @@ require_once __DIR__ . '/../app/controllers/ReporteController.php';
 require_once __DIR__ . '/../app/controllers/PublicController.php';
 require_once __DIR__ . '/../app/controllers/NotificacionController.php';
 require_once __DIR__ . '/../app/controllers/SupportTicketController.php';
+require_once __DIR__ . '/../app/controllers/AclaracionController.php';
 
 // Middlewares
 require_once __DIR__ . '/../app/middlewares/AuthMiddleware.php';
@@ -505,6 +506,22 @@ try {
             AuthMiddleware::handle();
             RoleMiddleware::handle('ADMINISTRADOR');
             (new SupportTicketController())->changeEstado((int) $m[1]);
+            break;
+
+        // Aclaraciones
+        case preg_match('#^/licitaciones/(\d+)/aclaraciones$#', $route, $m) && $requestMethod === 'GET':
+            AuthMiddleware::handle();
+            (new AclaracionController())->list((int) $m[1]);
+            break;
+
+        case preg_match('#^/licitaciones/(\d+)/aclaraciones$#', $route, $m) && $requestMethod === 'POST':
+            AuthMiddleware::handle();
+            (new AclaracionController())->create((int) $m[1]);
+            break;
+
+        case preg_match('#^/aclaraciones/(\d+)/respuesta$#', $route, $m) && $requestMethod === 'PATCH':
+            AuthMiddleware::handle();
+            (new AclaracionController())->responder((int) $m[1]);
             break;
 
         default:

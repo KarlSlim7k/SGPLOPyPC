@@ -85,6 +85,27 @@
             <div class="px-6 py-5 text-sm text-slate-500">Cargando documentos...</div>
           </div>
         </section>
+
+        <section id="aclaraciones-section" class="bg-white border border-slate-200 rounded-2xl overflow-hidden">
+          <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+            <h2 class="font-bold text-slate-900">Aclaraciones</h2>
+            <span id="aclaraciones-badge" class="text-xs px-2 py-1 rounded-full bg-slate-100 text-slate-600">0</span>
+          </div>
+          <div id="aclaraciones-list" class="divide-y divide-slate-100">
+            <div class="px-6 py-5 text-sm text-slate-500">Cargando aclaraciones...</div>
+          </div>
+          <div id="aclaraciones-form-wrap" class="hidden px-6 py-4 border-t border-slate-100 space-y-3">
+            <p class="text-xs font-semibold text-slate-600">Enviar pregunta</p>
+            <textarea id="aclaracion-pregunta" rows="3" maxlength="2000" placeholder="Escribe tu pregunta o solicitud de aclaración..." class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"></textarea>
+            <div class="flex items-center gap-3">
+              <button id="aclaracion-submit" class="inline-flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white font-semibold px-4 py-2 rounded-lg text-sm">
+                <i class="ph ph-paper-plane-tilt"></i>
+                Enviar aclaración
+              </button>
+              <p id="aclaracion-flash" class="text-sm text-slate-500"></p>
+            </div>
+          </div>
+        </section>
       </div>
 
       <aside class="space-y-6">
@@ -180,6 +201,13 @@
 
       const btn = document.getElementById('inscribir-btn');
       const canOperate = SGPLAdmin.providerCanOperate(providerStatus);
+
+      // Mostrar formulario de aclaración solo en fase EN_ACLARACIONES y proveedor validado
+      if (licitacion.estado_proceso === 'EN_ACLARACIONES' && canOperate) {
+        document.getElementById('aclaraciones-form-wrap').classList.remove('hidden');
+      }
+
+      if (!participacion && canInscribir(licitacion.estado_proceso)) {
       if (!participacion && canInscribir(licitacion.estado_proceso)) {
         btn.classList.remove('hidden');
         if (!canOperate) {
@@ -195,6 +223,32 @@
         }
       } else {
         btn.classList.add('hidden');
+      }
+    }
+
+    async function loadAclaraciones() {
+      const list = document.getElementById('aclaraciones-list');
+      const badge = document.getElementById('aclaraciones-badge');
+      try {
+        const res = await SGPLAdmin.authFetch('/licitaciones/' + idLicitacion + '/aclaraciones', { method: 'GET' });
+        const items = (res && res.data) || [];
+        badge.textContent = String(items.length);
+        if (!items.length) {
+          list.innerHTML = '<div class="px-6 py-5 text-sm text-slate-500">Sin aclaraciones registradas.</div>';
+          return;
+        }
+        list.innerHTML = items.map(function (item) {
+          const respondida = item.respuesta ? true : false;
+          return '<div class="px-6 py-4 space-y-2">'
+            + '<p class="text-sm font-semibold text-slate-800"><i class="ph ph-question mr-1"></i>' + SGPLAdmin.escapeHtml(item.pregunta) + '</p>'
+            + '<p class="text-xs text-slate-400">' + SGPLAdmin.formatDateTime(item.fecha_pregunta) + (item.nombre_empresa ? ' · ' + SGPLAdmin.escapeHtml(item.nombre_empresa) : '') + '</p>'
+            + (respondida
+              ? '<div class="mt-2 pl-3 border-l-2 border-emerald-400"><p class="text-sm text-slate-700">' + SGPLAdmin.escapeHtml(item.respuesta) + '</p><p class="text-xs text-slate-400 mt-1">' + SGPLAdmin.formatDateTime(item.fecha_respuesta) + (item.respondida_por_nombre ? ' · ' + SGPLAdmin.escapeHtml(item.respondida_por_nombre) : '') + '</p></div>'
+              : '<p class="text-xs text-amber-600 mt-1"><i class="ph ph-clock"></i> Pendiente de respuesta</p>')
+            + '</div>';
+        }).join('');
+      } catch (_) {
+        list.innerHTML = '<div class="px-6 py-5 text-sm text-red-600">No se pudieron cargar las aclaraciones.</div>';
       }
     }
 
@@ -237,6 +291,35 @@
       }
     });
 
+    document.getElementById('aclaracion-submit').addEventListener('click', async function () {
+      const pregunta = document.getElementById('aclaracion-pregunta').value.trim();
+      const flash = document.getElementById('aclaracion-flash');
+      flash.textContent = '';
+      if (!pregunta) {
+        flash.textContent = 'Escribe tu pregunta antes de enviar.';
+        flash.className = 'text-sm text-red-600';
+        return;
+      }
+      this.disabled = true;
+      this.textContent = 'Enviando...';
+      try {
+        await SGPLAdmin.authFetch('/licitaciones/' + idLicitacion + '/aclaraciones', {
+          method: 'POST',
+          body: JSON.stringify({ pregunta }),
+        });
+        document.getElementById('aclaracion-pregunta').value = '';
+        flash.textContent = 'Aclaración enviada correctamente.';
+        flash.className = 'text-sm text-emerald-600';
+        await loadAclaraciones();
+      } catch (error) {
+        flash.textContent = error.message || 'No se pudo enviar la aclaración.';
+        flash.className = 'text-sm text-red-600';
+      } finally {
+        this.disabled = false;
+        this.innerHTML = '<i class="ph ph-paper-plane-tilt"></i> Enviar aclaración';
+      }
+    });
+
     (async function init() {
       if (!idLicitacion) {
         window.location.href = '/frontend/proveedor/convocatorias.html';
@@ -260,7 +343,7 @@
         providerStatus = SGPLAdmin.extractProviderStatus(me);
         SGPLAdmin.renderProviderBadge(document.getElementById('estatus-proveedor'), providerStatus);
         SGPLAdmin.renderProviderBanner(document.getElementById('estatus-banner'), providerStatus);
-        await Promise.all([loadDetalle(), loadDocumentos()]);
+        await Promise.all([loadDetalle(), loadDocumentos(), loadAclaraciones()]);
       } catch (_) {
         window.location.href = '/frontend/proveedor/convocatorias.html';
       }
