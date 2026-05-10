@@ -27,8 +27,15 @@ class NotificacionRepository {
     }
 
     public function findByUsuario(int $idUsuario, bool $soloNoLeidas = false): array {
-        $sql = 'SELECT n.*, l.numero_licitacion FROM notificacion n '
+        $sql = 'SELECT n.*, l.numero_licitacion, l.descripcion_proyecto, d.nombre AS dependencia_nombre, '
+             . 'pa.id_participacion, pr.id_propuesta, c.id_contrato, c.numero_contrato '
+             . 'FROM notificacion n '
              . 'LEFT JOIN licitacion l ON n.id_licitacion = l.id_licitacion '
+             . 'LEFT JOIN dependencia d ON l.id_dependencia = d.id_dependencia '
+             . 'LEFT JOIN proveedor pv ON pv.id_usuario = n.id_usuario_destino '
+             . 'LEFT JOIN participacion pa ON pa.id_proveedor = pv.id_proveedor AND pa.id_licitacion = n.id_licitacion '
+             . 'LEFT JOIN propuesta pr ON pr.id_participacion = pa.id_participacion '
+             . 'LEFT JOIN contrato c ON c.id_proveedor = pv.id_proveedor AND c.id_licitacion = n.id_licitacion '
              . 'WHERE n.id_usuario_destino = :id_usuario';
         if ($soloNoLeidas) {
             $sql .= ' AND n.leida = 0';

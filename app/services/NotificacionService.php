@@ -43,7 +43,7 @@ class NotificacionService {
     }
 
     public function listarMias(int $idUsuario): array {
-        return $this->repo->findByUsuario($idUsuario);
+        return array_map([$this, 'normalizarParaPortal'], $this->repo->findByUsuario($idUsuario));
     }
 
     public function marcarLeida(int $idNotificacion, int $idUsuario): array {
@@ -77,5 +77,55 @@ class NotificacionService {
             $creadas++;
         }
         return $creadas;
+    }
+
+    private function normalizarParaPortal(array $notificacion): array {
+        $enlaces = [];
+        if (!empty($notificacion['id_licitacion'])) {
+            $enlaces['licitacion'] = [
+                'label' => 'Ver licitación',
+                'href' => '/frontend/proveedor/licitacion.html?id=' . (int) $notificacion['id_licitacion'],
+            ];
+        }
+        if (!empty($notificacion['id_propuesta'])) {
+            $enlaces['propuesta'] = [
+                'label' => 'Ver propuesta',
+                'href' => '/frontend/proveedor/propuestas.html?id_propuesta=' . (int) $notificacion['id_propuesta'],
+            ];
+        }
+        if (!empty($notificacion['id_contrato'])) {
+            $enlaces['contrato'] = [
+                'label' => 'Ver contrato',
+                'href' => '/frontend/proveedor/contratos.html?id_contrato=' . (int) $notificacion['id_contrato'],
+            ];
+        }
+
+        $accionPrincipal = $this->resolverAccionPrincipal($notificacion, $enlaces);
+
+        $notificacion['leida'] = (bool) $notificacion['leida'];
+        $notificacion['enlaces'] = $enlaces;
+        $notificacion['accion_principal'] = $accionPrincipal;
+
+        return $notificacion;
+    }
+
+    private function resolverAccionPrincipal(array $notificacion, array $enlaces): ?array {
+        $tipo = (string) ($notificacion['tipo_notificacion'] ?? '');
+        if ($tipo === 'ADJUDICACION' && isset($enlaces['contrato'])) {
+            return $enlaces['contrato'];
+        }
+        if ($tipo === 'RESULTADO_EVALUACION' && isset($enlaces['propuesta'])) {
+            return $enlaces['propuesta'];
+        }
+        if (isset($enlaces['licitacion'])) {
+            return $enlaces['licitacion'];
+        }
+        if (isset($enlaces['propuesta'])) {
+            return $enlaces['propuesta'];
+        }
+        if (isset($enlaces['contrato'])) {
+            return $enlaces['contrato'];
+        }
+        return null;
     }
 }
