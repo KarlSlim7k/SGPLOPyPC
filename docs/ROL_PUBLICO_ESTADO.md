@@ -183,6 +183,7 @@ Resultado: sin errores de sintaxis y migraciones completadas en logs de deploy.
 
 1. Evaluar refresh tokens o mecanismo de revocacion si el riesgo operativo de JWT de 24h aumenta.
 2. Mantener respaldo y monitoreo de migraciones automaticas en cada deploy Railway.
+3. Cerrados en este commit: flash de datos hardcodeados en landing (procesos impugnados), validacion sintactica PHP OK, endpoints publicos verificados.
 
 ## 9. Estado Final
 

@@ -105,6 +105,7 @@
       const monto = qs('#landing-stat-monto');
       const tActivos = qs('#landing-tr-activas');
       const tMonto = qs('#landing-tr-monto');
+      const tImpugnados = qs('#landing-tr-impugnados');
       const pLic = qs('#landing-preview-licitaciones');
       const pProv = qs('#landing-preview-proveedores');
       const pEval = qs('#landing-preview-evaluacion');
@@ -120,6 +121,7 @@
       if (monto) monto.textContent = formatCurrency(stats.monto_total_contratado || 0);
       if (tActivos) tActivos.textContent = '+' + String(stats.licitaciones_activas || 0);
       if (tMonto) tMonto.textContent = formatCurrency(stats.monto_total_contratado || 0);
+      if (tImpugnados) tImpugnados.textContent = String(stats.procesos_impugnados || '—');
       if (pLic) pLic.textContent = String(stats.licitaciones_activas || 0);
       if (pProv) pProv.textContent = String(stats.proveedores_registrados_total ?? stats.proveedores_registrados ?? 0);
       if (pEval) pEval.textContent = String(stats.licitaciones_en_evaluacion || 0);

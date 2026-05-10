@@ -354,7 +354,7 @@
                     <p class="text-slate-400 text-sm font-medium">MXN Adjudicados</p>
                 </div>
                 <div class="bg-white/5 rounded-2xl p-6 border border-white/10 text-center">
-                    <p class="text-4xl font-extrabold text-white mb-1">0</p>
+                    <p id="landing-tr-impugnados" class="text-4xl font-extrabold text-white mb-1">—</p>
                     <p class="text-slate-400 text-sm font-medium">Procesos Impugnados</p>
                 </div>
             </div>
