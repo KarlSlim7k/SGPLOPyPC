@@ -2,17 +2,31 @@
 declare(strict_types=1);
 
 require_once __DIR__ . '/../repositories/UserRepository.php';
+require_once __DIR__ . '/../repositories/ProveedorRepository.php';
 require_once __DIR__ . '/../helpers/audit.php';
 
 class UserService {
     private UserRepository $repo;
+    private ProveedorRepository $proveedorRepo;
 
     public function __construct() {
         $this->repo = new UserRepository();
+        $this->proveedorRepo = new ProveedorRepository();
     }
 
     public function getMe(int $idUsuario): ?array {
-        return $this->repo->findById($idUsuario);
+        $user = $this->repo->findById($idUsuario);
+        if (!$user) {
+            return null;
+        }
+
+        if (($user['rol'] ?? '') === 'PROVEEDOR') {
+            $proveedor = $this->proveedorRepo->findByUsuario($idUsuario);
+            $user['proveedor'] = $proveedor;
+            $user['id_proveedor'] = $proveedor ? (int) $proveedor['id_proveedor'] : null;
+        }
+
+        return $user;
     }
 
     public function updateProfile(int $idUsuario, array $input): array {

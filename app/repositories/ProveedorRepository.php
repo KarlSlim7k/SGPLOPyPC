@@ -5,6 +5,7 @@ require_once __DIR__ . '/../../config/database.php';
 
 class ProveedorRepository {
     private PDO $db;
+    private ?array $columns = null;
 
     public function __construct() {
         $this->db = getDbConnection();
@@ -12,12 +13,10 @@ class ProveedorRepository {
 
     public function findAll(): array {
         $stmt = $this->db->query(
-            'SELECT p.*, u.email, u.nombre AS usuario_nombre, COUNT(DISTINCT pa.id_licitacion) AS total_licitaciones '
+            'SELECT p.*, u.email, u.nombre AS usuario_nombre, '
+            . '(SELECT COUNT(DISTINCT pa.id_licitacion) FROM participacion pa WHERE pa.id_proveedor = p.id_proveedor) AS total_licitaciones '
             . 'FROM proveedor p '
             . 'JOIN usuario u ON p.id_usuario = u.id_usuario '
-            . 'LEFT JOIN participacion pa ON pa.id_proveedor = p.id_proveedor '
-            . 'GROUP BY p.id_proveedor, p.id_usuario, p.nombre_empresa, p.representante_legal, p.registro_fiscal, p.domicilio, '
-            . 'p.telefono, p.especialidad, p.estatus, p.fecha_registro, u.email, u.nombre '
             . 'ORDER BY p.fecha_registro DESC'
         );
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
@@ -25,13 +24,11 @@ class ProveedorRepository {
 
     public function findById(int $id): ?array {
         $stmt = $this->db->prepare(
-            'SELECT p.*, u.email, u.nombre AS usuario_nombre, COUNT(DISTINCT pa.id_licitacion) AS total_licitaciones '
+            'SELECT p.*, u.email, u.nombre AS usuario_nombre, '
+            . '(SELECT COUNT(DISTINCT pa.id_licitacion) FROM participacion pa WHERE pa.id_proveedor = p.id_proveedor) AS total_licitaciones '
             . 'FROM proveedor p '
             . 'JOIN usuario u ON p.id_usuario = u.id_usuario '
-            . 'LEFT JOIN participacion pa ON pa.id_proveedor = p.id_proveedor '
             . 'WHERE p.id_proveedor = :id '
-            . 'GROUP BY p.id_proveedor, p.id_usuario, p.nombre_empresa, p.representante_legal, p.registro_fiscal, p.domicilio, '
-            . 'p.telefono, p.especialidad, p.estatus, p.fecha_registro, u.email, u.nombre '
             . 'LIMIT 1'
         );
         $stmt->execute(['id' => $id]);
@@ -63,6 +60,12 @@ class ProveedorRepository {
     }
 
     public function update(int $id, array $data): void {
+        $availableColumns = array_flip($this->getColumns());
+        $data = array_intersect_key($data, $availableColumns);
+        if (empty($data)) {
+            return;
+        }
+
         $fields = [];
         $params = ['id' => $id];
         foreach ($data as $k => $v) {
@@ -72,5 +75,17 @@ class ProveedorRepository {
         $sql = 'UPDATE proveedor SET ' . implode(', ', $fields) . ' WHERE id_proveedor = :id';
         $stmt = $this->db->prepare($sql);
         $stmt->execute($params);
+    }
+
+    private function getColumns(): array {
+        if ($this->columns !== null) {
+            return $this->columns;
+        }
+
+        $stmt = $this->db->query(
+            "SELECT COLUMN_NAME FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'proveedor'"
+        );
+        $this->columns = $stmt->fetchAll(PDO::FETCH_COLUMN) ?: [];
+        return $this->columns;
     }
 }

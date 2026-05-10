@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mi Perfil — SGPLOPyPC</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] },
+          colors: { primary: { 500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8' } }
+        }
+      }
+    }
+  </script>
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+<body class="bg-slate-50 text-slate-900 font-sans antialiased">
+  <nav class="bg-white border-b border-slate-200 sticky top-0 z-40">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+      <a href="/frontend/proveedor/centro.html" class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-lg bg-primary-700 text-white flex items-center justify-center font-bold text-sm">SG</div>
+        <div>
+          <p class="font-bold text-sm">SGPLOPyPC</p>
+          <p class="text-xs text-slate-500">Mi perfil</p>
+        </div>
+      </a>
+      <div class="flex items-center gap-2">
+        <a href="/frontend/proveedor/convocatorias.html" class="hidden sm:inline-flex items-center gap-2 text-sm font-semibold px-3 py-2 rounded-lg border border-slate-200 hover:bg-slate-50">
+          <i class="ph ph-megaphone"></i>
+          Convocatorias
+        </a>
+        <a href="/frontend/proveedor/centro.html" class="inline-flex items-center gap-2 text-sm font-semibold px-3 py-2 rounded-lg border border-slate-200 hover:bg-slate-50">
+          <i class="ph ph-house"></i>
+          Centro
+        </a>
+        <button data-action="logout" class="inline-flex items-center gap-2 text-sm font-semibold px-3 py-2 rounded-lg border border-slate-200 hover:bg-slate-50">
+          <i class="ph ph-sign-out"></i>
+          Cerrar sesión
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="max-w-6xl mx-auto px-4 py-8 space-y-6">
+    <section class="bg-white border border-slate-200 rounded-2xl p-6">
+      <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+        <div>
+          <p class="text-xs uppercase tracking-wide text-primary-700 font-semibold">Rol Proveedor</p>
+          <h1 class="text-2xl font-bold mt-1">Mi perfil</h1>
+          <p class="text-slate-500 text-sm mt-2">Administra los datos de acceso, informacion fiscal y contacto de tu empresa.</p>
+        </div>
+        <div id="estatus-proveedor" class="inline-flex w-fit items-center px-3 py-1 rounded-full text-xs font-semibold border bg-slate-100 text-slate-700 border-slate-200">Cargando...</div>
+      </div>
+    </section>
+
+    <section id="page-alert" class="hidden border rounded-xl px-4 py-3 text-sm"></section>
+
+    <section class="grid lg:grid-cols-[1.25fr_0.75fr] gap-6">
+      <div class="space-y-6">
+        <section class="bg-white border border-slate-200 rounded-2xl p-5 md:p-6">
+          <div class="flex items-start justify-between gap-4 mb-5">
+            <div>
+              <h2 class="font-bold text-lg">Datos fiscales y contacto</h2>
+              <p class="text-sm text-slate-500 mt-1">Estos datos identifican a tu empresa en licitaciones, propuestas y contratos.</p>
+            </div>
+            <i class="ph ph-buildings text-2xl text-primary-600"></i>
+          </div>
+
+          <form id="form-proveedor" class="grid md:grid-cols-2 gap-4">
+            <label class="block md:col-span-2">
+              <span class="text-xs font-semibold text-slate-600">Razon social / empresa *</span>
+              <input id="nombre_empresa" type="text" required maxlength="200" class="mt-1 w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500">
+            </label>
+            <label class="block">
+              <span class="text-xs font-semibold text-slate-600">Representante legal *</span>
+              <input id="representante_legal" type="text" required maxlength="150" class="mt-1 w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500">
+            </label>
+            <label class="block">
+              <span class="text-xs font-semibold text-slate-600">RFC / registro fiscal *</span>
+              <input id="registro_fiscal" type="text" required maxlength="30" class="mt-1 w-full px-3 py-2 border border-slate-300 rounded-lg text-sm uppercase focus:outline-none focus:ring-2 focus:ring-primary-500">
+            </label>
+            <label class="block">
+              <span class="text-xs font-semibold text-slate-600">Regimen fiscal</span>
+              <input id="regimen_fiscal" type="text" maxlength="120" class="mt-1 w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500">
+            </label>
+            <label class="block">
+              <span class="text-xs font-semibold text-slate-600">Telefono</span>
+              <input id="telefono" type="tel" maxlength="30" class="mt-1 w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500">
+            </label>
+            <label class="block">
+              <span class="text-xs font-semibold text-slate-600">Cargo de contacto</span>
+              <input id="contacto_cargo" type="text" maxlength="120" class="mt-1 w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500">
+            </label>
+            <label class="block">
+              <span class="text-xs font-semibold text-slate-600">Correo de contacto</span>
+              <input id="contacto_email" type="email" maxlength="200" class="mt-1 w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500">
+            </label>
+            <label class="block md:col-span-2">
+              <span class="text-xs font-semibold text-slate-600">Especialidad</span>
+              <input id="especialidad" type="text" maxlength="255" class="mt-1 w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500">
+            </label>
+            <label class="block md:col-span-2">
+              <span class="text-xs font-semibold text-slate-600">Domicilio fiscal *</span>
+              <textarea id="domicilio" required rows="3" maxlength="500" class="mt-1 w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"></textarea>
+            </label>
+            <div class="md:col-span-2 flex flex-col sm:flex-row sm:items-center gap-3 pt-2">
+              <button id="btn-proveedor" type="submit" class="inline-flex justify-center items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white font-semibold px-4 py-2 rounded-lg text-sm disabled:opacity-60">
+                <i class="ph ph-floppy-disk"></i>
+                Guardar datos de empresa
+              </button>
+              <p id="proveedor-alert" class="text-sm text-slate-500"></p>
+            </div>
+          </form>
+        </section>
+
+        <section class="bg-white border border-slate-200 rounded-2xl p-5 md:p-6">
+          <div class="flex items-start justify-between gap-4 mb-5">
+            <div>
+              <h2 class="font-bold text-lg">Cuenta de acceso</h2>
+              <p class="text-sm text-slate-500 mt-1">Actualiza el nombre visible y correo con el que inicias sesion.</p>
+            </div>
+            <i class="ph ph-user-circle text-2xl text-primary-600"></i>
+          </div>
+
+          <form id="form-usuario" class="grid md:grid-cols-2 gap-4">
+            <label class="block">
+              <span class="text-xs font-semibold text-slate-600">Nombre *</span>
+              <input id="usuario_nombre" type="text" required maxlength="120" class="mt-1 w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500">
+            </label>
+            <label class="block">
+              <span class="text-xs font-semibold text-slate-600">Email *</span>
+              <input id="usuario_email" type="email" required maxlength="200" class="mt-1 w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500">
+            </label>
+            <div class="md:col-span-2 flex flex-col sm:flex-row sm:items-center gap-3 pt-2">
+              <button id="btn-usuario" type="submit" class="inline-flex justify-center items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white font-semibold px-4 py-2 rounded-lg text-sm disabled:opacity-60">
+                <i class="ph ph-check-circle"></i>
+                Actualizar cuenta
+              </button>
+              <p id="usuario-alert" class="text-sm text-slate-500"></p>
+            </div>
+          </form>
+        </section>
+      </div>
+
+      <aside class="space-y-6">
+        <section class="bg-white border border-slate-200 rounded-2xl p-5 md:p-6">
+          <h2 class="font-bold text-lg">Resumen</h2>
+          <dl class="mt-4 space-y-3 text-sm">
+            <div class="flex justify-between gap-4 border-b border-slate-100 pb-3">
+              <dt class="text-slate-500">ID proveedor</dt>
+              <dd id="res-id" class="font-semibold text-slate-800">N/A</dd>
+            </div>
+            <div class="flex justify-between gap-4 border-b border-slate-100 pb-3">
+              <dt class="text-slate-500">Registro</dt>
+              <dd id="res-fecha" class="font-semibold text-slate-800">N/A</dd>
+            </div>
+            <div class="flex justify-between gap-4">
+              <dt class="text-slate-500">Participaciones</dt>
+              <dd id="res-participaciones" class="font-semibold text-slate-800">0</dd>
+            </div>
+          </dl>
+        </section>
+
+        <section class="bg-white border border-slate-200 rounded-2xl p-5 md:p-6">
+          <div class="flex items-start justify-between gap-4 mb-5">
+            <div>
+              <h2 class="font-bold text-lg">Contraseña</h2>
+              <p class="text-sm text-slate-500 mt-1">Requiere mayuscula, numero, simbolo y minimo 8 caracteres.</p>
+            </div>
+            <i class="ph ph-lock-key text-2xl text-primary-600"></i>
+          </div>
+
+          <form id="form-password" class="space-y-4">
+            <label class="block">
+              <span class="text-xs font-semibold text-slate-600">Contraseña actual *</span>
+              <input id="pwd_actual" type="password" required autocomplete="current-password" class="mt-1 w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500">
+            </label>
+            <label class="block">
+              <span class="text-xs font-semibold text-slate-600">Nueva contraseña *</span>
+              <input id="pwd_nueva" type="password" required autocomplete="new-password" class="mt-1 w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500">
+              <span id="pwd-hint" class="block text-xs text-slate-400 mt-1">Minimo 8 caracteres, mayuscula, numero y simbolo</span>
+            </label>
+            <label class="block">
+              <span class="text-xs font-semibold text-slate-600">Confirmar contraseña *</span>
+              <input id="pwd_confirmacion" type="password" required autocomplete="new-password" class="mt-1 w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500">
+            </label>
+            <button id="btn-password" type="submit" class="w-full inline-flex justify-center items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white font-semibold px-4 py-2 rounded-lg text-sm disabled:opacity-60">
+              <i class="ph ph-key"></i>
+              Cambiar contraseña
+            </button>
+            <p id="password-alert" class="text-sm text-slate-500"></p>
+          </form>
+        </section>
+      </aside>
+    </section>
+  </main>
+
+  <script src="/frontend/shared/admin.js"></script>
+  <script>
+    SGPLAdmin.attachLogoutHandlers();
+
+    let currentUser = null;
+    let currentProvider = null;
+
+    function setAlert(id, message, type) {
+      const el = document.getElementById(id);
+      if (!el) return;
+      el.textContent = message || '';
+      el.className = 'text-sm ' + (type === 'error' ? 'text-red-600' : type === 'success' ? 'text-emerald-600' : 'text-slate-500');
+    }
+
+    function setPageAlert(message, type) {
+      const el = document.getElementById('page-alert');
+      if (!message) {
+        el.classList.add('hidden');
+        return;
+      }
+      el.textContent = message;
+      el.className = 'border rounded-xl px-4 py-3 text-sm ' + (type === 'error'
+        ? 'bg-red-50 text-red-700 border-red-100'
+        : 'bg-emerald-50 text-emerald-700 border-emerald-100');
+    }
+
+    function setBusy(buttonId, busy, label) {
+      const btn = document.getElementById(buttonId);
+      if (!btn) return;
+      if (busy) {
+        btn.dataset.original = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = '<i class="ph ph-spinner animate-spin"></i> ' + label;
+      } else {
+        btn.disabled = false;
+        btn.innerHTML = btn.dataset.original || btn.innerHTML;
+      }
+    }
+
+    function providerBadgeClass(estatus) {
+      if (estatus === 'VALIDADO') return 'bg-emerald-50 text-emerald-700 border-emerald-100';
+      if (estatus === 'PENDIENTE') return 'bg-amber-50 text-amber-700 border-amber-100';
+      if (estatus === 'RECHAZADO' || estatus === 'SUSPENDIDO') return 'bg-red-50 text-red-700 border-red-100';
+      return 'bg-slate-100 text-slate-700 border-slate-200';
+    }
+
+    function fillValue(id, value) {
+      const el = document.getElementById(id);
+      if (el) el.value = value || '';
+    }
+
+    function hydrateForms() {
+      fillValue('usuario_nombre', currentUser.nombre);
+      fillValue('usuario_email', currentUser.email);
+
+      fillValue('nombre_empresa', currentProvider.nombre_empresa);
+      fillValue('representante_legal', currentProvider.representante_legal);
+      fillValue('registro_fiscal', currentProvider.registro_fiscal);
+      fillValue('regimen_fiscal', currentProvider.regimen_fiscal);
+      fillValue('domicilio', currentProvider.domicilio);
+      fillValue('telefono', currentProvider.telefono);
+      fillValue('contacto_cargo', currentProvider.contacto_cargo);
+      fillValue('contacto_email', currentProvider.contacto_email || currentUser.email);
+      fillValue('especialidad', currentProvider.especialidad);
+
+      const estatus = currentProvider.estatus || 'N/A';
+      const badge = document.getElementById('estatus-proveedor');
+      badge.textContent = estatus;
+      badge.className = 'inline-flex w-fit items-center px-3 py-1 rounded-full text-xs font-semibold border ' + providerBadgeClass(estatus);
+
+      document.getElementById('res-id').textContent = currentProvider.id_proveedor || 'N/A';
+      document.getElementById('res-fecha').textContent = SGPLAdmin.formatDate(currentProvider.fecha_registro);
+      document.getElementById('res-participaciones').textContent = String(currentProvider.total_licitaciones || 0);
+    }
+
+    async function loadProfile() {
+      const meResp = await SGPLAdmin.authFetch('/me', { method: 'GET' });
+      const me = (meResp && meResp.data) || null;
+      if (!me || me.rol !== 'PROVEEDOR') {
+        window.location.href = '/';
+        return;
+      }
+
+      currentUser = me;
+      SGPLAdmin.setUser(me);
+
+      if (!me.id_proveedor && !(me.proveedor && me.proveedor.id_proveedor)) {
+        setPageAlert('No se encontró un perfil de proveedor asociado a esta cuenta.', 'error');
+        return;
+      }
+
+      const idProveedor = me.id_proveedor || me.proveedor.id_proveedor;
+      const providerResp = await SGPLAdmin.authFetch('/proveedores/' + encodeURIComponent(idProveedor), { method: 'GET' });
+      currentProvider = (providerResp && providerResp.data) || me.proveedor;
+      hydrateForms();
+      setPageAlert('');
+    }
+
+    function collectProviderPayload() {
+      return {
+        nombre_empresa: document.getElementById('nombre_empresa').value.trim(),
+        representante_legal: document.getElementById('representante_legal').value.trim(),
+        registro_fiscal: document.getElementById('registro_fiscal').value.trim().toUpperCase(),
+        regimen_fiscal: document.getElementById('regimen_fiscal').value.trim(),
+        domicilio: document.getElementById('domicilio').value.trim(),
+        telefono: document.getElementById('telefono').value.trim(),
+        contacto_cargo: document.getElementById('contacto_cargo').value.trim(),
+        contacto_email: document.getElementById('contacto_email').value.trim(),
+        especialidad: document.getElementById('especialidad').value.trim(),
+      };
+    }
+
+    document.getElementById('form-proveedor').addEventListener('submit', async function (event) {
+      event.preventDefault();
+      setAlert('proveedor-alert', '');
+      if (!currentProvider || !currentProvider.id_proveedor) return;
+
+      const payload = collectProviderPayload();
+      if (!payload.nombre_empresa || !payload.representante_legal || !payload.registro_fiscal || !payload.domicilio) {
+        setAlert('proveedor-alert', 'Completa los campos obligatorios.', 'error');
+        return;
+      }
+
+      setBusy('btn-proveedor', true, 'Guardando...');
+      try {
+        await SGPLAdmin.authFetch('/proveedores/' + encodeURIComponent(currentProvider.id_proveedor), {
+          method: 'PUT',
+          body: JSON.stringify(payload),
+        });
+        await loadProfile();
+        setAlert('proveedor-alert', 'Datos de empresa actualizados correctamente.', 'success');
+      } catch (error) {
+        setAlert('proveedor-alert', error.message || 'No se pudo actualizar el proveedor.', 'error');
+      } finally {
+        setBusy('btn-proveedor', false);
+      }
+    });
+
+    document.getElementById('form-usuario').addEventListener('submit', async function (event) {
+      event.preventDefault();
+      setAlert('usuario-alert', '');
+
+      const nombre = document.getElementById('usuario_nombre').value.trim();
+      const email = document.getElementById('usuario_email').value.trim();
+      if (!nombre || !email) {
+        setAlert('usuario-alert', 'Completa nombre y correo.', 'error');
+        return;
+      }
+
+      setBusy('btn-usuario', true, 'Actualizando...');
+      try {
+        await SGPLAdmin.authFetch('/me/profile', {
+          method: 'PUT',
+          body: JSON.stringify({ nombre, email }),
+        });
+        await loadProfile();
+        setAlert('usuario-alert', 'Cuenta actualizada correctamente.', 'success');
+      } catch (error) {
+        setAlert('usuario-alert', error.message || 'No se pudo actualizar la cuenta.', 'error');
+      } finally {
+        setBusy('btn-usuario', false);
+      }
+    });
+
+    function passwordScore(value) {
+      let score = 0;
+      if (value.length >= 8) score++;
+      if (/[A-Z]/.test(value)) score++;
+      if (/[0-9]/.test(value)) score++;
+      if (/[^A-Za-z0-9]/.test(value)) score++;
+      return score;
+    }
+
+    document.getElementById('pwd_nueva').addEventListener('input', function (event) {
+      const score = passwordScore(event.target.value);
+      const hint = document.getElementById('pwd-hint');
+      hint.textContent = score === 4 ? 'Contraseña valida' : 'Minimo 8 caracteres, mayuscula, numero y simbolo';
+      hint.className = 'block text-xs mt-1 ' + (score === 4 ? 'text-emerald-600' : 'text-slate-400');
+    });
+
+    document.getElementById('form-password').addEventListener('submit', async function (event) {
+      event.preventDefault();
+      setAlert('password-alert', '');
+
+      const actual = document.getElementById('pwd_actual').value;
+      const nueva = document.getElementById('pwd_nueva').value;
+      const confirmacion = document.getElementById('pwd_confirmacion').value;
+
+      if (!actual || !nueva || !confirmacion) {
+        setAlert('password-alert', 'Completa todos los campos.', 'error');
+        return;
+      }
+      if (passwordScore(nueva) < 4) {
+        setAlert('password-alert', 'La nueva contraseña no cumple la politica requerida.', 'error');
+        return;
+      }
+      if (nueva !== confirmacion) {
+        setAlert('password-alert', 'La confirmacion no coincide.', 'error');
+        return;
+      }
+
+      setBusy('btn-password', true, 'Actualizando...');
+      try {
+        await SGPLAdmin.authFetch('/me/password', {
+          method: 'POST',
+          body: JSON.stringify({
+            contrasena_actual: actual,
+            contrasena_nueva: nueva,
+            contrasena_confirmacion: confirmacion,
+          }),
+        });
+        event.target.reset();
+        document.getElementById('pwd-hint').textContent = 'Minimo 8 caracteres, mayuscula, numero y simbolo';
+        document.getElementById('pwd-hint').className = 'block text-xs text-slate-400 mt-1';
+        setAlert('password-alert', 'Contraseña actualizada correctamente.', 'success');
+      } catch (error) {
+        setAlert('password-alert', error.message || 'No se pudo actualizar la contraseña.', 'error');
+      } finally {
+        setBusy('btn-password', false);
+      }
+    });
+
+    (async function init() {
+      if (!SGPLAdmin.protectRoute()) return;
+      const cachedUser = SGPLAdmin.getUser() || {};
+      if (cachedUser.rol !== 'PROVEEDOR') {
+        window.location.href = '/';
+        return;
+      }
+
+      try {
+        await loadProfile();
+      } catch (error) {
+        setPageAlert(error.message || 'No se pudo cargar el perfil.', 'error');
+      }
+    })();
+  </script>
+</body>
+</html>

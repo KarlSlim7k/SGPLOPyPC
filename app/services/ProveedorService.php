@@ -64,7 +64,17 @@ class ProveedorService {
             }
         }
         $data = [];
-        $fields = ['nombre_empresa', 'representante_legal', 'registro_fiscal', 'domicilio', 'telefono', 'especialidad'];
+        $fields = [
+            'nombre_empresa',
+            'representante_legal',
+            'registro_fiscal',
+            'regimen_fiscal',
+            'domicilio',
+            'telefono',
+            'contacto_cargo',
+            'contacto_email',
+            'especialidad',
+        ];
         foreach ($fields as $f) {
             if (array_key_exists($f, $input)) {
                 $data[$f] = is_string($input[$f]) ? trim($input[$f]) : $input[$f];
@@ -102,6 +112,11 @@ class ProveedorService {
         }
         if (!$isUpdate || array_key_exists('domicilio', $input)) {
             if (trim($input['domicilio'] ?? '') === '') $errors[] = 'El domicilio es obligatorio.';
+        }
+        if (array_key_exists('contacto_email', $input) && trim((string) $input['contacto_email']) !== '') {
+            if (!filter_var(trim((string) $input['contacto_email']), FILTER_VALIDATE_EMAIL)) {
+                $errors[] = 'El correo de contacto es inválido.';
+            }
         }
         return $errors;
     }
