@@ -99,16 +99,16 @@ class PublicRepository {
 
         $stmt = $this->db->prepare($sql);
         foreach ($params as $k => $v) {
-            $stmt->bindValue($k, $v);
+            $stmt->bindValue(':' . $k, $v);
         }
-        $stmt->bindValue('limit', $limit, PDO::PARAM_INT);
-        $stmt->bindValue('offset', $offset, PDO::PARAM_INT);
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
         $stmt->execute();
         $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         $countStmt = $this->db->prepare('SELECT COUNT(*) FROM licitacion l JOIN dependencia d ON l.id_dependencia = d.id_dependencia ' . $whereSql);
         foreach ($params as $k => $v) {
-            $countStmt->bindValue($k, $v);
+            $countStmt->bindValue(':' . $k, $v);
         }
         $countStmt->execute();
         $total = (int) $countStmt->fetchColumn();
@@ -163,16 +163,16 @@ class PublicRepository {
 
         $stmt = $this->db->prepare($sql);
         foreach ($params as $k => $v) {
-            $stmt->bindValue($k, $v);
+            $stmt->bindValue(':' . $k, $v);
         }
-        $stmt->bindValue('limit', $limit, PDO::PARAM_INT);
-        $stmt->bindValue('offset', $offset, PDO::PARAM_INT);
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
         $stmt->execute();
         $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         $countStmt = $this->db->prepare('SELECT COUNT(*) FROM licitacion l LEFT JOIN contrato c ON l.id_licitacion = c.id_licitacion LEFT JOIN proveedor p ON c.id_proveedor = p.id_proveedor ' . $whereSql);
         foreach ($params as $k => $v) {
-            $countStmt->bindValue($k, $v);
+            $countStmt->bindValue(':' . $k, $v);
         }
         $countStmt->execute();
         $total = (int) $countStmt->fetchColumn();
@@ -207,10 +207,10 @@ class PublicRepository {
 
         $stmt = $this->db->prepare($sql);
         foreach ($params as $k => $v) {
-            $stmt->bindValue($k, $v);
+            $stmt->bindValue(':' . $k, $v);
         }
-        $stmt->bindValue('limit', $limit, PDO::PARAM_INT);
-        $stmt->bindValue('offset', $offset, PDO::PARAM_INT);
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
         $stmt->execute();
         $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -220,7 +220,7 @@ class PublicRepository {
             . $whereSql
         );
         foreach ($params as $k => $v) {
-            $countStmt->bindValue($k, $v);
+            $countStmt->bindValue(':' . $k, $v);
         }
         $countStmt->execute();
         $total = (int) $countStmt->fetchColumn();
@@ -248,8 +248,8 @@ class PublicRepository {
              . 'ORDER BY l.fecha_actualizacion DESC LIMIT :limit OFFSET :offset';
 
         $stmt = $this->db->prepare($sql);
-        $stmt->bindValue('limit', $limit, PDO::PARAM_INT);
-        $stmt->bindValue('offset', $offset, PDO::PARAM_INT);
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
         $stmt->execute();
         $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
@@ -298,16 +298,16 @@ class PublicRepository {
 
         $stmt = $this->db->prepare($sql);
         foreach ($params as $k => $v) {
-            $stmt->bindValue($k, $v);
+            $stmt->bindValue(':' . $k, $v);
         }
-        $stmt->bindValue('limit', $limit, PDO::PARAM_INT);
-        $stmt->bindValue('offset', $offset, PDO::PARAM_INT);
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
         $stmt->execute();
         $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
         $countStmt = $this->db->prepare('SELECT COUNT(*) FROM licitacion l ' . $whereSql);
         foreach ($params as $k => $v) {
-            $countStmt->bindValue($k, $v);
+            $countStmt->bindValue(':' . $k, $v);
         }
         $countStmt->execute();
         $total = (int) $countStmt->fetchColumn();

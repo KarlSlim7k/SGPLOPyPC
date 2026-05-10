@@ -1,0 +1,354 @@
+openapi: 3.0.3
+info:
+  title: SGPLOPyPC Public API
+  version: 1.0.0
+  description: |
+    Contrato OpenAPI de endpoints públicos (`/api/v1/public/*`) para transparencia,
+    registro de proveedores y soporte ciudadano.
+servers:
+  - url: https://sgplopypc-production.up.railway.app/api/v1
+    description: Producción Railway
+  - url: http://localhost:8080/api/v1
+    description: Local
+
+tags:
+  - name: Publico
+  - name: Registro
+  - name: Soporte
+
+paths:
+  /public/estadisticas:
+    get:
+      tags: [Publico]
+      summary: Estadísticas públicas
+      responses:
+        '200':
+          description: Estadísticas generales
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiSuccess'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+
+  /public/convocatorias:
+    get:
+      tags: [Publico]
+      summary: Listado de convocatorias públicas
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/Limit'
+        - name: q
+          in: query
+          schema: { type: string }
+        - name: estado
+          in: query
+          schema: { type: string }
+        - name: tipo
+          in: query
+          schema: { type: string }
+        - name: year
+          in: query
+          schema: { type: integer, minimum: 2000 }
+      responses:
+        '200':
+          description: Lista paginada
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiSuccess'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+
+  /public/convocatorias/{id}:
+    get:
+      tags: [Publico]
+      summary: Detalle de convocatoria pública
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      responses:
+        '200':
+          description: Convocatoria
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiSuccess'
+        '404':
+          $ref: '#/components/responses/NotFound'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+
+  /public/convocatorias/{id}/documentos:
+    get:
+      tags: [Publico]
+      summary: Documentos públicos de convocatoria
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      responses:
+        '200':
+          description: Lista de documentos públicos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiSuccess'
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /public/documentos/{id}/download:
+    get:
+      tags: [Publico]
+      summary: Descarga de documento público
+      parameters:
+        - $ref: '#/components/parameters/IdPath'
+      responses:
+        '200':
+          description: Binario del documento
+          content:
+            application/octet-stream:
+              schema:
+                type: string
+                format: binary
+        '404':
+          $ref: '#/components/responses/NotFound'
+
+  /public/evaluaciones:
+    get:
+      tags: [Publico]
+      summary: Procesos públicos en evaluación
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/Limit'
+      responses:
+        '200':
+          description: Lista de evaluaciones públicas
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiSuccess'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+
+  /public/contratos:
+    get:
+      tags: [Publico]
+      summary: Contratos adjudicados públicos
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/Limit'
+        - name: estatus
+          in: query
+          schema: { type: string }
+        - name: year
+          in: query
+          schema: { type: integer, minimum: 2000 }
+      responses:
+        '200':
+          description: Lista de contratos
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiSuccess'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+
+  /public/historial:
+    get:
+      tags: [Publico]
+      summary: Historial de licitaciones
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/Limit'
+        - name: year
+          in: query
+          schema: { type: integer, minimum: 2000 }
+        - name: tipo
+          in: query
+          schema: { type: string }
+        - name: q
+          in: query
+          schema: { type: string }
+      responses:
+        '200':
+          description: Historial paginado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiSuccess'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+
+  /public/resultados:
+    get:
+      tags: [Publico]
+      summary: Resultados de adjudicación
+      parameters:
+        - $ref: '#/components/parameters/Page'
+        - $ref: '#/components/parameters/Limit'
+        - name: q
+          in: query
+          schema: { type: string }
+      responses:
+        '200':
+          description: Resultados paginados
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiSuccess'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+
+  /public/proveedores/registro:
+    post:
+      tags: [Registro]
+      summary: Registro público de proveedor
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/RegistroProveedorRequest'
+      responses:
+        '201':
+          description: Proveedor registrado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiSuccess'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+
+  /public/soporte:
+    post:
+      tags: [Soporte]
+      summary: Crear ticket de soporte público
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SoporteRequest'
+      responses:
+        '202':
+          description: Ticket aceptado
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ApiSuccess'
+        '422':
+          $ref: '#/components/responses/ValidationError'
+        '429':
+          $ref: '#/components/responses/TooManyRequests'
+
+components:
+  parameters:
+    IdPath:
+      name: id
+      in: path
+      required: true
+      schema:
+        type: integer
+        minimum: 1
+    Page:
+      name: page
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        default: 1
+    Limit:
+      name: limit
+      in: query
+      schema:
+        type: integer
+        minimum: 1
+        maximum: 100
+        default: 20
+
+  responses:
+    ValidationError:
+      description: Error de validación
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+    NotFound:
+      description: Recurso no encontrado
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+    TooManyRequests:
+      description: Límite de peticiones excedido
+      content:
+        application/json:
+          schema:
+            $ref: '#/components/schemas/ApiError'
+
+  schemas:
+    ApiSuccess:
+      type: object
+      required: [success, message, data, errors]
+      properties:
+        success: { type: boolean, example: true }
+        message: { type: string, example: Operación exitosa }
+        data:
+          nullable: true
+        errors:
+          type: array
+          nullable: true
+          items: { type: string }
+
+    ApiError:
+      type: object
+      required: [success, message, data, errors]
+      properties:
+        success: { type: boolean, example: false }
+        message: { type: string, example: Validación fallida }
+        data:
+          nullable: true
+        errors:
+          type: array
+          nullable: true
+          items: { type: string }
+
+    RegistroProveedorRequest:
+      type: object
+      required:
+        - nombre_empresa
+        - representante_legal
+        - registro_fiscal
+        - regimen_fiscal
+        - domicilio
+        - nombre_contacto
+        - cargo
+        - email
+        - telefono
+        - password
+        - accepted_terms
+      properties:
+        nombre_empresa: { type: string }
+        representante_legal: { type: string }
+        registro_fiscal: { type: string }
+        regimen_fiscal: { type: string }
+        domicilio: { type: string }
+        nombre_contacto: { type: string }
+        cargo: { type: string }
+        email: { type: string, format: email }
+        telefono: { type: string }
+        password: { type: string, format: password }
+        accepted_terms: { type: boolean }
+        especialidades:
+          type: array
+          items: { type: string }
+
+    SoporteRequest:
+      type: object
+      required: [nombre, email, asunto, mensaje]
+      properties:
+        nombre: { type: string }
+        email: { type: string, format: email }
+        telefono: { type: string }
+        asunto: { type: string }
+        mensaje: { type: string }
