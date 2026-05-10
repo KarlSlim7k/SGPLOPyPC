@@ -5,9 +5,36 @@ require_once __DIR__ . '/../../config/database.php';
 
 class PublicRepository {
     private PDO $db;
+    private ?bool $hasIsTestColumn = null;
 
     public function __construct() {
         $this->db = getDbConnection();
+    }
+
+    private function hasIsTestColumn(): bool {
+        if ($this->hasIsTestColumn !== null) {
+            return $this->hasIsTestColumn;
+        }
+
+        $stmt = $this->db->prepare(
+            'SELECT COUNT(*) FROM information_schema.columns '
+            . 'WHERE table_schema = DATABASE() AND table_name = :table_name AND column_name = :column_name'
+        );
+        $stmt->execute([
+            'table_name' => 'licitacion',
+            'column_name' => 'is_test',
+        ]);
+
+        $this->hasIsTestColumn = ((int) $stmt->fetchColumn()) > 0;
+        return $this->hasIsTestColumn;
+    }
+
+    private function nonTestCondition(string $alias = 'l'): string {
+        if ($this->hasIsTestColumn()) {
+            return "COALESCE({$alias}.is_test, 0) = 0";
+        }
+
+        return "({$alias}.numero_licitacion NOT LIKE 'E2E-%' AND ({$alias}.descripcion_proyecto IS NULL OR {$alias}.descripcion_proyecto NOT LIKE '%[E2E_TEST_DATASET]%'))";
     }
 
     public function findConvocatorias(
@@ -29,7 +56,10 @@ class PublicRepository {
         }
         $sortOrder = in_array(strtoupper($sortOrder), $allowedOrders, true) ? strtoupper($sortOrder) : 'DESC';
 
-        $where = ["l.estado_proceso NOT IN ('BORRADOR','CANCELADA')"];
+        $where = [
+            "l.estado_proceso NOT IN ('BORRADOR','CANCELADA')",
+            $this->nonTestCondition('l'),
+        ];
         $params = [];
 
         if ($search !== null && trim($search) !== '') {
@@ -97,7 +127,9 @@ class PublicRepository {
             . 'JOIN dependencia d ON l.id_dependencia = d.id_dependencia '
             . "LEFT JOIN fecha_proceso fp_recepcion ON fp_recepcion.id_licitacion = l.id_licitacion AND fp_recepcion.tipo_fecha = 'RECEPCION_PROPUESTAS' "
             . "LEFT JOIN fecha_proceso fp_fallo ON fp_fallo.id_licitacion = l.id_licitacion AND fp_fallo.tipo_fecha = 'FALLO_ADJUDICACION' "
-            . 'WHERE l.id_licitacion = :id AND l.estado_proceso NOT IN (\'BORRADOR\',\'CANCELADA\') LIMIT 1'
+            . 'WHERE l.id_licitacion = :id '
+            . 'AND l.estado_proceso NOT IN (\'BORRADOR\',\'CANCELADA\') '
+            . 'AND ' . $this->nonTestCondition('l') . ' LIMIT 1'
         );
         $stmt->execute(['id' => $id]);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
@@ -107,7 +139,10 @@ class PublicRepository {
     public function findResultados(int $page, int $limit, ?string $search = null): array {
         $offset = ($page - 1) * $limit;
 
-        $where = ["l.estado_proceso = 'ADJUDICADA'"];
+        $where = [
+            "l.estado_proceso = 'ADJUDICADA'",
+            $this->nonTestCondition('l'),
+        ];
         $params = [];
         if ($search !== null && trim($search) !== '') {
             $where[] = '(l.numero_licitacion LIKE :search OR l.descripcion_proyecto LIKE :search OR p.nombre_empresa LIKE :search)';
@@ -148,7 +183,7 @@ class PublicRepository {
     public function findContratosPublicos(int $page, int $limit, ?string $estatus = null, ?int $year = null): array {
         $offset = ($page - 1) * $limit;
 
-        $where = ['1=1'];
+        $where = ['1=1', $this->nonTestCondition('l')];
         $params = [];
         if ($estatus !== null && $estatus !== '') {
             $where[] = 'c.estatus = :estatus';
@@ -179,7 +214,11 @@ class PublicRepository {
         $stmt->execute();
         $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        $countStmt = $this->db->prepare('SELECT COUNT(*) FROM contrato c ' . $whereSql);
+        $countStmt = $this->db->prepare(
+            'SELECT COUNT(*) FROM contrato c '
+            . 'JOIN licitacion l ON c.id_licitacion = l.id_licitacion '
+            . $whereSql
+        );
         foreach ($params as $k => $v) {
             $countStmt->bindValue($k, $v);
         }
@@ -203,6 +242,7 @@ class PublicRepository {
              . "LEFT JOIN fecha_proceso fp_recepcion ON fp_recepcion.id_licitacion = l.id_licitacion AND fp_recepcion.tipo_fecha = 'RECEPCION_PROPUESTAS' "
              . "LEFT JOIN fecha_proceso fp_fallo ON fp_fallo.id_licitacion = l.id_licitacion AND fp_fallo.tipo_fecha = 'FALLO_ADJUDICACION' "
              . "WHERE l.estado_proceso IN ('RECEPCION_PROPUESTAS','EN_EVALUACION') "
+             . 'AND ' . $this->nonTestCondition('l') . ' '
              . 'GROUP BY l.id_licitacion, l.numero_licitacion, l.descripcion_proyecto, l.presupuesto_estimado, '
              . 'l.ubicacion_proyecto, l.estado_proceso, d.nombre, fp_recepcion.fecha_programada, fp_fallo.fecha_programada '
              . 'ORDER BY l.fecha_actualizacion DESC LIMIT :limit OFFSET :offset';
@@ -213,7 +253,11 @@ class PublicRepository {
         $stmt->execute();
         $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
 
-        $countStmt = $this->db->query("SELECT COUNT(*) FROM licitacion WHERE estado_proceso IN ('RECEPCION_PROPUESTAS','EN_EVALUACION')");
+        $countStmt = $this->db->query(
+            "SELECT COUNT(*) FROM licitacion l "
+            . "WHERE l.estado_proceso IN ('RECEPCION_PROPUESTAS','EN_EVALUACION') "
+            . 'AND ' . $this->nonTestCondition('l')
+        );
         $total = (int) $countStmt->fetchColumn();
 
         return ['items' => $items, 'total' => $total, 'page' => $page, 'limit' => $limit];
@@ -222,7 +266,10 @@ class PublicRepository {
     public function findHistorialPublico(int $page, int $limit, ?int $year = null, ?string $tipo = null, ?string $search = null): array {
         $offset = ($page - 1) * $limit;
 
-        $where = ["l.estado_proceso IN ('ADJUDICADA','DESIERTA','CANCELADA')"];
+        $where = [
+            "l.estado_proceso IN ('ADJUDICADA','DESIERTA','CANCELADA')",
+            $this->nonTestCondition('l'),
+        ];
         $params = [];
 
         if ($year !== null && $year > 2000) {
@@ -274,7 +321,8 @@ class PublicRepository {
             . "SUM(CASE WHEN estado_proceso IN ('PUBLICADA','EN_ACLARACIONES','RECEPCION_PROPUESTAS','EN_EVALUACION') THEN 1 ELSE 0 END) AS licitaciones_activas, "
             . "SUM(CASE WHEN estado_proceso = 'ADJUDICADA' THEN 1 ELSE 0 END) AS licitaciones_adjudicadas, "
             . "SUM(CASE WHEN estado_proceso = 'EN_EVALUACION' THEN 1 ELSE 0 END) AS licitaciones_en_evaluacion "
-            . 'FROM licitacion'
+            . 'FROM licitacion l '
+            . 'WHERE ' . $this->nonTestCondition('l')
         )->fetch(PDO::FETCH_ASSOC);
 
         $proveedores = $this->db->query(
@@ -309,6 +357,7 @@ class PublicRepository {
             . "WHERE d.id_licitacion = :id_licitacion "
             . "AND d.tipo_documento IN ('BASES_LICITACION','ANEXO_TECNICO','PLANO','FORMATO_OFICIAL','ACLARACION') "
             . "AND l.estado_proceso NOT IN ('BORRADOR','CANCELADA') "
+            . 'AND ' . $this->nonTestCondition('l') . ' '
             . 'ORDER BY d.fecha_subida DESC'
         );
         $stmt->execute(['id_licitacion' => $idLicitacion]);
@@ -323,6 +372,7 @@ class PublicRepository {
             . 'WHERE d.id_documento = :id_documento '
             . "AND d.tipo_documento IN ('BASES_LICITACION','ANEXO_TECNICO','PLANO','FORMATO_OFICIAL','ACLARACION') "
             . "AND l.estado_proceso NOT IN ('BORRADOR','CANCELADA') "
+            . 'AND ' . $this->nonTestCondition('l') . ' '
             . 'LIMIT 1'
         );
         $stmt->execute(['id_documento' => $idDocumento]);
