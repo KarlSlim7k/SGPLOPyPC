@@ -208,7 +208,6 @@
       }
 
       if (!participacion && canInscribir(licitacion.estado_proceso)) {
-      if (!participacion && canInscribir(licitacion.estado_proceso)) {
         btn.classList.remove('hidden');
         if (!canOperate) {
           btn.disabled = true;
@@ -343,7 +342,8 @@
         providerStatus = SGPLAdmin.extractProviderStatus(me);
         SGPLAdmin.renderProviderBadge(document.getElementById('estatus-proveedor'), providerStatus);
         SGPLAdmin.renderProviderBanner(document.getElementById('estatus-banner'), providerStatus);
-        await Promise.all([loadDetalle(), loadDocumentos(), loadAclaraciones()]);
+        await Promise.all([loadDetalle(), loadDocumentos()]);
+        loadAclaraciones(); // independiente, no bloquea el flujo principal
       } catch (_) {
         window.location.href = '/frontend/proveedor/convocatorias.html';
       }

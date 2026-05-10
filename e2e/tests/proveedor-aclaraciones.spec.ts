@@ -1,24 +1,42 @@
-import { expect, test } from '@playwright/test';
+import { expect, test, type APIRequestContext } from '@playwright/test';
 
 const ADMIN_EMAIL = process.env.E2E_ADMIN_EMAIL || 'admin@sgplopypc.gob.mx';
 const ADMIN_PASSWORD = process.env.E2E_ADMIN_PASSWORD || 'admin123';
 const PROVIDER_EMAIL = process.env.E2E_PROVIDER_EMAIL || 'proveedor@demo.mx';
 const PROVIDER_PASSWORD = process.env.E2E_PROVIDER_PASSWORD || 'proveedor123';
 
-async function loginToken(request: import('@playwright/test').APIRequestContext, email: string, password: string) {
-  const res = await request.post('/api/v1/auth/login', { data: { email, password } });
-  expect(res.ok()).toBeTruthy();
-  const payload = await res.json();
-  return payload.data.token as string;
+async function loginToken(request: APIRequestContext, email: string, password: string) {
+  // Retry once after 65s if rate-limited (5 logins/60s in production)
+  for (let attempt = 0; attempt < 2; attempt++) {
+    const res = await request.post('/api/v1/auth/login', { data: { email, password } });
+    if (res.status() === 429 && attempt === 0) {
+      await new Promise((r) => setTimeout(r, 65_000));
+      continue;
+    }
+    expect(res.ok(), `login falló para ${email}: ${res.status()}`).toBeTruthy();
+    const payload = await res.json();
+    return payload.data.token as string;
+  }
+  throw new Error('loginToken: no se pudo obtener token tras reintentos');
 }
 
 test.describe('Aclaraciones proveedor', () => {
-  test('API: proveedor no puede enviar aclaración en licitación fuera de EN_ACLARACIONES', async ({ request }) => {
-    const token = await loginToken(request, PROVIDER_EMAIL, PROVIDER_PASSWORD);
+  let providerToken = '';
+  let adminToken = '';
+  let meData: Record<string, unknown> = {};
 
-    // Buscar una licitación que NO esté en EN_ACLARACIONES
+  test.beforeAll(async ({ request }) => {
+    providerToken = await loginToken(request, PROVIDER_EMAIL, PROVIDER_PASSWORD);
+    // Pequeña pausa para no saturar el rate limiter (5 logins/60s por IP)
+    await new Promise((r) => setTimeout(r, 2_000));
+    adminToken = await loginToken(request, ADMIN_EMAIL, ADMIN_PASSWORD);
+    const meRes = await request.get('/api/v1/me', { headers: { Authorization: `Bearer ${providerToken}` } });
+    meData = (await meRes.json())?.data ?? {};
+  });
+
+  test('API: proveedor no puede enviar aclaración en licitación fuera de EN_ACLARACIONES', async ({ request }) => {
     const licRes = await request.get('/api/v1/licitaciones?limit=50', {
-      headers: { Authorization: `Bearer ${token}` },
+      headers: { Authorization: `Bearer ${providerToken}` },
     });
     expect(licRes.status()).toBe(200);
     const lics = ((await licRes.json())?.data || []) as Array<Record<string, unknown>>;
@@ -26,20 +44,16 @@ test.describe('Aclaraciones proveedor', () => {
 
     if (noAclaracion) {
       const res = await request.post(`/api/v1/licitaciones/${noAclaracion.id_licitacion}/aclaraciones`, {
-        headers: { Authorization: `Bearer ${token}` },
+        headers: { Authorization: `Bearer ${providerToken}` },
         data: { pregunta: 'Pregunta de prueba E2E' },
       });
       expect(res.status()).toBe(422);
       const payload = await res.json();
-      expect((payload?.errors || []).join(' ').toLowerCase()).toContain('aclaraciones');
+      expect(payload?.message?.toLowerCase()).toContain('aclaraciones');
     }
   });
 
   test('API: proveedor puede enviar aclaración y admin puede responder en licitación EN_ACLARACIONES', async ({ request }) => {
-    const adminToken = await loginToken(request, ADMIN_EMAIL, ADMIN_PASSWORD);
-    const providerToken = await loginToken(request, PROVIDER_EMAIL, PROVIDER_PASSWORD);
-
-    // Buscar licitación EN_ACLARACIONES
     const licRes = await request.get('/api/v1/licitaciones?limit=50&estado=EN_ACLARACIONES', {
       headers: { Authorization: `Bearer ${adminToken}` },
     });
@@ -47,24 +61,21 @@ test.describe('Aclaraciones proveedor', () => {
     const lics = ((await licRes.json())?.data || []) as Array<Record<string, unknown>>;
 
     if (!lics.length) {
-      test.skip(true, 'No hay licitaciones EN_ACLARACIONES en producción — test omitido');
+      test.skip(true, 'No hay licitaciones EN_ACLARACIONES — test omitido');
       return;
     }
 
     const lic = lics[0];
     const idLicitacion = lic.id_licitacion;
 
-    // Proveedor envía aclaración
     const postRes = await request.post(`/api/v1/licitaciones/${idLicitacion}/aclaraciones`, {
       headers: { Authorization: `Bearer ${providerToken}` },
       data: { pregunta: `Pregunta E2E ${Date.now()}` },
     });
     expect([201, 200]).toContain(postRes.status());
-    const postPayload = await postRes.json();
-    const idAclaracion = postPayload?.data?.id_aclaracion;
+    const idAclaracion = (await postRes.json())?.data?.id_aclaracion;
     expect(idAclaracion).toBeTruthy();
 
-    // Proveedor lista sus aclaraciones
     const listRes = await request.get(`/api/v1/licitaciones/${idLicitacion}/aclaraciones`, {
       headers: { Authorization: `Bearer ${providerToken}` },
     });
@@ -72,14 +83,12 @@ test.describe('Aclaraciones proveedor', () => {
     const items = (await listRes.json())?.data || [];
     expect(items.some((i: { id_aclaracion: number }) => i.id_aclaracion === idAclaracion)).toBeTruthy();
 
-    // Admin responde
     const patchRes = await request.patch(`/api/v1/aclaraciones/${idAclaracion}/respuesta`, {
       headers: { Authorization: `Bearer ${adminToken}` },
       data: { respuesta: 'Respuesta oficial E2E' },
     });
     expect(patchRes.status()).toBe(200);
 
-    // Proveedor ve la respuesta
     const listRes2 = await request.get(`/api/v1/licitaciones/${idLicitacion}/aclaraciones`, {
       headers: { Authorization: `Bearer ${providerToken}` },
     });
@@ -88,25 +97,28 @@ test.describe('Aclaraciones proveedor', () => {
     expect(aclaracion?.respuesta).toBe('Respuesta oficial E2E');
   });
 
-  test('UI: sección de aclaraciones visible en detalle de licitación', async ({ page }) => {
-    await page.goto('/frontend/auth/login.html');
-    await page.locator('#email').fill(PROVIDER_EMAIL);
-    await page.locator('#password').fill(PROVIDER_PASSWORD);
-    await page.getByRole('button', { name: /iniciar sesi(?:ó|o)n/i }).click();
-    await page.waitForURL('**/frontend/proveedor/centro.html');
-
-    await page.goto('/frontend/proveedor/convocatorias.html');
-    await expect(page.locator('#summary')).not.toContainText('Cargando', { timeout: 15_000 });
-
-    const detailLink = page.getByRole('link', { name: /Ver detalle/i }).first();
-    if (!(await detailLink.count())) {
+  test('UI: sección de aclaraciones visible en detalle de licitación', async ({ page, request }) => {
+    // Obtener una licitación disponible vía API
+    const licRes = await request.get('/api/v1/licitaciones?limit=5', {
+      headers: { Authorization: `Bearer ${providerToken}` },
+    });
+    const lics = ((await licRes.json())?.data || []) as Array<Record<string, unknown>>;
+    if (!lics.length) {
       test.skip(true, 'Sin convocatorias disponibles');
       return;
     }
-    await detailLink.click();
-    await page.waitForURL(/\/frontend\/proveedor\/licitacion\.html\?id=\d+/);
+    const idLicitacion = lics[0].id_licitacion;
 
-    await expect(page.getByText(/Aclaraciones/i)).toBeVisible({ timeout: 10_000 });
+    // Inyectar sesión antes de que la página cargue
+    await page.addInitScript(({ t, u }: { t: string; u: Record<string, unknown> }) => {
+      localStorage.setItem('sgplopypc_token', t);
+      localStorage.setItem('sgplopypc_user', JSON.stringify(u));
+    }, { t: providerToken, u: meData });
+
+    await page.goto(`/frontend/proveedor/licitacion.html?id=${idLicitacion}`);
+    await expect(page.locator('h1')).not.toContainText('Detalle de licitación', { timeout: 15_000 });
+
+    await expect(page.locator('#aclaraciones-section')).toBeVisible({ timeout: 10_000 });
     await expect(page.locator('#aclaraciones-list')).not.toContainText('Cargando', { timeout: 15_000 });
   });
 });
