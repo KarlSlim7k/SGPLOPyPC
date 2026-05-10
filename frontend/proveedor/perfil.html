@@ -54,9 +54,14 @@
           <h1 class="text-2xl font-bold mt-1">Mi perfil</h1>
           <p class="text-slate-500 text-sm mt-2">Administra los datos de acceso, informacion fiscal y contacto de tu empresa.</p>
         </div>
-        <div id="estatus-proveedor" class="inline-flex w-fit items-center px-3 py-1 rounded-full text-xs font-semibold border bg-slate-100 text-slate-700 border-slate-200">Cargando...</div>
+        <div id="estatus-proveedor" data-testid="estatus-proveedor" class="inline-flex w-fit items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold border bg-slate-100 text-slate-700 border-slate-200">
+          <i class="ph ph-spinner animate-spin"></i>
+          <span>Cargando...</span>
+        </div>
       </div>
     </section>
+
+    <section id="estatus-banner" data-testid="estatus-banner" class="hidden"></section>
 
     <section id="page-alert" class="hidden border rounded-xl px-4 py-3 text-sm"></section>
 
@@ -239,13 +244,6 @@
       }
     }
 
-    function providerBadgeClass(estatus) {
-      if (estatus === 'VALIDADO') return 'bg-emerald-50 text-emerald-700 border-emerald-100';
-      if (estatus === 'PENDIENTE') return 'bg-amber-50 text-amber-700 border-amber-100';
-      if (estatus === 'RECHAZADO' || estatus === 'SUSPENDIDO') return 'bg-red-50 text-red-700 border-red-100';
-      return 'bg-slate-100 text-slate-700 border-slate-200';
-    }
-
     function fillValue(id, value) {
       const el = document.getElementById(id);
       if (el) el.value = value || '';
@@ -265,10 +263,9 @@
       fillValue('contacto_email', currentProvider.contacto_email || currentUser.email);
       fillValue('especialidad', currentProvider.especialidad);
 
-      const estatus = currentProvider.estatus || 'N/A';
-      const badge = document.getElementById('estatus-proveedor');
-      badge.textContent = estatus;
-      badge.className = 'inline-flex w-fit items-center px-3 py-1 rounded-full text-xs font-semibold border ' + providerBadgeClass(estatus);
+      const estatus = currentProvider.estatus || null;
+      SGPLAdmin.renderProviderBadge(document.getElementById('estatus-proveedor'), estatus);
+      SGPLAdmin.renderProviderBanner(document.getElementById('estatus-banner'), estatus);
 
       document.getElementById('res-id').textContent = currentProvider.id_proveedor || 'N/A';
       document.getElementById('res-fecha').textContent = SGPLAdmin.formatDate(currentProvider.fecha_registro);

@@ -38,9 +38,18 @@
 
   <main class="max-w-6xl mx-auto px-4 py-8 space-y-8">
     <section class="bg-white border border-slate-200 rounded-2xl p-6">
-      <p class="text-xs uppercase tracking-wide text-primary-700 font-semibold">Sesión activa</p>
-      <h1 id="proveedor-bienvenida" class="text-2xl font-bold mt-1">Bienvenido</h1>
-      <p class="text-slate-500 text-sm mt-2">Accede a los módulos operativos del rol proveedor para participar en licitaciones y dar seguimiento a tus notificaciones.</p>
+      <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+        <div>
+          <p class="text-xs uppercase tracking-wide text-primary-700 font-semibold">Sesión activa</p>
+          <h1 id="proveedor-bienvenida" class="text-2xl font-bold mt-1">Bienvenido</h1>
+          <p class="text-slate-500 text-sm mt-2">Accede a los módulos operativos del rol proveedor para participar en licitaciones y dar seguimiento a tus notificaciones.</p>
+        </div>
+        <div id="estatus-proveedor" data-testid="estatus-proveedor" class="inline-flex w-fit items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold border bg-slate-100 text-slate-700 border-slate-200">
+          <i class="ph ph-spinner animate-spin"></i>
+          <span>Cargando estatus...</span>
+        </div>
+      </div>
+      <div id="estatus-banner" data-testid="estatus-banner" class="hidden mt-4"></div>
     </section>
 
     <section class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
@@ -48,17 +57,19 @@
         <p class="text-slate-800 font-semibold">Mi perfil</p>
         <p class="text-slate-500 text-sm mt-1">Actualiza datos fiscales, contacto y contraseña.</p>
       </a>
-      <a href="/frontend/proveedor/convocatorias.html" class="bg-white border border-slate-200 rounded-xl p-5 hover:shadow-sm transition-shadow">
+      <a href="/frontend/proveedor/convocatorias.html" data-provider-action="inscribir" class="bg-white border border-slate-200 rounded-xl p-5 hover:shadow-sm transition-shadow">
         <p class="text-slate-800 font-semibold">Convocatorias</p>
         <p class="text-slate-500 text-sm mt-1">Explora licitaciones y realiza inscripciones.</p>
+        <p class="text-xs text-slate-400 mt-2" data-provider-hint></p>
       </a>
       <a href="/frontend/proveedor/participaciones.html" class="bg-white border border-slate-200 rounded-xl p-5 hover:shadow-sm transition-shadow">
         <p class="text-slate-800 font-semibold">Mis participaciones</p>
         <p class="text-slate-500 text-sm mt-1">Consulta historial y estatus de inscripción.</p>
       </a>
-      <a href="/frontend/proveedor/propuestas.html" class="bg-white border border-slate-200 rounded-xl p-5 hover:shadow-sm transition-shadow">
+      <a href="/frontend/proveedor/propuestas.html" data-provider-action="propuesta" class="bg-white border border-slate-200 rounded-xl p-5 hover:shadow-sm transition-shadow">
         <p class="text-slate-800 font-semibold">Mis propuestas</p>
         <p class="text-slate-500 text-sm mt-1">Envía propuestas y revisa su seguimiento.</p>
+        <p class="text-xs text-slate-400 mt-2" data-provider-hint></p>
       </a>
       <a href="/frontend/proveedor/documentos.html" class="bg-white border border-slate-200 rounded-xl p-5 hover:shadow-sm transition-shadow">
         <p class="text-slate-800 font-semibold">Documentos</p>
@@ -108,6 +119,29 @@
       const bienvenida = document.getElementById('proveedor-bienvenida');
       bienvenida.textContent = 'Bienvenido, ' + (user.nombre || 'Proveedor');
 
+      function applyEstatusUi(estatus) {
+        SGPLAdmin.renderProviderBadge(document.getElementById('estatus-proveedor'), estatus);
+        SGPLAdmin.renderProviderBanner(document.getElementById('estatus-banner'), estatus);
+
+        const canOperate = SGPLAdmin.providerCanOperate(estatus);
+        document.querySelectorAll('[data-provider-action]').forEach(function (card) {
+          const hint = card.querySelector('[data-provider-hint]');
+          if (!canOperate) {
+            card.classList.add('opacity-60');
+            if (hint) {
+              hint.textContent = 'Disponible solo para proveedores validados.';
+              hint.className = 'text-xs text-amber-700 mt-2';
+            }
+          } else {
+            card.classList.remove('opacity-60');
+            if (hint) {
+              hint.textContent = 'Disponible';
+              hint.className = 'text-xs text-emerald-700 mt-2';
+            }
+          }
+        });
+      }
+
       try {
         const [meResp, notifResp] = await Promise.all([
           SGPLAdmin.authFetch('/me', { method: 'GET' }),
@@ -119,6 +153,9 @@
           bienvenida.textContent = 'Bienvenido, ' + me.nombre;
           SGPLAdmin.setUser(me);
         }
+
+        const estatus = SGPLAdmin.extractProviderStatus(me);
+        applyEstatusUi(estatus);
 
         const notificaciones = (notifResp && notifResp.data) || [];
         document.getElementById('proveedor-notif-count').textContent = String(notificaciones.length);
@@ -137,6 +174,7 @@
             + '</div>';
         }).join('');
       } catch (error) {
+        applyEstatusUi(null);
         document.getElementById('proveedor-notificaciones').innerHTML = '<div class="px-6 py-5 text-sm text-red-600">No se pudieron cargar las notificaciones.</div>';
       }
     })();

@@ -5,7 +5,9 @@
 .codex
 .gemini
 .opencode
+.qwen
 .github
 phpmyadmin-railway
 storage
 docs
+e2e

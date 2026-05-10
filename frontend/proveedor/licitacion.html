@@ -51,12 +51,17 @@
           <p id="dependencia" class="text-slate-500 text-sm mt-2">Dependencia</p>
         </div>
         <div class="flex flex-wrap items-center gap-2">
+          <span id="estatus-proveedor" data-testid="estatus-proveedor" class="inline-flex items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold border bg-slate-100 text-slate-700 border-slate-200">
+            <i class="ph ph-spinner animate-spin"></i>
+            <span>Cargando...</span>
+          </span>
           <span id="estado" class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold border bg-slate-100 text-slate-700 border-slate-200">N/A</span>
           <button id="inscribir-btn" class="hidden bg-primary-600 hover:bg-primary-700 text-white font-semibold px-4 py-2 rounded-lg text-sm">
             Inscribirme
           </button>
         </div>
       </div>
+      <div id="estatus-banner" data-testid="estatus-banner" class="hidden mt-4"></div>
       <p id="flash" class="hidden mt-4 text-sm rounded-lg px-3 py-2"></p>
     </section>
 
@@ -102,6 +107,7 @@
     const idLicitacion = new URLSearchParams(window.location.search).get('id');
     let licitacion = null;
     let participacion = null;
+    let providerStatus = null;
 
     function badgeClass(estado) {
       if (estado === 'PUBLICADA') return 'bg-blue-50 text-blue-700 border-blue-100';
@@ -173,8 +179,20 @@
         + (participacion ? '<p class="font-semibold text-emerald-700">Ya estás inscrito en esta licitación con estatus ' + SGPLAdmin.escapeHtml(participacion.estatus) + '.</p>' : '');
 
       const btn = document.getElementById('inscribir-btn');
+      const canOperate = SGPLAdmin.providerCanOperate(providerStatus);
       if (!participacion && canInscribir(licitacion.estado_proceso)) {
         btn.classList.remove('hidden');
+        if (!canOperate) {
+          btn.disabled = true;
+          btn.textContent = 'Requiere validación';
+          btn.title = 'Tu perfil debe estar validado. Estatus actual: ' + SGPLAdmin.providerStatusLabel(providerStatus);
+          btn.className = 'bg-slate-100 text-slate-400 cursor-not-allowed font-semibold px-4 py-2 rounded-lg text-sm';
+        } else {
+          btn.disabled = false;
+          btn.textContent = 'Inscribirme';
+          btn.title = '';
+          btn.className = 'bg-primary-600 hover:bg-primary-700 text-white font-semibold px-4 py-2 rounded-lg text-sm';
+        }
       } else {
         btn.classList.add('hidden');
       }
@@ -239,6 +257,9 @@
           return;
         }
         SGPLAdmin.setUser(me);
+        providerStatus = SGPLAdmin.extractProviderStatus(me);
+        SGPLAdmin.renderProviderBadge(document.getElementById('estatus-proveedor'), providerStatus);
+        SGPLAdmin.renderProviderBanner(document.getElementById('estatus-banner'), providerStatus);
         await Promise.all([loadDetalle(), loadDocumentos()]);
       } catch (_) {
         window.location.href = '/frontend/proveedor/convocatorias.html';

@@ -48,9 +48,18 @@
 
   <main class="max-w-6xl mx-auto px-4 py-8 space-y-6">
     <section class="bg-white border border-slate-200 rounded-2xl p-6">
-      <p class="text-xs uppercase tracking-wide text-primary-700 font-semibold">Rol Proveedor</p>
-      <h1 class="text-2xl font-bold mt-1">Mis propuestas</h1>
-      <p class="text-slate-500 text-sm mt-2">Envía propuestas para participaciones habilitadas y consulta el seguimiento de las que ya presentaste.</p>
+      <div class="flex flex-col md:flex-row md:items-start md:justify-between gap-4">
+        <div>
+          <p class="text-xs uppercase tracking-wide text-primary-700 font-semibold">Rol Proveedor</p>
+          <h1 class="text-2xl font-bold mt-1">Mis propuestas</h1>
+          <p class="text-slate-500 text-sm mt-2">Envía propuestas para participaciones habilitadas y consulta el seguimiento de las que ya presentaste.</p>
+        </div>
+        <div id="estatus-proveedor" data-testid="estatus-proveedor" class="inline-flex w-fit items-center gap-2 px-3 py-1 rounded-full text-xs font-semibold border bg-slate-100 text-slate-700 border-slate-200">
+          <i class="ph ph-spinner animate-spin"></i>
+          <span>Cargando estatus...</span>
+        </div>
+      </div>
+      <div id="estatus-banner" data-testid="estatus-banner" class="hidden mt-4"></div>
     </section>
 
     <section class="grid md:grid-cols-3 gap-3">
@@ -165,6 +174,7 @@
     SGPLAdmin.attachLogoutHandlers();
     let propuestas = [];
     let participaciones = [];
+    let providerStatus = null;
 
     function badgeClass(value) {
       if (value === 'ACEPTADA' || value === 'ADJUDICADA') return 'bg-emerald-50 text-emerald-700 border-emerald-100';
@@ -206,6 +216,15 @@
     function renderElegibles() {
       const select = document.getElementById('participacion-select');
       const elegibles = getElegibles();
+      const canOperate = SGPLAdmin.providerCanOperate(providerStatus);
+      if (!canOperate) {
+        select.innerHTML = '<option value="">Proveedor no validado</option>';
+        select.disabled = true;
+        document.getElementById('create-submit').disabled = true;
+        document.getElementById('create-submit').title = 'Requiere estatus VALIDADO. Actual: ' + SGPLAdmin.providerStatusLabel(providerStatus);
+        return;
+      }
+      document.getElementById('create-submit').title = '';
       if (!elegibles.length) {
         select.innerHTML = '<option value="">Sin participaciones listas para propuesta</option>';
         select.disabled = true;
@@ -388,6 +407,9 @@
           return;
         }
         SGPLAdmin.setUser(me);
+        providerStatus = SGPLAdmin.extractProviderStatus(me);
+        SGPLAdmin.renderProviderBadge(document.getElementById('estatus-proveedor'), providerStatus);
+        SGPLAdmin.renderProviderBanner(document.getElementById('estatus-banner'), providerStatus);
       } catch (_) {
         window.location.href = '/frontend/auth/login.html';
         return;
