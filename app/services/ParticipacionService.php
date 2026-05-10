@@ -168,4 +168,58 @@ class ParticipacionService {
     public function listPropuestas(?int $idLicitacion = null): array {
         return $this->propRepo->findAll($idLicitacion);
     }
+
+    public function retirarInscripcion(int $idParticipacion, int $idUsuario): array {
+        $participacion = $this->partRepo->findById($idParticipacion);
+        if (!$participacion) {
+            return ['ok' => false, 'errors' => ['Participación no encontrada.']];
+        }
+        $proveedor = $this->provRepo->findByUsuario($idUsuario);
+        if (!$proveedor || (int) $proveedor['id_proveedor'] !== (int) $participacion['id_proveedor']) {
+            return ['ok' => false, 'errors' => ['No tienes permiso para retirar esta inscripción.']];
+        }
+        if ($participacion['estatus'] !== 'INSCRITO') {
+            return ['ok' => false, 'errors' => ['Solo se puede retirar una inscripción en estatus INSCRITO.']];
+        }
+        $licitacion = $this->licRepo->findById((int) $participacion['id_licitacion']);
+        $estadosPermitidos = ['PUBLICADA', 'EN_ACLARACIONES', 'RECEPCION_PROPUESTAS'];
+        if (!$licitacion || !in_array($licitacion['estado_proceso'], $estadosPermitidos, true)) {
+            return ['ok' => false, 'errors' => ['No se puede retirar la inscripción en el estado actual del proceso.']];
+        }
+        $this->partRepo->delete($idParticipacion);
+        auditLog($idUsuario, 'participacion', $idParticipacion, 'ELIMINAR', $participacion, null);
+        return ['ok' => true];
+    }
+
+    public function editarPropuesta(int $idParticipacion, array $input, int $idUsuario): array {
+        $participacion = $this->partRepo->findById($idParticipacion);
+        if (!$participacion) {
+            return ['ok' => false, 'errors' => ['Participación no encontrada.']];
+        }
+        $proveedor = $this->provRepo->findByUsuario($idUsuario);
+        if (!$proveedor || (int) $proveedor['id_proveedor'] !== (int) $participacion['id_proveedor']) {
+            return ['ok' => false, 'errors' => ['No tienes permiso para editar esta propuesta.']];
+        }
+        $licitacion = $this->licRepo->findById((int) $participacion['id_licitacion']);
+        if (!$licitacion || $licitacion['estado_proceso'] !== 'RECEPCION_PROPUESTAS') {
+            return ['ok' => false, 'errors' => ['Solo se puede editar la propuesta durante RECEPCION_PROPUESTAS.']];
+        }
+        $propuesta = $this->propRepo->findByParticipacion($idParticipacion);
+        if (!$propuesta) {
+            return ['ok' => false, 'errors' => ['No existe propuesta para esta participación.']];
+        }
+        if ($propuesta['estatus'] !== 'RECIBIDA') {
+            return ['ok' => false, 'errors' => ['Solo se puede editar una propuesta en estatus RECIBIDA.']];
+        }
+        if (!isset($input['monto_propuesta']) || (float) $input['monto_propuesta'] <= 0) {
+            return ['ok' => false, 'errors' => ['El monto de la propuesta debe ser mayor a 0.']];
+        }
+        $monto = (float) $input['monto_propuesta'];
+        $descripcion = isset($input['descripcion_tecnica']) ? trim($input['descripcion_tecnica']) : $propuesta['descripcion_tecnica'];
+        $this->propRepo->update((int) $propuesta['id_propuesta'], $monto, $descripcion ?: null);
+        auditLog($idUsuario, 'propuesta', (int) $propuesta['id_propuesta'], 'ACTUALIZAR',
+            ['monto_propuesta' => $propuesta['monto_propuesta'], 'descripcion_tecnica' => $propuesta['descripcion_tecnica']],
+            ['monto_propuesta' => $monto, 'descripcion_tecnica' => $descripcion]);
+        return ['ok' => true, 'id' => (int) $propuesta['id_propuesta']];
+    }
 }

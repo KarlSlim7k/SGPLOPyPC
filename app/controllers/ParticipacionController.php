@@ -117,6 +117,42 @@ class ParticipacionController {
         jsonResponse(true, 'Listado de propuestas', $data, null, 200);
     }
 
+    public function retirar(int $idParticipacion): never {
+        AuthMiddleware::handle();
+        $user = AuthMiddleware::getAuthenticatedUser();
+        if ($user['rol'] !== 'PROVEEDOR') {
+            jsonResponse(false, 'Solo los proveedores pueden retirar inscripciones.', null, null, 403);
+        }
+        $result = $this->service->retirarInscripcion($idParticipacion, (int) $user['id_usuario']);
+        if (!$result['ok']) {
+            if (in_array('Participación no encontrada.', $result['errors'])) {
+                jsonResponse(false, 'Participación no encontrada', null, $result['errors'], 404);
+            }
+            jsonResponse(false, 'No se pudo retirar la inscripción', null, $result['errors'], 422);
+        }
+        jsonResponse(true, 'Inscripción retirada exitosamente', null, null, 200);
+    }
+
+    public function editarPropuesta(int $idParticipacion): never {
+        AuthMiddleware::handle();
+        $user = AuthMiddleware::getAuthenticatedUser();
+        if ($user['rol'] !== 'PROVEEDOR') {
+            jsonResponse(false, 'Solo los proveedores pueden editar propuestas.', null, null, 403);
+        }
+        $input = json_decode(file_get_contents('php://input'), true);
+        if (!is_array($input)) {
+            jsonResponse(false, 'Cuerpo de solicitud inválido', null, null, 400);
+        }
+        $result = $this->service->editarPropuesta($idParticipacion, $input, (int) $user['id_usuario']);
+        if (!$result['ok']) {
+            if (in_array('Participación no encontrada.', $result['errors'])) {
+                jsonResponse(false, 'Participación no encontrada', null, $result['errors'], 404);
+            }
+            jsonResponse(false, 'No se pudo editar la propuesta', null, $result['errors'], 422);
+        }
+        jsonResponse(true, 'Propuesta actualizada exitosamente', ['id_propuesta' => $result['id']], null, 200);
+    }
+
     public function listPropuestasMias(): never {
         AuthMiddleware::handle();
         $user = AuthMiddleware::getAuthenticatedUser();

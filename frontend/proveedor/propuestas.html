@@ -169,6 +169,30 @@
     <div id="detail-content" class="p-5 text-sm text-slate-700"></div>
   </dialog>
 
+  <dialog id="edit-dialog" class="w-[min(480px,calc(100%-32px))] rounded-xl border border-slate-200 p-0 backdrop:bg-slate-900/40">
+    <div class="p-5 border-b border-slate-100 flex items-center justify-between">
+      <p class="font-bold text-slate-900">Editar propuesta</p>
+      <button id="close-edit" class="w-9 h-9 rounded-lg border border-slate-200 hover:bg-slate-50" aria-label="Cerrar">
+        <i class="ph ph-x"></i>
+      </button>
+    </div>
+    <form id="edit-form" class="p-5 space-y-4">
+      <input type="hidden" id="edit-id-participacion">
+      <label class="block">
+        <span class="text-xs font-semibold text-slate-600">Monto *</span>
+        <input id="edit-monto" type="number" min="1" step="0.01" required class="mt-1 w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500">
+      </label>
+      <label class="block">
+        <span class="text-xs font-semibold text-slate-600">Descripción técnica</span>
+        <textarea id="edit-descripcion" rows="3" maxlength="1000" class="mt-1 w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"></textarea>
+      </label>
+      <div class="flex items-center gap-3">
+        <button type="submit" class="bg-primary-600 hover:bg-primary-700 text-white font-semibold px-4 py-2 rounded-lg text-sm">Guardar cambios</button>
+        <p id="edit-flash" class="text-sm text-slate-500"></p>
+      </div>
+    </form>
+  </dialog>
+
   <script src="/frontend/shared/admin.js"></script>
   <script>
     SGPLAdmin.attachLogoutHandlers();
@@ -271,6 +295,7 @@
         }
 
         rows.innerHTML = propuestas.map(function (item) {
+          const canEdit = item.estatus === 'RECIBIDA' && item.estado_proceso === 'RECEPCION_PROPUESTAS';
           return '<tr class="border-t border-slate-100">'
             + '<td class="px-4 py-3"><p class="font-semibold text-slate-800">' + SGPLAdmin.escapeHtml(item.numero_licitacion || 'N/A') + '</p><p class="text-xs text-slate-500 mt-1">' + SGPLAdmin.escapeHtml(item.descripcion_proyecto || '') + '</p></td>'
             + '<td class="px-4 py-3 text-slate-600">' + SGPLAdmin.escapeHtml(item.dependencia_nombre || 'N/A') + '</td>'
@@ -278,7 +303,10 @@
             + '<td class="px-4 py-3">' + badge(item.estatus) + '</td>'
             + '<td class="px-4 py-3 text-slate-700 font-semibold">' + SGPLAdmin.formatCurrency(item.monto_propuesta || 0) + '</td>'
             + '<td class="px-4 py-3 text-slate-600">' + SGPLAdmin.formatDate(item.fecha_envio) + '</td>'
-            + '<td class="px-4 py-3 text-right"><button data-detail="' + String(item.id_propuesta) + '" class="px-3 py-2 rounded-lg text-xs font-semibold border border-slate-200 hover:bg-slate-50">Ver</button></td>'
+            + '<td class="px-4 py-3 text-right"><div class="inline-flex gap-2">'
+            + '<button data-detail="' + String(item.id_propuesta) + '" class="px-3 py-2 rounded-lg text-xs font-semibold border border-slate-200 hover:bg-slate-50">Ver</button>'
+            + (canEdit ? '<button data-edit="' + String(item.id_participacion) + '" data-monto="' + String(item.monto_propuesta) + '" data-desc="' + SGPLAdmin.escapeHtml(item.descripcion_tecnica || '') + '" class="px-3 py-2 rounded-lg text-xs font-semibold border border-primary-200 text-primary-700 hover:bg-primary-50">Editar</button>' : '')
+            + '</div></td>'
             + '</tr>';
         }).join('');
       } catch (error) {
@@ -389,6 +417,52 @@
 
     document.getElementById('close-detail').addEventListener('click', function () {
       document.getElementById('detail-dialog').close();
+    });
+
+    document.getElementById('rows').addEventListener('click', function (e) {
+      const editBtn = e.target.closest('button[data-edit]');
+      if (editBtn) {
+        document.getElementById('edit-id-participacion').value = editBtn.getAttribute('data-edit');
+        document.getElementById('edit-monto').value = editBtn.getAttribute('data-monto');
+        document.getElementById('edit-descripcion').value = editBtn.getAttribute('data-desc');
+        document.getElementById('edit-flash').textContent = '';
+        document.getElementById('edit-dialog').showModal();
+      }
+    });
+
+    document.getElementById('close-edit').addEventListener('click', function () {
+      document.getElementById('edit-dialog').close();
+    });
+
+    document.getElementById('edit-form').addEventListener('submit', async function (e) {
+      e.preventDefault();
+      const idParticipacion = document.getElementById('edit-id-participacion').value;
+      const monto = Number(document.getElementById('edit-monto').value || 0);
+      const descripcion = document.getElementById('edit-descripcion').value.trim();
+      const flash = document.getElementById('edit-flash');
+      if (!monto || monto <= 0) {
+        flash.textContent = 'El monto debe ser mayor a 0.';
+        flash.className = 'text-sm text-red-600';
+        return;
+      }
+      const submit = e.target.querySelector('[type="submit"]');
+      submit.disabled = true;
+      submit.textContent = 'Guardando...';
+      try {
+        await SGPLAdmin.authFetch('/participaciones/' + idParticipacion + '/propuesta', {
+          method: 'PUT',
+          body: JSON.stringify({ monto_propuesta: monto, descripcion_tecnica: descripcion || null }),
+        });
+        document.getElementById('edit-dialog').close();
+        setFlash('Propuesta actualizada correctamente.', 'ok');
+        await Promise.all([loadParticipaciones(), loadPropuestas()]);
+      } catch (error) {
+        flash.textContent = error.message || 'No se pudo actualizar la propuesta.';
+        flash.className = 'text-sm text-red-600';
+      } finally {
+        submit.disabled = false;
+        submit.textContent = 'Guardar cambios';
+      }
     });
 
     (async function init() {

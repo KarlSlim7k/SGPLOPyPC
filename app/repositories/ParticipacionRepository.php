@@ -171,6 +171,11 @@ class ParticipacionRepository {
         return (int) $this->db->lastInsertId();
     }
 
+    public function delete(int $id): void {
+        $stmt = $this->db->prepare('DELETE FROM participacion WHERE id_participacion = :id');
+        $stmt->execute(['id' => $id]);
+    }
+
     public function updateEstatus(int $id, string $estatus): void {
         $stmt = $this->db->prepare('UPDATE participacion SET estatus = :estatus WHERE id_participacion = :id');
         $stmt->execute(['id' => $id, 'estatus' => $estatus]);
@@ -314,6 +319,13 @@ class PropuestaRepository {
     public function updateEstatus(int $id, string $estatus): void {
         $stmt = $this->db->prepare('UPDATE propuesta SET estatus = :estatus WHERE id_propuesta = :id');
         $stmt->execute(['id' => $id, 'estatus' => $estatus]);
+    }
+
+    public function update(int $id, float $monto, ?string $descripcion): void {
+        $stmt = $this->db->prepare(
+            'UPDATE propuesta SET monto_propuesta = :monto, descripcion_tecnica = :descripcion WHERE id_propuesta = :id'
+        );
+        $stmt->execute(['id' => $id, 'monto' => $monto, 'descripcion' => $descripcion]);
     }
 
     public function updateEstatusByLicitacion(int $idLicitacion, string $estatus, ?int $excludePropuestaId = null): void {

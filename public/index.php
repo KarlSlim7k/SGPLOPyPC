@@ -224,6 +224,18 @@ try {
             (new ParticipacionController())->enviarPropuesta((int) $m[1]);
             break;
 
+        case preg_match('#^/participaciones/(\d+)/propuesta$#', $route, $m) && $requestMethod === 'PUT':
+            AuthMiddleware::handle();
+            RoleMiddleware::handle('PROVEEDOR');
+            (new ParticipacionController())->editarPropuesta((int) $m[1]);
+            break;
+
+        case preg_match('#^/participaciones/(\d+)$#', $route, $m) && $requestMethod === 'DELETE':
+            AuthMiddleware::handle();
+            RoleMiddleware::handle('PROVEEDOR');
+            (new ParticipacionController())->retirar((int) $m[1]);
+            break;
+
         case preg_match('#^/propuestas/(\d+)$#', $route, $m) && $requestMethod === 'GET':
             AuthMiddleware::handle();
             (new ParticipacionController())->getPropuesta((int) $m[1]);
