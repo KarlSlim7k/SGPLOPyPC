@@ -43,8 +43,8 @@
       <p class="text-slate-500 text-sm mt-2">Este espacio te permite consultar actividad pública y seguimiento de notificaciones de procesos.</p>
     </section>
 
-    <section class="grid md:grid-cols-3 gap-4">
-      <a href="/" class="bg-white border border-slate-200 rounded-xl p-5 hover:shadow-sm transition-shadow">
+    <section class="grid md:grid-cols-4 gap-4">
+      <a href="/#convocatorias" class="bg-white border border-slate-200 rounded-xl p-5 hover:shadow-sm transition-shadow">
         <p class="text-slate-800 font-semibold">Convocatorias</p>
         <p class="text-slate-500 text-sm mt-1">Revisa convocatorias publicadas.</p>
       </a>
@@ -56,6 +56,50 @@
         <p class="text-slate-800 font-semibold">Contratos adjudicados</p>
         <p class="text-slate-500 text-sm mt-1">Visualiza adjudicaciones recientes.</p>
       </a>
+      <a href="/historial.php" class="bg-white border border-slate-200 rounded-xl p-5 hover:shadow-sm transition-shadow">
+        <p class="text-slate-800 font-semibold">Historial</p>
+        <p class="text-slate-500 text-sm mt-1">Consulta procesos concluidos.</p>
+      </a>
+    </section>
+
+    <section class="grid md:grid-cols-3 gap-4">
+      <div class="bg-white border border-slate-200 rounded-xl p-5">
+        <p class="text-xs text-slate-400">Licitaciones activas</p>
+        <p id="publico-stat-activas" class="text-2xl font-extrabold text-slate-900 mt-1">0</p>
+      </div>
+      <div class="bg-white border border-slate-200 rounded-xl p-5">
+        <p class="text-xs text-slate-400">Contratos adjudicados</p>
+        <p id="publico-stat-contratos" class="text-2xl font-extrabold text-slate-900 mt-1">0</p>
+      </div>
+      <div class="bg-white border border-slate-200 rounded-xl p-5">
+        <p class="text-xs text-slate-400">Monto total contratado</p>
+        <p id="publico-stat-monto" class="text-2xl font-extrabold text-slate-900 mt-1">$0</p>
+      </div>
+    </section>
+
+    <section class="bg-white border border-slate-200 rounded-2xl overflow-hidden">
+      <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+        <h2 class="font-bold text-slate-800">Últimas convocatorias</h2>
+        <a href="/#convocatorias" class="text-sm text-primary-700 font-semibold hover:text-primary-800">Ver más</a>
+      </div>
+      <div id="publico-convocatorias" class="divide-y divide-slate-100">
+        <div class="px-6 py-5 text-sm text-slate-500">Cargando convocatorias...</div>
+      </div>
+    </section>
+
+    <section class="bg-white border border-slate-200 rounded-2xl p-6">
+      <h2 class="font-bold text-slate-800 mb-2">Acceso rápido</h2>
+      <p class="text-slate-500 text-sm">Consulta histórico completo o registra una nueva empresa proveedora.</p>
+      <div class="mt-4 flex flex-wrap gap-3">
+        <a href="/historial.php" class="inline-flex items-center gap-2 bg-slate-900 hover:bg-slate-700 text-white font-semibold px-4 py-2 rounded-lg text-sm">
+          <i class="ph ph-archive"></i>
+          Ver historial
+        </a>
+        <a href="/registro.php" class="inline-flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white font-semibold px-4 py-2 rounded-lg text-sm">
+          <i class="ph ph-user-plus"></i>
+          Registrar proveedor
+        </a>
+      </div>
     </section>
 
     <section class="bg-white border border-slate-200 rounded-2xl overflow-hidden">
@@ -70,6 +114,7 @@
   </main>
 
   <script src="/frontend/shared/admin.js"></script>
+  <script src="/frontend/shared/public.js"></script>
   <script>
     SGPLAdmin.attachLogoutHandlers();
 
@@ -85,9 +130,11 @@
       bienvenida.textContent = 'Bienvenido, ' + (user.nombre || 'Usuario Público');
 
       try {
-        const [meResp, notifResp] = await Promise.all([
+        const [meResp, notifResp, statsResp, convResp] = await Promise.all([
           SGPLAdmin.authFetch('/me', { method: 'GET' }),
           SGPLAdmin.authFetch('/notificaciones/mias', { method: 'GET' }),
+          SGPLPublic.fetchJson('/api/v1/public/estadisticas'),
+          SGPLPublic.fetchJson('/api/v1/public/convocatorias?limit=3&sort=fecha_creacion&order=DESC'),
         ]);
 
         const me = (meResp && meResp.data) || null;
@@ -98,22 +145,39 @@
 
         const notificaciones = (notifResp && notifResp.data) || [];
         document.getElementById('publico-notif-count').textContent = String(notificaciones.length);
+        document.getElementById('publico-stat-activas').textContent = String((statsResp && statsResp.licitaciones_activas) || 0);
+        document.getElementById('publico-stat-contratos').textContent = String((statsResp && statsResp.contratos_adjudicados) || 0);
+        document.getElementById('publico-stat-monto').textContent = SGPLPublic.formatCurrency((statsResp && statsResp.monto_total_contratado) || 0);
 
         const container = document.getElementById('publico-notificaciones');
+        const convocatoriasContainer = document.getElementById('publico-convocatorias');
         if (!notificaciones.length) {
           container.innerHTML = '<div class="px-6 py-5 text-sm text-slate-500">Sin notificaciones por ahora.</div>';
-          return;
+        } else {
+          container.innerHTML = notificaciones.slice(0, 20).map(function (item) {
+            return '<div class="px-6 py-4">'
+              + '<p class="font-semibold text-sm text-slate-800">' + SGPLAdmin.escapeHtml(item.titulo || 'Notificación') + '</p>'
+              + '<p class="text-sm text-slate-600 mt-1">' + SGPLAdmin.escapeHtml(item.mensaje || '') + '</p>'
+              + '<p class="text-xs text-slate-400 mt-2">' + SGPLAdmin.formatDateTime(item.fecha_envio) + '</p>'
+              + '</div>';
+          }).join('');
         }
 
-        container.innerHTML = notificaciones.slice(0, 20).map(function (item) {
-          return '<div class="px-6 py-4">'
-            + '<p class="font-semibold text-sm text-slate-800">' + SGPLAdmin.escapeHtml(item.titulo || 'Notificación') + '</p>'
-            + '<p class="text-sm text-slate-600 mt-1">' + SGPLAdmin.escapeHtml(item.mensaje || '') + '</p>'
-            + '<p class="text-xs text-slate-400 mt-2">' + SGPLAdmin.formatDateTime(item.fecha_envio) + '</p>'
-            + '</div>';
-        }).join('');
+        const convocatorias = (convResp && convResp.items) || [];
+        if (!convocatorias.length) {
+          convocatoriasContainer.innerHTML = '<div class="px-6 py-5 text-sm text-slate-500">Sin convocatorias disponibles por ahora.</div>';
+        } else {
+          convocatoriasContainer.innerHTML = convocatorias.map(function (item) {
+            return '<a href=\"/convocatoria.php?id=' + encodeURIComponent(String(item.id_licitacion)) + '\" class=\"block px-6 py-4 hover:bg-slate-50 transition-colors\">'
+              + '<p class=\"font-semibold text-sm text-slate-800\">' + SGPLPublic.escapeHtml(item.numero_licitacion || 'N/A') + '</p>'
+              + '<p class=\"text-sm text-slate-600 mt-1\">' + SGPLPublic.escapeHtml(item.descripcion_proyecto || 'Sin descripción') + '</p>'
+              + '<p class=\"text-xs text-slate-400 mt-2\">' + SGPLPublic.escapeHtml(item.dependencia_nombre || 'Dependencia no disponible') + ' · Fallo: ' + SGPLPublic.formatDate(item.fecha_fallo_adjudicacion) + '</p>'
+              + '</a>';
+          }).join('');
+        }
       } catch (error) {
         document.getElementById('publico-notificaciones').innerHTML = '<div class="px-6 py-5 text-sm text-red-600">No se pudieron cargar las notificaciones.</div>';
+        document.getElementById('publico-convocatorias').innerHTML = '<div class="px-6 py-5 text-sm text-red-600">No se pudieron cargar las convocatorias.</div>';
       }
     })();
   </script>

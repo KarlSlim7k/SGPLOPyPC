@@ -39,6 +39,19 @@
     }).format(date);
   }
 
+  function escapeHtml(value) {
+    return String(value || '')
+      .replace(/&/g, '&amp;')
+      .replace(/</g, '&lt;')
+      .replace(/>/g, '&gt;')
+      .replace(/"/g, '&quot;')
+      .replace(/'/g, '&#39;');
+  }
+
+  function buildConvocatoriaHref(id) {
+    return '/convocatoria.php?id=' + encodeURIComponent(String(id));
+  }
+
   function tipoLegible(tipo) {
     return {
       LICITACION_PUBLICA: 'Licitación Pública',
@@ -81,6 +94,11 @@
       const monto = qs('#landing-stat-monto');
       const tActivos = qs('#landing-tr-activas');
       const tMonto = qs('#landing-tr-monto');
+      const pLic = qs('#landing-preview-licitaciones');
+      const pProv = qs('#landing-preview-proveedores');
+      const pEval = qs('#landing-preview-evaluacion');
+      const pContratos = qs('#landing-preview-contratos');
+      const previewRows = qs('#landing-preview-rows');
 
       if (licActivas) licActivas.textContent = String(stats.licitaciones_activas || 0);
       if (provRegs) {
@@ -91,13 +109,21 @@
       if (monto) monto.textContent = formatCurrency(stats.monto_total_contratado || 0);
       if (tActivos) tActivos.textContent = '+' + String(stats.licitaciones_activas || 0);
       if (tMonto) tMonto.textContent = formatCurrency(stats.monto_total_contratado || 0);
+      if (pLic) pLic.textContent = String(stats.licitaciones_activas || 0);
+      if (pProv) pProv.textContent = String(stats.proveedores_registrados_total ?? stats.proveedores_registrados ?? 0);
+      if (pEval) pEval.textContent = String(stats.licitaciones_en_evaluacion || 0);
+      if (pContratos) pContratos.textContent = String(stats.contratos_adjudicados || 0);
 
       if (!conv.items || conv.items.length === 0) {
         mountMessage(listEl, 'No hay convocatorias públicas disponibles en este momento.');
+        if (previewRows) {
+          previewRows.innerHTML = '<div class="px-3 py-3 text-slate-400 text-xs">Sin convocatorias públicas por mostrar.</div>';
+        }
         return;
       }
 
       listEl.innerHTML = conv.items.map(function (item) {
+        const detailHref = buildConvocatoriaHref(item.id_licitacion);
         return '<article class="bg-white border border-slate-200 rounded-2xl p-6 hover:border-primary-200 hover:shadow-md transition-all duration-200">'
           + '<div class="flex flex-col md:flex-row md:items-center justify-between gap-4">'
           + '<div class="flex-1">'
@@ -115,10 +141,34 @@
           + '<p class="text-xs text-slate-400 mt-1">Fallo: ' + formatDate(item.fecha_fallo_adjudicacion) + '</p>'
           + '</div>'
           + '</div>'
+          + '<div class="mt-4 pt-4 border-t border-slate-100 flex justify-end">'
+          + '<a href="' + detailHref + '" class="inline-flex items-center gap-1.5 text-sm font-semibold text-primary-700 hover:text-primary-800">'
+          + 'Ver detalle <i class="ph ph-arrow-right"></i>'
+          + '</a>'
+          + '</div>'
           + '</article>';
       }).join('');
+
+      if (previewRows) {
+        previewRows.innerHTML = conv.items.slice(0, 2).map(function (item) {
+          return '<div class="px-3 py-2 flex items-center justify-between gap-2">'
+            + '<div>'
+            + '<p class="text-white text-xs font-medium">' + escapeHtml(item.numero_licitacion || 'N/A') + '</p>'
+            + '<p class="text-slate-400 text-xs truncate max-w-[220px]">' + escapeHtml(item.descripcion_proyecto || 'Sin descripción') + '</p>'
+            + '</div>'
+            + '<span class="text-xs px-2 py-0.5 rounded-full border ' + (item.estado_proceso === 'PUBLICADA'
+              ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30'
+              : 'bg-amber-500/20 text-amber-400 border-amber-500/30') + '">'
+            + escapeHtml(item.estado_proceso || 'N/A')
+            + '</span>'
+            + '</div>';
+        }).join('');
+      }
     } catch (error) {
       mountMessage(listEl, 'No se pudieron cargar las convocatorias públicas.', 'error');
+      if (previewRows) {
+        previewRows.innerHTML = '<div class="px-3 py-3 text-red-300 text-xs">No se pudieron cargar los datos del resumen.</div>';
+      }
     }
   }
 
@@ -304,6 +354,124 @@
     load();
   }
 
+  function initResultados() {
+    const listEl = qs('#resultados-list');
+    if (!listEl) return;
+
+    const searchInput = qs('#resultados-search');
+    const pageInfo = qs('#resultados-page-info');
+    const prevBtn = qs('#resultados-prev');
+    const nextBtn = qs('#resultados-next');
+
+    var page = 1;
+    var limit = 10;
+    var total = 0;
+
+    async function load() {
+      const params = new URLSearchParams();
+      params.set('page', String(page));
+      params.set('limit', String(limit));
+      if (searchInput && searchInput.value.trim()) params.set('q', searchInput.value.trim());
+
+      try {
+        const data = await fetchJson(API_BASE + '/resultados?' + params.toString());
+        total = Number(data.total || 0);
+
+        if (!data.items || data.items.length === 0) {
+          listEl.innerHTML = '<tr><td colspan="6" class="px-6 py-6 text-center text-slate-500">No hay resultados para los criterios seleccionados.</td></tr>';
+          if (pageInfo) pageInfo.textContent = '0 resultados';
+          return;
+        }
+
+        listEl.innerHTML = data.items.map(function (item) {
+          return '<tr class="hover:bg-slate-50 transition-colors">'
+            + '<td class="px-6 py-4"><p class="font-mono text-xs text-slate-400">' + escapeHtml(item.numero_licitacion || 'N/A') + '</p><p class="font-semibold text-slate-800">' + escapeHtml(item.numero_contrato || 'Sin contrato') + '</p></td>'
+            + '<td class="px-6 py-4"><p class="text-slate-700">' + escapeHtml(item.descripcion_proyecto || 'Sin descripción') + '</p><p class="text-xs text-slate-400 mt-1">' + escapeHtml(item.dependencia_nombre || 'Dependencia no disponible') + '</p></td>'
+            + '<td class="px-6 py-4"><p class="text-slate-700">' + escapeHtml(item.adjudicatario_nombre_empresa || 'N/A') + '</p></td>'
+            + '<td class="px-6 py-4 hidden lg:table-cell"><p class="font-semibold text-slate-800">' + formatCurrency(item.monto_contrato || item.presupuesto_estimado || 0) + '</p></td>'
+            + '<td class="px-6 py-4 hidden md:table-cell"><p class="text-slate-600">' + formatDate(item.fecha_adjudicacion) + '</p></td>'
+            + '<td class="px-6 py-4"><span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-semibold border ' + estadoBadgeClass(item.estado_proceso) + '">' + escapeHtml(item.estado_proceso || 'N/A') + '</span></td>'
+            + '</tr>';
+        }).join('');
+
+        const start = ((page - 1) * limit) + 1;
+        const end = Math.min(page * limit, total);
+        if (pageInfo) pageInfo.textContent = 'Mostrando ' + start + '-' + end + ' de ' + total;
+        if (prevBtn) prevBtn.disabled = page <= 1;
+        if (nextBtn) nextBtn.disabled = end >= total;
+      } catch (_) {
+        listEl.innerHTML = '<tr><td colspan="6" class="px-6 py-6 text-center text-red-600">No se pudieron cargar los resultados.</td></tr>';
+      }
+    }
+
+    if (searchInput) searchInput.addEventListener('input', function () { page = 1; load(); });
+    if (prevBtn) prevBtn.addEventListener('click', function () { if (page > 1) { page -= 1; load(); } });
+    if (nextBtn) nextBtn.addEventListener('click', function () { page += 1; load(); });
+
+    load();
+  }
+
+  function initConvocatoriaDetalle() {
+    const detalleEl = qs('#convocatoria-detalle');
+    if (!detalleEl) return;
+
+    const docsEl = qs('#convocatoria-documentos');
+    const params = new URLSearchParams(window.location.search);
+    const id = Number(params.get('id') || '');
+
+    if (!id) {
+      mountMessage(detalleEl, 'La convocatoria solicitada no es válida.', 'error');
+      if (docsEl) {
+        docsEl.innerHTML = '<div class="px-6 py-5 text-sm text-slate-500">No hay documentos por mostrar.</div>';
+      }
+      return;
+    }
+
+    Promise.all([
+      fetchJson(API_BASE + '/convocatorias/' + String(id)),
+      fetchJson(API_BASE + '/convocatorias/' + String(id) + '/documentos'),
+    ]).then(function (results) {
+      const convocatoria = results[0] || {};
+      const documentos = ((results[1] || {}).items) || [];
+      const encabezado = qs('#convocatoria-titulo');
+      const subtitulo = qs('#convocatoria-subtitulo');
+
+      if (encabezado) encabezado.textContent = convocatoria.numero_licitacion || 'Detalle de convocatoria';
+      if (subtitulo) subtitulo.textContent = convocatoria.descripcion_proyecto || 'Información detallada del proceso';
+
+      detalleEl.innerHTML = '<div class="grid md:grid-cols-2 gap-4">'
+        + '<div class="bg-slate-50 border border-slate-200 rounded-xl p-4"><p class="text-xs text-slate-400 mb-1">Dependencia</p><p class="font-semibold text-slate-800">' + escapeHtml(convocatoria.dependencia_nombre || 'N/A') + '</p></div>'
+        + '<div class="bg-slate-50 border border-slate-200 rounded-xl p-4"><p class="text-xs text-slate-400 mb-1">Tipo de procedimiento</p><p class="font-semibold text-slate-800">' + escapeHtml(tipoLegible(convocatoria.tipo_procedimiento)) + '</p></div>'
+        + '<div class="bg-slate-50 border border-slate-200 rounded-xl p-4"><p class="text-xs text-slate-400 mb-1">Estado</p><p class="font-semibold text-slate-800">' + escapeHtml(convocatoria.estado_proceso || 'N/A') + '</p></div>'
+        + '<div class="bg-slate-50 border border-slate-200 rounded-xl p-4"><p class="text-xs text-slate-400 mb-1">Presupuesto estimado</p><p class="font-semibold text-slate-800">' + formatCurrency(convocatoria.presupuesto_estimado || 0) + '</p></div>'
+        + '<div class="bg-slate-50 border border-slate-200 rounded-xl p-4"><p class="text-xs text-slate-400 mb-1">Cierre de recepción</p><p class="font-semibold text-slate-800">' + formatDate(convocatoria.fecha_cierre_recepcion) + '</p></div>'
+        + '<div class="bg-slate-50 border border-slate-200 rounded-xl p-4"><p class="text-xs text-slate-400 mb-1">Fallo estimado</p><p class="font-semibold text-slate-800">' + formatDate(convocatoria.fecha_fallo_adjudicacion) + '</p></div>'
+        + '</div>'
+        + '<div class="mt-4 bg-white border border-slate-200 rounded-xl p-4">'
+        + '<p class="text-xs text-slate-400 mb-1">Descripción del proyecto</p>'
+        + '<p class="text-slate-700">' + escapeHtml(convocatoria.descripcion_proyecto || 'Sin descripción') + '</p>'
+        + '</div>';
+
+      if (!docsEl) return;
+      if (!documentos.length) {
+        docsEl.innerHTML = '<div class="px-6 py-5 text-sm text-slate-500">No hay documentos públicos disponibles para esta convocatoria.</div>';
+        return;
+      }
+
+      docsEl.innerHTML = documentos.map(function (doc) {
+        return '<a href="/api/v1/public/documentos/' + encodeURIComponent(String(doc.id_documento)) + '/download" class="flex items-center justify-between gap-3 px-6 py-4 hover:bg-slate-50 transition-colors">'
+          + '<div><p class="font-semibold text-slate-800 text-sm">' + escapeHtml(doc.nombre_archivo || 'Documento') + '</p><p class="text-xs text-slate-500 mt-1">' + escapeHtml(doc.tipo_documento || 'N/A') + ' · ' + formatDate(doc.fecha_subida) + '</p></div>'
+          + '<span class="inline-flex items-center gap-1.5 text-primary-700 text-sm font-semibold">Descargar <i class="ph ph-download-simple"></i></span>'
+          + '</a>';
+      }).join('');
+    }).catch(function () {
+      mountMessage(detalleEl, 'No se pudo cargar el detalle de la convocatoria.', 'error');
+      if (docsEl) {
+        docsEl.innerHTML = '<div class="px-6 py-5 text-sm text-red-600">No se pudieron cargar los documentos.</div>';
+      }
+    });
+  }
+
   function initRegistro() {
     const form = qs('#registro-form');
     if (!form) return;
@@ -413,6 +581,8 @@
     initEvaluacion();
     initHistorial();
     initContratos();
+    initResultados();
+    initConvocatoriaDetalle();
     initRegistro();
   });
 
@@ -420,5 +590,7 @@
     fetchJson: fetchJson,
     formatCurrency: formatCurrency,
     formatDate: formatDate,
+    tipoLegible: tipoLegible,
+    escapeHtml: escapeHtml,
   };
 })();

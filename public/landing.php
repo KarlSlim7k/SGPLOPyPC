@@ -130,23 +130,23 @@
                     <div class="p-4 grid grid-cols-2 gap-3">
                         <div class="bg-slate-900/60 rounded-xl p-3 border border-slate-700/40">
                             <p class="text-slate-400 text-xs mb-1">Licitaciones Activas</p>
-                            <p class="text-white font-bold text-2xl">12</p>
-                            <p class="text-emerald-400 text-xs mt-1 flex items-center gap-1"><i class="ph ph-arrow-up" aria-hidden="true"></i> +3 este mes</p>
+                            <p id="landing-preview-licitaciones" class="text-white font-bold text-2xl">—</p>
+                            <p class="text-emerald-400 text-xs mt-1 flex items-center gap-1"><i class="ph ph-chart-line" aria-hidden="true"></i> Dato en tiempo real</p>
                         </div>
                         <div class="bg-slate-900/60 rounded-xl p-3 border border-slate-700/40">
                             <p class="text-slate-400 text-xs mb-1">Proveedores Activos</p>
-                            <p class="text-white font-bold text-2xl">84</p>
-                            <p class="text-blue-400 text-xs mt-1 flex items-center gap-1"><i class="ph ph-arrow-up" aria-hidden="true"></i> +7 nuevos</p>
+                            <p id="landing-preview-proveedores" class="text-white font-bold text-2xl">—</p>
+                            <p class="text-blue-400 text-xs mt-1 flex items-center gap-1"><i class="ph ph-users" aria-hidden="true"></i> Dato en tiempo real</p>
                         </div>
                         <div class="bg-slate-900/60 rounded-xl p-3 border border-slate-700/40">
-                            <p class="text-slate-400 text-xs mb-1">Propuestas Recibidas</p>
-                            <p class="text-white font-bold text-2xl">26</p>
-                            <p class="text-amber-400 text-xs mt-1 flex items-center gap-1"><i class="ph ph-clock" aria-hidden="true"></i> Por evaluar</p>
+                            <p class="text-slate-400 text-xs mb-1">Procesos en Evaluación</p>
+                            <p id="landing-preview-evaluacion" class="text-white font-bold text-2xl">—</p>
+                            <p class="text-amber-400 text-xs mt-1 flex items-center gap-1"><i class="ph ph-clock" aria-hidden="true"></i> Dato en tiempo real</p>
                         </div>
                         <div class="bg-slate-900/60 rounded-xl p-3 border border-slate-700/40">
                             <p class="text-slate-400 text-xs mb-1">Contratos Adjudicados</p>
-                            <p class="text-white font-bold text-2xl">145</p>
-                            <p class="text-emerald-400 text-xs mt-1 flex items-center gap-1"><i class="ph ph-check-circle" aria-hidden="true"></i> Ejercicio 2026</p>
+                            <p id="landing-preview-contratos" class="text-white font-bold text-2xl">—</p>
+                            <p class="text-emerald-400 text-xs mt-1 flex items-center gap-1"><i class="ph ph-check-circle" aria-hidden="true"></i> Dato en tiempo real</p>
                         </div>
                     </div>
                     <!-- Mini table -->
@@ -155,21 +155,8 @@
                             <div class="px-3 py-2 border-b border-slate-700/40">
                                 <p class="text-slate-300 text-xs font-semibold">Últimas Licitaciones</p>
                             </div>
-                            <div class="divide-y divide-slate-700/30">
-                                <div class="px-3 py-2 flex items-center justify-between">
-                                    <div>
-                                        <p class="text-white text-xs font-medium">LO-902002994-E1-2026</p>
-                                        <p class="text-slate-400 text-xs">Infraestructura Educativa Fase II</p>
-                                    </div>
-                                    <span class="text-xs bg-emerald-500/20 text-emerald-400 px-2 py-0.5 rounded-full border border-emerald-500/30">Publicada</span>
-                                </div>
-                                <div class="px-3 py-2 flex items-center justify-between">
-                                    <div>
-                                        <p class="text-white text-xs font-medium">IR-902002994-E2-2026</p>
-                                        <p class="text-slate-400 text-xs">Vialidades Zona Norte</p>
-                                    </div>
-                                    <span class="text-xs bg-amber-500/20 text-amber-400 px-2 py-0.5 rounded-full border border-amber-500/30">Evaluación</span>
-                                </div>
+                            <div id="landing-preview-rows" class="divide-y divide-slate-700/30">
+                                <div class="px-3 py-3 text-slate-400 text-xs">Actualizando información...</div>
                             </div>
                         </div>
                     </div>
@@ -416,6 +403,17 @@
                         <i class="ph ph-arrow-square-out text-slate-500 group-hover:text-blue-400 shrink-0 transition-colors" aria-hidden="true"></i>
                     </a>
                 </div>
+            </div>
+
+            <div class="mt-10 flex flex-wrap gap-3">
+                <a href="/resultados.php" class="inline-flex items-center gap-2 bg-primary-600 hover:bg-primary-500 text-white font-semibold px-5 py-2.5 rounded-xl transition-colors text-sm">
+                    <i class="ph ph-trophy"></i>
+                    Resultados de Adjudicación
+                </a>
+                <a href="/historial.php" class="inline-flex items-center gap-2 bg-white/10 hover:bg-white/20 border border-white/20 text-white font-semibold px-5 py-2.5 rounded-xl transition-colors text-sm">
+                    <i class="ph ph-archive"></i>
+                    Historial de Licitaciones
+                </a>
             </div>
         </div>
     </section>
