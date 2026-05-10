@@ -172,6 +172,7 @@ Redirecciones de inicio de sesión:
 Módulos frontend del rol proveedor:
 - `/frontend/proveedor/centro.html`
 - `/frontend/proveedor/convocatorias.html`
+- `/frontend/proveedor/licitacion.html?id={id_licitacion}`
 - `/frontend/proveedor/participaciones.html`
 - `/frontend/proveedor/propuestas.html`
 - `/frontend/proveedor/documentos.html`

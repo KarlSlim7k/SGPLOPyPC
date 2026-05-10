@@ -179,3 +179,8 @@ Actualización de módulo Documentos:
 - Se incorporó `GET /api/v1/documentos/{id}/download` con control de acceso autenticado.
 - Se habilitó `/frontend/proveedor/documentos.html` para carga de documentos legales del proveedor y documentos asociados a propuestas propias.
 - El upload para PROVEEDOR valida pertenencia del proveedor/propuesta antes de guardar documentos.
+
+Actualización de detalle de licitación para PROVEEDOR:
+- Se habilitó `/frontend/proveedor/licitacion.html?id={id_licitacion}`.
+- La vista muestra información general, cronograma, reglas operativas de participación y documentos públicos de la convocatoria.
+- El listado de convocatorias del proveedor ahora enlaza al detalle antes de la inscripción.

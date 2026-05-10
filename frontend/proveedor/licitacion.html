@@ -1,0 +1,249 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Detalle de Licitación - SGPLOPyPC</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] },
+          colors: { primary: { 500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8' } }
+        }
+      }
+    }
+  </script>
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+<body class="bg-slate-50 text-slate-900 font-sans antialiased">
+  <nav class="bg-white border-b border-slate-200 sticky top-0 z-40">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+      <a href="/frontend/proveedor/centro.html" class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-lg bg-primary-700 text-white flex items-center justify-center font-bold text-sm">SG</div>
+        <div>
+          <p class="font-bold text-sm">SGPLOPyPC</p>
+          <p class="text-xs text-slate-500">Detalle de licitación</p>
+        </div>
+      </a>
+      <div class="flex items-center gap-2">
+        <a href="/frontend/proveedor/convocatorias.html" class="inline-flex items-center gap-2 text-sm font-semibold px-3 py-2 rounded-lg border border-slate-200 hover:bg-slate-50">
+          <i class="ph ph-megaphone"></i>
+          Convocatorias
+        </a>
+        <button data-action="logout" class="inline-flex items-center gap-2 text-sm font-semibold px-3 py-2 rounded-lg border border-slate-200 hover:bg-slate-50">
+          <i class="ph ph-sign-out"></i>
+          Cerrar sesión
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="max-w-6xl mx-auto px-4 py-8 space-y-6">
+    <section class="bg-white border border-slate-200 rounded-2xl p-6">
+      <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
+        <div>
+          <p id="numero" class="text-xs uppercase tracking-wide text-primary-700 font-semibold">Cargando...</p>
+          <h1 id="titulo" class="text-2xl font-bold mt-1">Detalle de licitación</h1>
+          <p id="dependencia" class="text-slate-500 text-sm mt-2">Dependencia</p>
+        </div>
+        <div class="flex flex-wrap items-center gap-2">
+          <span id="estado" class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold border bg-slate-100 text-slate-700 border-slate-200">N/A</span>
+          <button id="inscribir-btn" class="hidden bg-primary-600 hover:bg-primary-700 text-white font-semibold px-4 py-2 rounded-lg text-sm">
+            Inscribirme
+          </button>
+        </div>
+      </div>
+      <p id="flash" class="hidden mt-4 text-sm rounded-lg px-3 py-2"></p>
+    </section>
+
+    <section class="grid lg:grid-cols-[1.4fr_0.9fr] gap-6">
+      <div class="space-y-6">
+        <section class="bg-white border border-slate-200 rounded-2xl p-6">
+          <h2 class="font-bold text-slate-900">Información general</h2>
+          <div id="general" class="grid md:grid-cols-2 gap-4 mt-4 text-sm"></div>
+        </section>
+
+        <section class="bg-white border border-slate-200 rounded-2xl p-6">
+          <h2 class="font-bold text-slate-900">Descripción</h2>
+          <p id="descripcion" class="text-sm text-slate-600 mt-3 leading-relaxed">Cargando...</p>
+        </section>
+
+        <section class="bg-white border border-slate-200 rounded-2xl overflow-hidden">
+          <div class="px-6 py-4 border-b border-slate-100">
+            <h2 class="font-bold text-slate-900">Documentos de la convocatoria</h2>
+          </div>
+          <div id="documentos" class="divide-y divide-slate-100">
+            <div class="px-6 py-5 text-sm text-slate-500">Cargando documentos...</div>
+          </div>
+        </section>
+      </div>
+
+      <aside class="space-y-6">
+        <section class="bg-white border border-slate-200 rounded-2xl p-6">
+          <h2 class="font-bold text-slate-900">Cronograma</h2>
+          <div id="fechas" class="mt-4 space-y-3"></div>
+        </section>
+
+        <section class="bg-white border border-slate-200 rounded-2xl p-6">
+          <h2 class="font-bold text-slate-900">Reglas de participación</h2>
+          <div id="reglas" class="mt-4 space-y-3 text-sm text-slate-600"></div>
+        </section>
+      </aside>
+    </section>
+  </main>
+
+  <script src="/frontend/shared/admin.js"></script>
+  <script>
+    SGPLAdmin.attachLogoutHandlers();
+    const idLicitacion = new URLSearchParams(window.location.search).get('id');
+    let licitacion = null;
+    let participacion = null;
+
+    function badgeClass(estado) {
+      if (estado === 'PUBLICADA') return 'bg-blue-50 text-blue-700 border-blue-100';
+      if (estado === 'EN_ACLARACIONES') return 'bg-amber-50 text-amber-700 border-amber-100';
+      if (estado === 'RECEPCION_PROPUESTAS') return 'bg-violet-50 text-violet-700 border-violet-100';
+      if (estado === 'EN_EVALUACION') return 'bg-orange-50 text-orange-700 border-orange-100';
+      if (estado === 'ADJUDICADA') return 'bg-emerald-50 text-emerald-700 border-emerald-100';
+      return 'bg-slate-100 text-slate-700 border-slate-200';
+    }
+
+    function canInscribir(estado) {
+      return estado === 'PUBLICADA' || estado === 'EN_ACLARACIONES' || estado === 'RECEPCION_PROPUESTAS';
+    }
+
+    function field(label, value) {
+      return '<div><p class="text-xs text-slate-500">' + label + '</p><p class="font-semibold text-slate-800 mt-1">' + SGPLAdmin.escapeHtml(value || 'N/A') + '</p></div>';
+    }
+
+    function timeline(label, date) {
+      return '<div class="flex items-start gap-3"><div class="w-2 h-2 rounded-full bg-primary-600 mt-2"></div><div><p class="text-xs text-slate-500">' + label + '</p><p class="text-sm font-semibold text-slate-800">' + SGPLAdmin.formatDate(date) + '</p></div></div>';
+    }
+
+    function setFlash(message, tone) {
+      const flash = document.getElementById('flash');
+      flash.className = 'mt-4 text-sm rounded-lg px-3 py-2 ' + (tone === 'ok'
+        ? 'bg-emerald-50 border border-emerald-200 text-emerald-700'
+        : 'bg-red-50 border border-red-200 text-red-700');
+      flash.textContent = message;
+      flash.classList.remove('hidden');
+    }
+
+    async function loadDetalle() {
+      const [licResp, partResp] = await Promise.all([
+        SGPLAdmin.authFetch('/licitaciones/' + idLicitacion, { method: 'GET' }),
+        SGPLAdmin.authFetch('/participaciones/mias?page=1&limit=100', { method: 'GET' }),
+      ]);
+
+      licitacion = licResp.data;
+      participacion = ((partResp.data && partResp.data.items) || []).find(function (item) {
+        return String(item.id_licitacion) === String(idLicitacion);
+      }) || null;
+
+      document.getElementById('numero').textContent = licitacion.numero_licitacion || 'Licitación';
+      document.getElementById('titulo').textContent = licitacion.descripcion_proyecto || 'Detalle de licitación';
+      document.getElementById('dependencia').textContent = licitacion.dependencia_nombre || 'Dependencia no disponible';
+      document.getElementById('descripcion').textContent = licitacion.descripcion_proyecto || 'Sin descripción registrada.';
+
+      const estado = document.getElementById('estado');
+      estado.className = 'inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold border ' + badgeClass(licitacion.estado_proceso);
+      estado.textContent = licitacion.estado_proceso || 'N/A';
+
+      document.getElementById('general').innerHTML =
+        field('Tipo de procedimiento', licitacion.tipo_procedimiento)
+        + field('Ubicación', licitacion.ubicacion_proyecto)
+        + field('Presupuesto estimado', SGPLAdmin.formatCurrency(licitacion.presupuesto_estimado || 0))
+        + field('Responsable', licitacion.responsable_nombre);
+
+      document.getElementById('fechas').innerHTML =
+        timeline('Publicación', licitacion.fecha_publicacion_convocatoria)
+        + timeline('Junta de aclaraciones', licitacion.fecha_junta_aclaraciones)
+        + timeline('Recepción de propuestas', licitacion.fecha_recepcion_propuestas)
+        + timeline('Apertura de propuestas', licitacion.fecha_apertura_propuestas)
+        + timeline('Fallo de adjudicación', licitacion.fecha_fallo_adjudicacion);
+
+      document.getElementById('reglas').innerHTML =
+        '<p>Inscripción permitida únicamente si el proveedor está validado y el proceso se encuentra en PUBLICADA, EN_ACLARACIONES o RECEPCION_PROPUESTAS.</p>'
+        + '<p>El envío de propuesta solo se permite durante RECEPCION_PROPUESTAS y una sola vez por participación.</p>'
+        + '<p>Antes de inscribirte, revisa bases, anexos, formatos y aclaraciones disponibles.</p>'
+        + (participacion ? '<p class="font-semibold text-emerald-700">Ya estás inscrito en esta licitación con estatus ' + SGPLAdmin.escapeHtml(participacion.estatus) + '.</p>' : '');
+
+      const btn = document.getElementById('inscribir-btn');
+      if (!participacion && canInscribir(licitacion.estado_proceso)) {
+        btn.classList.remove('hidden');
+      } else {
+        btn.classList.add('hidden');
+      }
+    }
+
+    async function loadDocumentos() {
+      const container = document.getElementById('documentos');
+      try {
+        const response = await fetch('/api/v1/public/convocatorias/' + idLicitacion + '/documentos');
+        const payload = await response.json();
+        const items = (payload && payload.data && payload.data.items) || [];
+        if (!items.length) {
+          container.innerHTML = '<div class="px-6 py-5 text-sm text-slate-500">Sin documentos públicos disponibles.</div>';
+          return;
+        }
+
+        container.innerHTML = items.map(function (doc) {
+          return '<div class="px-6 py-4 flex items-center justify-between gap-4">'
+            + '<div><p class="font-semibold text-sm text-slate-800">' + SGPLAdmin.escapeHtml(doc.nombre_archivo || 'Documento') + '</p><p class="text-xs text-slate-500 mt-1">' + SGPLAdmin.escapeHtml(doc.tipo_documento || 'N/A') + ' · ' + SGPLAdmin.formatDate(doc.fecha_subida) + '</p></div>'
+            + '<a class="px-3 py-2 rounded-lg text-xs font-semibold border border-slate-200 hover:bg-slate-50" href="/api/v1/public/documentos/' + String(doc.id_documento) + '/download">Descargar</a>'
+            + '</div>';
+        }).join('');
+      } catch (_) {
+        container.innerHTML = '<div class="px-6 py-5 text-sm text-red-600">No se pudieron cargar los documentos.</div>';
+      }
+    }
+
+    document.getElementById('inscribir-btn').addEventListener('click', async function () {
+      const btn = this;
+      btn.disabled = true;
+      btn.textContent = 'Enviando...';
+      try {
+        const result = await SGPLAdmin.authFetch('/licitaciones/' + idLicitacion + '/participaciones', { method: 'POST' });
+        setFlash((result && result.message) || 'Inscripción realizada correctamente.', 'ok');
+        await loadDetalle();
+      } catch (error) {
+        const details = Array.isArray(error.errors) && error.errors.length ? ' ' + error.errors[0] : '';
+        setFlash((error.message || 'No se pudo completar la inscripción.') + details, 'error');
+      } finally {
+        btn.disabled = false;
+        btn.textContent = 'Inscribirme';
+      }
+    });
+
+    (async function init() {
+      if (!idLicitacion) {
+        window.location.href = '/frontend/proveedor/convocatorias.html';
+        return;
+      }
+      if (!SGPLAdmin.protectRoute()) return;
+      const user = SGPLAdmin.getUser() || {};
+      if (user.rol !== 'PROVEEDOR') {
+        window.location.href = '/';
+        return;
+      }
+
+      try {
+        const meResp = await SGPLAdmin.authFetch('/me', { method: 'GET' });
+        const me = (meResp && meResp.data) || null;
+        if (!me || me.rol !== 'PROVEEDOR') {
+          window.location.href = '/';
+          return;
+        }
+        SGPLAdmin.setUser(me);
+        await Promise.all([loadDetalle(), loadDocumentos()]);
+      } catch (_) {
+        window.location.href = '/frontend/proveedor/convocatorias.html';
+      }
+    })();
+  </script>
+</body>
+</html>
