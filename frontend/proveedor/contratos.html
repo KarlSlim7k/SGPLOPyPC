@@ -105,10 +105,11 @@
               <th class="px-4 py-3 text-left font-semibold">Monto</th>
               <th class="px-4 py-3 text-left font-semibold">Adjudicación</th>
               <th class="px-4 py-3 text-left font-semibold">Vigencia</th>
+              <th class="px-4 py-3 text-right font-semibold">Acción</th>
             </tr>
           </thead>
           <tbody id="rows">
-            <tr><td colspan="7" class="px-4 py-8 text-center text-slate-500">Cargando contratos...</td></tr>
+            <tr><td colspan="8" class="px-4 py-8 text-center text-slate-500">Cargando contratos...</td></tr>
           </tbody>
         </table>
       </div>
@@ -148,7 +149,7 @@
     async function loadContratos() {
       const rows = document.getElementById('rows');
       const summary = document.getElementById('summary');
-      rows.innerHTML = '<tr><td colspan="7" class="px-4 py-8 text-center text-slate-500">Cargando contratos...</td></tr>';
+      rows.innerHTML = '<tr><td colspan="8" class="px-4 py-8 text-center text-slate-500">Cargando contratos...</td></tr>';
 
       try {
         const params = new URLSearchParams({ page: '1', limit: '100' });
@@ -164,7 +165,7 @@
         summary.textContent = 'Mostrando ' + items.length + ' de ' + (payload.total || items.length);
 
         if (!items.length) {
-          rows.innerHTML = '<tr><td colspan="7" class="px-4 py-8 text-center text-slate-500">Sin contratos para los filtros seleccionados.</td></tr>';
+          rows.innerHTML = '<tr><td colspan="8" class="px-4 py-8 text-center text-slate-500">Sin contratos para los filtros seleccionados.</td></tr>';
           return;
         }
 
@@ -178,11 +179,12 @@
             + '<td class="px-4 py-3 text-slate-700 font-semibold">' + SGPLAdmin.formatCurrency(item.monto_contrato || 0) + '</td>'
             + '<td class="px-4 py-3 text-slate-600">' + SGPLAdmin.formatDate(item.fecha_adjudicacion) + '</td>'
             + '<td class="px-4 py-3 text-slate-600">' + vigencia + '</td>'
+            + '<td class="px-4 py-3 text-right"><a class="inline-flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold border border-slate-200 hover:bg-slate-50" href="/frontend/proveedor/contrato.html?id=' + String(item.id_contrato) + '"><i class="ph ph-eye"></i>Ver detalle</a></td>'
             + '</tr>';
         }).join('');
       } catch (error) {
         summary.textContent = 'Error al cargar';
-        rows.innerHTML = '<tr><td colspan="7" class="px-4 py-8 text-center text-red-600">No se pudieron cargar los contratos.</td></tr>';
+        rows.innerHTML = '<tr><td colspan="8" class="px-4 py-8 text-center text-red-600">No se pudieron cargar los contratos.</td></tr>';
       }
     }
 

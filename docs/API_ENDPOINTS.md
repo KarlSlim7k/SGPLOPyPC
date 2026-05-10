@@ -55,6 +55,16 @@ Devuelve información del usuario autenticado.
 
 **Headers:** `Authorization: Bearer <token>`
 
+### PUT /api/v1/me/profile
+Actualiza nombre y correo del usuario autenticado.
+
+**Headers:** `Authorization: Bearer <token>`
+
+### POST /api/v1/me/password
+Cambia la contraseña del usuario autenticado.
+
+**Headers:** `Authorization: Bearer <token>`
+
 ---
 
 ## Licitaciones
@@ -256,6 +266,7 @@ Lista contratos del proveedor autenticado (PROVEEDOR) con paginación y filtros.
 - `limit`: tamaño de página, máximo `100` (default `20`)
 - `estatus`: `EN_FORMALIZACION | VIGENTE | EN_EJECUCION | CONCLUIDO | RESCINDIDO`
 - `q`: búsqueda por número de contrato, número de licitación, descripción o dependencia
+- `id_contrato`: filtra un contrato propio y agrega `documentos` al primer item para la vista de detalle
 
 **Response 200:**
 ```json
@@ -276,7 +287,8 @@ Lista contratos del proveedor autenticado (PROVEEDOR) con paginación y filtros.
         "numero_licitacion": "LO-001-2026",
         "descripcion_proyecto": "Obra pública",
         "estado_proceso": "ADJUDICADA",
-        "dependencia_nombre": "Secretaría de Obras"
+        "dependencia_nombre": "Secretaría de Obras",
+        "documentos": []
       }
     ],
     "total": 1,
@@ -669,7 +681,7 @@ Crea una notificación (ADMINISTRADOR o eventos del sistema).
 ```
 
 ### GET /api/v1/notificaciones/mias
-Lista las notificaciones del usuario autenticado.
+Lista las notificaciones del usuario autenticado con datos relacionados y `accion_principal` cuando se puede enlazar a licitación, propuesta o contrato.
 
 **Headers:** `Authorization: Bearer <token>`
 

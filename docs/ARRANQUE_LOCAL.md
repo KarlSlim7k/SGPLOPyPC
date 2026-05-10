@@ -59,6 +59,8 @@
 | GET | `/api/v1/health` | Estado de la API | Público |
 | POST | `/api/v1/auth/login` | Inicio de sesión | Público |
 | GET | `/api/v1/me` | Perfil del usuario autenticado | Autenticado |
+| PUT | `/api/v1/me/profile` | Editar nombre y correo del usuario autenticado | Autenticado |
+| POST | `/api/v1/me/password` | Cambiar contraseña del usuario autenticado | Autenticado |
 | GET | `/api/v1/admin/dashboard` | Panel admin | Autenticado + ADMINISTRADOR |
 
 ### Licitaciones / Convocatorias
@@ -136,7 +138,7 @@
 
 | Método | Ruta | Descripción | Protección |
 |--------|------|-------------|------------|
-| GET | `/api/v1/contratos/mios` | Historial de contratos adjudicados al proveedor autenticado | Autenticado + PROVEEDOR |
+| GET | `/api/v1/contratos/mios` | Historial y detalle por `id_contrato` de contratos adjudicados al proveedor autenticado | Autenticado + PROVEEDOR |
 | GET | `/api/v1/contratos` | Listado administrativo de contratos | Autenticado + ADMINISTRADOR |
 
 ### Documentos
@@ -178,12 +180,15 @@ Redirecciones de inicio de sesión:
 
 Módulos frontend del rol proveedor:
 - `/frontend/proveedor/centro.html`
+- `/frontend/proveedor/perfil.html`
 - `/frontend/proveedor/convocatorias.html`
 - `/frontend/proveedor/licitacion.html?id={id_licitacion}`
 - `/frontend/proveedor/participaciones.html`
 - `/frontend/proveedor/propuestas.html`
 - `/frontend/proveedor/documentos.html`
 - `/frontend/proveedor/contratos.html`
+- `/frontend/proveedor/contrato.html?id={id_contrato}`
+- `/frontend/proveedor/notificaciones.html`
 
 ## Dependencias de prueba (Fase 2)
 

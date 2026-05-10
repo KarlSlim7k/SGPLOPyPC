@@ -32,8 +32,9 @@ class ContratoController {
         $limit = isset($_GET['limit']) ? (int) $_GET['limit'] : 20;
         $estatus = $_GET['estatus'] ?? null;
         $search = $_GET['q'] ?? null;
+        $idContrato = isset($_GET['id_contrato']) ? (int) $_GET['id_contrato'] : null;
 
-        $result = $this->service->listMios((int) $user['id_usuario'], $page, $limit, $estatus, $search);
+        $result = $this->service->listMios((int) $user['id_usuario'], $page, $limit, $estatus, $search, $idContrato);
         if (!$result['ok']) {
             jsonResponse(false, 'No se pudieron cargar los contratos', null, $result['errors'], 422);
         }

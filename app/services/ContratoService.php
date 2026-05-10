@@ -28,7 +28,14 @@ class ContratoService {
         return $this->repo->findAll($estatus);
     }
 
-    public function listMios(int $idUsuario, int $page, int $limit, ?string $estatus = null, ?string $search = null): array {
+    public function listMios(
+        int $idUsuario,
+        int $page,
+        int $limit,
+        ?string $estatus = null,
+        ?string $search = null,
+        ?int $idContrato = null
+    ): array {
         $proveedor = $this->provRepo->findByUsuario($idUsuario);
         if (!$proveedor) {
             return ['ok' => false, 'errors' => ['El usuario no tiene un perfil de proveedor registrado.']];
@@ -39,16 +46,22 @@ class ContratoService {
         $normalizedEstatus = ($estatus !== null && trim($estatus) !== '') ? strtoupper(trim($estatus)) : null;
         $normalizedSearch = ($search !== null && trim($search) !== '') ? trim($search) : null;
 
-        return [
-            'ok' => true,
-            'data' => $this->repo->findByProveedorForPortal(
-                (int) $proveedor['id_proveedor'],
-                $page,
-                $limit,
-                $normalizedEstatus,
-                $normalizedSearch
-            ),
-        ];
+        $idProveedor = (int) $proveedor['id_proveedor'];
+        $normalizedContrato = ($idContrato !== null && $idContrato > 0) ? $idContrato : null;
+        $data = $this->repo->findByProveedorForPortal(
+            $idProveedor,
+            $page,
+            $limit,
+            $normalizedEstatus,
+            $normalizedSearch,
+            $normalizedContrato
+        );
+
+        if ($normalizedContrato !== null && !empty($data['items'])) {
+            $data['items'][0]['documentos'] = $this->repo->findDocumentosByContratoForProveedor($normalizedContrato, $idProveedor);
+        }
+
+        return ['ok' => true, 'data' => $data];
     }
 
     public function create(array $input, int $idUsuario): array {

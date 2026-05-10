@@ -69,7 +69,8 @@
     </section>
 
     <section class="bg-white border border-slate-200 rounded-2xl p-4 md:p-5">
-      <form id="create-form" class="grid lg:grid-cols-[1.4fr_0.8fr_1.2fr_auto] gap-3 items-end">
+      <form id="create-form" class="space-y-4">
+        <div class="grid lg:grid-cols-[1.4fr_0.8fr_1.2fr_auto] gap-3 items-end">
         <label class="block">
           <span class="text-xs font-semibold text-slate-600">Participación</span>
           <select id="participacion-select" required class="mt-1 w-full px-3 py-2 border border-slate-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary-500">
@@ -87,6 +88,22 @@
         <button id="create-submit" type="submit" class="bg-primary-600 hover:bg-primary-700 text-white font-semibold px-4 py-2 rounded-lg text-sm">
           Enviar propuesta
         </button>
+        </div>
+        <div class="grid lg:grid-cols-[0.8fr_1.6fr] gap-3 items-end border-t border-slate-100 pt-4">
+          <label class="block">
+            <span class="text-xs font-semibold text-slate-600">Tipo de documento</span>
+            <select id="proposal-doc-type" class="mt-1 w-full px-3 py-2 border border-slate-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary-500">
+              <option value="PROPUESTA_TECNICA">PROPUESTA_TECNICA</option>
+              <option value="PROPUESTA_ECONOMICA">PROPUESTA_ECONOMICA</option>
+              <option value="DOC_COMPLEMENTARIA">DOC_COMPLEMENTARIA</option>
+            </select>
+          </label>
+          <label class="block">
+            <span class="text-xs font-semibold text-slate-600">Documentos de propuesta</span>
+            <input id="proposal-files" type="file" multiple accept=".pdf,.docx,.xlsx,.png,.jpg,.jpeg" class="mt-1 block w-full text-sm text-slate-600 file:mr-3 file:rounded-lg file:border-0 file:bg-slate-800 file:px-3 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-slate-900">
+            <span id="files-summary" class="block text-xs text-slate-500 mt-1">Opcional. PDF, DOCX, XLSX, PNG o JPG. Máximo 10 MB por archivo.</span>
+          </label>
+        </div>
       </form>
       <p id="flash" class="hidden mt-3 text-sm rounded-lg px-3 py-2"></p>
     </section>
@@ -162,9 +179,12 @@
 
     function setFlash(message, tone) {
       const flash = document.getElementById('flash');
-      flash.className = 'mt-3 text-sm rounded-lg px-3 py-2 ' + (tone === 'ok'
+      const toneClass = tone === 'ok'
         ? 'bg-emerald-50 border border-emerald-200 text-emerald-700'
-        : 'bg-red-50 border border-red-200 text-red-700');
+        : tone === 'warn'
+          ? 'bg-amber-50 border border-amber-200 text-amber-700'
+          : 'bg-red-50 border border-red-200 text-red-700';
+      flash.className = 'mt-3 text-sm rounded-lg px-3 py-2 ' + toneClass;
       flash.textContent = message;
       flash.classList.remove('hidden');
     }
@@ -248,9 +268,42 @@
       }
     }
 
+    async function uploadProposalDocument(idPropuesta, file, tipoDocumento) {
+      const fd = new FormData();
+      fd.append('archivo', file);
+      fd.append('id_propuesta', idPropuesta);
+      fd.append('tipo_documento', tipoDocumento);
+      await SGPLAdmin.authFetch('/documentos/upload', {
+        method: 'POST',
+        body: fd,
+      });
+    }
+
+    async function uploadProposalDocuments(idPropuesta, files, tipoDocumento) {
+      for (const file of files) {
+        await uploadProposalDocument(idPropuesta, file, tipoDocumento);
+      }
+    }
+
+    function resetCreateForm() {
+      document.getElementById('monto-propuesta').value = '';
+      document.getElementById('descripcion-tecnica').value = '';
+      document.getElementById('proposal-files').value = '';
+      document.getElementById('proposal-doc-type').value = 'PROPUESTA_TECNICA';
+      document.getElementById('files-summary').textContent = 'Opcional. PDF, DOCX, XLSX, PNG o JPG. Máximo 10 MB por archivo.';
+    }
+
     document.getElementById('filters-form').addEventListener('submit', function (e) {
       e.preventDefault();
       loadPropuestas();
+    });
+
+    document.getElementById('proposal-files').addEventListener('change', function (e) {
+      const files = Array.from(e.target.files || []);
+      const summary = document.getElementById('files-summary');
+      summary.textContent = files.length
+        ? files.length + ' archivo(s) seleccionado(s): ' + files.map(function (file) { return file.name; }).join(', ')
+        : 'Opcional. PDF, DOCX, XLSX, PNG o JPG. Máximo 10 MB por archivo.';
     });
 
     document.getElementById('create-form').addEventListener('submit', async function (e) {
@@ -259,26 +312,42 @@
       const idParticipacion = document.getElementById('participacion-select').value;
       const monto = Number(document.getElementById('monto-propuesta').value || 0);
       const descripcion = document.getElementById('descripcion-tecnica').value.trim();
+      const files = Array.from(document.getElementById('proposal-files').files || []);
+      const tipoDocumento = document.getElementById('proposal-doc-type').value;
       if (!idParticipacion || monto <= 0) return;
 
       submit.disabled = true;
+      submit.textContent = files.length ? 'Enviando...' : 'Enviando propuesta...';
       try {
-        await SGPLAdmin.authFetch('/participaciones/' + idParticipacion + '/propuesta', {
+        const response = await SGPLAdmin.authFetch('/participaciones/' + idParticipacion + '/propuesta', {
           method: 'POST',
           body: JSON.stringify({
             monto_propuesta: monto,
             descripcion_tecnica: descripcion || null,
           }),
         });
-        setFlash('Propuesta enviada correctamente.', 'ok');
-        document.getElementById('monto-propuesta').value = '';
-        document.getElementById('descripcion-tecnica').value = '';
+        const idPropuesta = response && response.data ? response.data.id_propuesta : null;
+        if (files.length && idPropuesta) {
+          try {
+            await uploadProposalDocuments(idPropuesta, files, tipoDocumento);
+            setFlash('Propuesta enviada correctamente con ' + files.length + ' documento(s).', 'ok');
+          } catch (uploadError) {
+            const uploadDetails = Array.isArray(uploadError.errors) && uploadError.errors.length ? ' ' + uploadError.errors[0] : '';
+            setFlash('Propuesta enviada, pero no se pudieron subir todos los documentos.' + uploadDetails, 'warn');
+          }
+        } else if (files.length && !idPropuesta) {
+          setFlash('Propuesta enviada, pero no se recibió el identificador para asociar documentos.', 'warn');
+        } else {
+          setFlash('Propuesta enviada correctamente.', 'ok');
+        }
+        resetCreateForm();
         await Promise.all([loadParticipaciones(), loadPropuestas()]);
       } catch (error) {
         const details = Array.isArray(error.errors) && error.errors.length ? ' ' + error.errors[0] : '';
-        setFlash((error.message || 'No se pudo enviar la propuesta.') + details, 'error');
+        setFlash((error.message || 'No se pudo completar el envío de la propuesta.') + details, 'error');
       } finally {
-        submit.disabled = false;
+        submit.disabled = document.getElementById('participacion-select').disabled;
+        submit.textContent = 'Enviar propuesta';
       }
     });
 

@@ -169,6 +169,16 @@ class DocumentoService {
             if (!empty($doc['id_licitacion']) && in_array($doc['tipo_documento'], $publicTypes, true)) {
                 return $doc;
             }
+            if (!empty($doc['id_contrato'])) {
+                require_once __DIR__ . '/../repositories/ContratoRepository.php';
+                $contratoRepo = new ContratoRepository();
+                $contrato = $contratoRepo->findById((int) $doc['id_contrato']);
+                $provRepo = new ProveedorRepository();
+                $prov = $provRepo->findByUsuario($idUsuario);
+                if ($contrato && $prov && (int) $contrato['id_proveedor'] === (int) $prov['id_proveedor']) {
+                    return $doc;
+                }
+            }
         }
         // Público solo puede ver documentos públicos de licitación
         if ($rol === 'PUBLICO') {

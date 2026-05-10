@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Detalle de Contrato - SGPLOPyPC</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] },
+          colors: { primary: { 500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8' } }
+        }
+      }
+    }
+  </script>
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+<body class="bg-slate-50 text-slate-900 font-sans antialiased">
+  <nav class="bg-white border-b border-slate-200 sticky top-0 z-40">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+      <a href="/frontend/proveedor/centro.html" class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-lg bg-primary-700 text-white flex items-center justify-center font-bold text-sm">SG</div>
+        <div>
+          <p class="font-bold text-sm">SGPLOPyPC</p>
+          <p class="text-xs text-slate-500">Detalle de contrato</p>
+        </div>
+      </a>
+      <div class="flex items-center gap-2">
+        <a href="/frontend/proveedor/contratos.html" class="inline-flex items-center gap-2 text-sm font-semibold px-3 py-2 rounded-lg border border-slate-200 hover:bg-slate-50">
+          <i class="ph ph-arrow-left"></i>
+          Mis contratos
+        </a>
+        <button data-action="logout" class="inline-flex items-center gap-2 text-sm font-semibold px-3 py-2 rounded-lg border border-slate-200 hover:bg-slate-50">
+          <i class="ph ph-sign-out"></i>
+          Cerrar sesión
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="max-w-6xl mx-auto px-4 py-8 space-y-6">
+    <section class="bg-white border border-slate-200 rounded-2xl p-6">
+      <div class="flex flex-col lg:flex-row lg:items-start lg:justify-between gap-4">
+        <div>
+          <p id="numero" class="text-xs uppercase tracking-wide text-primary-700 font-semibold">Cargando...</p>
+          <h1 id="titulo" class="text-2xl font-bold mt-1">Detalle de contrato</h1>
+          <p id="licitacion" class="text-slate-500 text-sm mt-2">Licitación relacionada</p>
+        </div>
+        <span id="estatus" class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold border bg-slate-100 text-slate-700 border-slate-200">N/A</span>
+      </div>
+      <p id="flash" class="hidden mt-4 text-sm rounded-lg px-3 py-2"></p>
+    </section>
+
+    <section class="grid md:grid-cols-4 gap-3">
+      <div class="bg-white border border-slate-200 rounded-xl p-4">
+        <p class="text-xs text-slate-500">Monto</p>
+        <p id="stat-monto" class="text-2xl font-bold text-slate-900 mt-1">$0</p>
+      </div>
+      <div class="bg-white border border-slate-200 rounded-xl p-4">
+        <p class="text-xs text-slate-500">Adjudicación</p>
+        <p id="stat-adjudicacion" class="text-lg font-bold text-slate-900 mt-1">N/A</p>
+      </div>
+      <div class="bg-white border border-slate-200 rounded-xl p-4">
+        <p class="text-xs text-slate-500">Inicio</p>
+        <p id="stat-inicio" class="text-lg font-bold text-slate-900 mt-1">N/A</p>
+      </div>
+      <div class="bg-white border border-slate-200 rounded-xl p-4">
+        <p class="text-xs text-slate-500">Fin</p>
+        <p id="stat-fin" class="text-lg font-bold text-slate-900 mt-1">N/A</p>
+      </div>
+    </section>
+
+    <section class="grid lg:grid-cols-[1.2fr_0.8fr] gap-6">
+      <div class="space-y-6">
+        <section class="bg-white border border-slate-200 rounded-2xl p-6">
+          <h2 class="font-bold text-slate-900">Información del contrato</h2>
+          <div id="general" class="grid md:grid-cols-2 gap-4 mt-4 text-sm"></div>
+        </section>
+
+        <section class="bg-white border border-slate-200 rounded-2xl overflow-hidden">
+          <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+            <h2 class="font-bold text-slate-900">Documentos del contrato</h2>
+            <p id="docs-summary" class="text-xs text-slate-500">Cargando...</p>
+          </div>
+          <div id="documentos" class="divide-y divide-slate-100">
+            <div class="px-6 py-5 text-sm text-slate-500">Cargando documentos...</div>
+          </div>
+        </section>
+      </div>
+
+      <aside class="space-y-6">
+        <section class="bg-white border border-slate-200 rounded-2xl p-6">
+          <h2 class="font-bold text-slate-900">Licitación relacionada</h2>
+          <div id="licitacion-card" class="mt-4 space-y-3 text-sm"></div>
+        </section>
+
+        <section class="bg-white border border-slate-200 rounded-2xl p-6">
+          <h2 class="font-bold text-slate-900">Vigencia</h2>
+          <div id="vigencia" class="mt-4 space-y-3"></div>
+        </section>
+      </aside>
+    </section>
+  </main>
+
+  <script src="/frontend/shared/admin.js"></script>
+  <script>
+    SGPLAdmin.attachLogoutHandlers();
+    const idContrato = new URLSearchParams(window.location.search).get('id');
+    let contrato = null;
+
+    function badgeClass(value) {
+      if (value === 'VIGENTE' || value === 'EN_EJECUCION') return 'bg-emerald-50 text-emerald-700 border-emerald-100';
+      if (value === 'EN_FORMALIZACION') return 'bg-blue-50 text-blue-700 border-blue-100';
+      if (value === 'CONCLUIDO') return 'bg-slate-100 text-slate-700 border-slate-200';
+      if (value === 'RESCINDIDO') return 'bg-red-50 text-red-700 border-red-100';
+      return 'bg-slate-100 text-slate-700 border-slate-200';
+    }
+
+    function field(label, value) {
+      return '<div><p class="text-xs text-slate-500">' + label + '</p><p class="font-semibold text-slate-800 mt-1">' + SGPLAdmin.escapeHtml(value || 'N/A') + '</p></div>';
+    }
+
+    function timeline(label, date) {
+      return '<div class="flex items-start gap-3"><div class="w-2 h-2 rounded-full bg-primary-600 mt-2"></div><div><p class="text-xs text-slate-500">' + label + '</p><p class="text-sm font-semibold text-slate-800">' + SGPLAdmin.formatDate(date) + '</p></div></div>';
+    }
+
+    function setFlash(message, tone) {
+      const flash = document.getElementById('flash');
+      flash.className = 'mt-4 text-sm rounded-lg px-3 py-2 ' + (tone === 'ok'
+        ? 'bg-emerald-50 border border-emerald-200 text-emerald-700'
+        : 'bg-red-50 border border-red-200 text-red-700');
+      flash.textContent = message;
+      flash.classList.remove('hidden');
+    }
+
+    function formatSize(bytes) {
+      const n = Number(bytes || 0);
+      if (n < 1024) return n + ' B';
+      if (n < 1024 * 1024) return Math.round(n / 1024) + ' KB';
+      return (n / (1024 * 1024)).toFixed(1) + ' MB';
+    }
+
+    function renderDocumentos(items) {
+      const container = document.getElementById('documentos');
+      const summary = document.getElementById('docs-summary');
+      summary.textContent = String(items.length) + ' documento(s)';
+
+      if (!items.length) {
+        container.innerHTML = '<div class="px-6 py-5 text-sm text-slate-500">Sin documentos asociados al contrato.</div>';
+        return;
+      }
+
+      container.innerHTML = items.map(function (doc) {
+        return '<div class="px-6 py-4 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">'
+          + '<div><p class="font-semibold text-sm text-slate-800">' + SGPLAdmin.escapeHtml(doc.nombre_archivo || 'Documento') + '</p><p class="text-xs text-slate-500 mt-1">' + SGPLAdmin.escapeHtml(doc.tipo_documento || 'N/A') + ' · Versión ' + SGPLAdmin.escapeHtml(doc.version || 1) + ' · ' + formatSize(doc.tamano_bytes) + ' · ' + SGPLAdmin.formatDate(doc.fecha_subida) + '</p></div>'
+          + '<button data-download="' + String(doc.id_documento) + '" data-name="' + SGPLAdmin.escapeHtml(doc.nombre_archivo || 'documento') + '" class="self-start sm:self-auto px-3 py-2 rounded-lg text-xs font-semibold border border-slate-200 hover:bg-slate-50">Descargar</button>'
+          + '</div>';
+      }).join('');
+    }
+
+    function renderContrato() {
+      document.getElementById('numero').textContent = contrato.numero_contrato || 'Contrato';
+      document.getElementById('titulo').textContent = contrato.numero_contrato || 'Detalle de contrato';
+      document.getElementById('licitacion').textContent = contrato.numero_licitacion || 'Licitación relacionada';
+      document.getElementById('stat-monto').textContent = SGPLAdmin.formatCurrency(contrato.monto_contrato || 0);
+      document.getElementById('stat-adjudicacion').textContent = SGPLAdmin.formatDate(contrato.fecha_adjudicacion);
+      document.getElementById('stat-inicio').textContent = SGPLAdmin.formatDate(contrato.fecha_inicio);
+      document.getElementById('stat-fin').textContent = SGPLAdmin.formatDate(contrato.fecha_fin);
+
+      const estatus = document.getElementById('estatus');
+      estatus.className = 'inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold border ' + badgeClass(contrato.estatus);
+      estatus.textContent = contrato.estatus || 'N/A';
+
+      document.getElementById('general').innerHTML =
+        field('ID contrato', contrato.id_contrato)
+        + field('Número de contrato', contrato.numero_contrato)
+        + field('Estatus', contrato.estatus)
+        + field('Monto contratado', SGPLAdmin.formatCurrency(contrato.monto_contrato || 0))
+        + field('Fecha de adjudicación', SGPLAdmin.formatDate(contrato.fecha_adjudicacion))
+        + field('Fecha de creación', SGPLAdmin.formatDateTime(contrato.fecha_creacion));
+
+      document.getElementById('licitacion-card').innerHTML =
+        '<div><p class="text-xs text-slate-500">Número</p><p class="font-semibold text-slate-800 mt-1">' + SGPLAdmin.escapeHtml(contrato.numero_licitacion || 'N/A') + '</p></div>'
+        + '<div><p class="text-xs text-slate-500">Proyecto</p><p class="font-semibold text-slate-800 mt-1">' + SGPLAdmin.escapeHtml(contrato.descripcion_proyecto || 'N/A') + '</p></div>'
+        + '<div><p class="text-xs text-slate-500">Dependencia</p><p class="font-semibold text-slate-800 mt-1">' + SGPLAdmin.escapeHtml(contrato.dependencia_nombre || 'N/A') + '</p></div>'
+        + '<a class="inline-flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold border border-slate-200 hover:bg-slate-50" href="/frontend/proveedor/licitacion.html?id=' + String(contrato.id_licitacion) + '"><i class="ph ph-arrow-square-out"></i>Ver licitación</a>';
+
+      document.getElementById('vigencia').innerHTML =
+        timeline('Adjudicación', contrato.fecha_adjudicacion)
+        + timeline('Inicio contractual', contrato.fecha_inicio)
+        + timeline('Fin contractual', contrato.fecha_fin);
+
+      renderDocumentos(contrato.documentos || []);
+    }
+
+    async function loadContrato() {
+      const response = await SGPLAdmin.authFetch('/contratos/mios?page=1&limit=1&id_contrato=' + encodeURIComponent(idContrato), { method: 'GET' });
+      const items = (response && response.data && response.data.items) || [];
+      contrato = items[0] || null;
+      if (!contrato) {
+        setFlash('Contrato no encontrado o sin acceso para tu proveedor.', 'error');
+        document.getElementById('docs-summary').textContent = '0 documento(s)';
+        document.getElementById('documentos').innerHTML = '<div class="px-6 py-5 text-sm text-slate-500">Sin documentos disponibles.</div>';
+        return;
+      }
+      renderContrato();
+    }
+
+    document.getElementById('documentos').addEventListener('click', async function (e) {
+      const btn = e.target.closest('button[data-download]');
+      if (!btn) return;
+      try {
+        await SGPLAdmin.downloadApiFile('/documentos/' + btn.getAttribute('data-download') + '/download', btn.getAttribute('data-name') || 'documento');
+      } catch (_) {
+        setFlash('No se pudo descargar el documento.', 'error');
+      }
+    });
+
+    (async function init() {
+      if (!idContrato) {
+        window.location.href = '/frontend/proveedor/contratos.html';
+        return;
+      }
+      if (!SGPLAdmin.protectRoute()) return;
+      const user = SGPLAdmin.getUser() || {};
+      if (user.rol !== 'PROVEEDOR') {
+        window.location.href = '/';
+        return;
+      }
+
+      try {
+        const meResp = await SGPLAdmin.authFetch('/me', { method: 'GET' });
+        const me = (meResp && meResp.data) || null;
+        if (!me || me.rol !== 'PROVEEDOR') {
+          window.location.href = '/';
+          return;
+        }
+        SGPLAdmin.setUser(me);
+        await loadContrato();
+      } catch (_) {
+        window.location.href = '/frontend/proveedor/contratos.html';
+      }
+    })();
+  </script>
+</body>
+</html>

@@ -187,5 +187,11 @@ Actualización de detalle de licitación para PROVEEDOR:
 
 Actualización de módulo Mis contratos:
 - Se incorporó `GET /api/v1/contratos/mios` para proveedores autenticados.
-- El endpoint devuelve contratos adjudicados al proveedor con paginación y filtros por `estatus` y `q`.
+- El endpoint devuelve contratos adjudicados al proveedor con paginación y filtros por `estatus`, `q` e `id_contrato`.
 - Se habilitó `/frontend/proveedor/contratos.html` y el centro del proveedor ahora enlaza a contratos propios en lugar del listado público general.
+
+Actualización de cierre de módulos PROVEEDOR:
+- Se habilitó `/frontend/proveedor/perfil.html` para editar datos fiscales/contacto, cuenta y contraseña del proveedor.
+- Se habilitó `/frontend/proveedor/notificaciones.html` con marcado de lectura y enlaces accionables hacia licitación, propuesta o contrato.
+- Se habilitó `/frontend/proveedor/contrato.html?id={id_contrato}` para consultar detalle individual de contrato propio y documentos asociados.
+- El envío de propuesta en `/frontend/proveedor/propuestas.html` ahora permite adjuntar documentos al crear la propuesta, conservando el flujo sin adjuntos.

@@ -44,11 +44,17 @@ class ContratoRepository {
         int $page,
         int $limit,
         ?string $estatus = null,
-        ?string $search = null
+        ?string $search = null,
+        ?int $idContrato = null
     ): array {
         $offset = ($page - 1) * $limit;
         $where = ['c.id_proveedor = :id_proveedor'];
         $params = ['id_proveedor' => $idProveedor];
+
+        if ($idContrato !== null && $idContrato > 0) {
+            $where[] = 'c.id_contrato = :id_contrato';
+            $params['id_contrato'] = $idContrato;
+        }
 
         if ($estatus !== null && trim($estatus) !== '') {
             $where[] = 'c.estatus = :estatus';
@@ -96,6 +102,22 @@ class ContratoRepository {
         $total = (int) $countStmt->fetchColumn();
 
         return ['items' => $items, 'total' => $total, 'page' => $page, 'limit' => $limit];
+    }
+
+    public function findDocumentosByContratoForProveedor(int $idContrato, int $idProveedor): array {
+        $stmt = $this->db->prepare(
+            'SELECT d.id_documento, d.nombre_archivo, d.tipo_documento, d.version, d.fecha_subida, d.tamano_bytes, u.nombre AS subido_por_nombre '
+            . 'FROM documento d '
+            . 'JOIN contrato c ON d.id_contrato = c.id_contrato '
+            . 'JOIN usuario u ON d.subido_por = u.id_usuario '
+            . 'WHERE d.id_contrato = :id_contrato AND c.id_proveedor = :id_proveedor '
+            . 'ORDER BY d.fecha_subida DESC'
+        );
+        $stmt->execute([
+            'id_contrato' => $idContrato,
+            'id_proveedor' => $idProveedor,
+        ]);
+        return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
     public function findByLicitacion(int $idLicitacion): ?array {

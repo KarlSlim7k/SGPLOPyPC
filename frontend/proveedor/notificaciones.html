@@ -136,7 +136,7 @@
     function linkFallback(item) {
       if (item.accion_principal) return item.accion_principal;
       if (item.id_contrato) {
-        return { label: 'Ver contrato', href: '/frontend/proveedor/contratos.html?id_contrato=' + String(item.id_contrato) };
+        return { label: 'Ver contrato', href: '/frontend/proveedor/contrato.html?id=' + String(item.id_contrato) };
       }
       if (item.id_propuesta) {
         return { label: 'Ver propuesta', href: '/frontend/proveedor/propuestas.html?id_propuesta=' + String(item.id_propuesta) };

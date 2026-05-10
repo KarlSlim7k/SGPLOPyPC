@@ -96,7 +96,7 @@ class NotificacionService {
         if (!empty($notificacion['id_contrato'])) {
             $enlaces['contrato'] = [
                 'label' => 'Ver contrato',
-                'href' => '/frontend/proveedor/contratos.html?id_contrato=' . (int) $notificacion['id_contrato'],
+                'href' => '/frontend/proveedor/contrato.html?id=' . (int) $notificacion['id_contrato'],
             ];
         }
 
