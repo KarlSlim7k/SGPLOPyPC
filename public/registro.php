@@ -23,6 +23,7 @@
             }
         }
     </script>
+    <link rel="stylesheet" href="/frontend/shared/public-accessibility.css">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <style>
         html { scroll-behavior: smooth; }
@@ -227,21 +228,21 @@
                 <div class="space-y-4">
                     <div class="border-2 border-dashed border-slate-200 rounded-xl p-6 text-center hover:border-primary-300 transition-colors cursor-pointer">
                         <i class="ph ph-upload-simple text-2xl text-slate-400 mb-2"></i>
-                        <p class="font-semibold text-slate-700 text-sm">Acta Constitutiva</p>
-                        <p class="text-xs text-slate-400 mt-1">Arrastra o <span class="text-primary-600 font-medium">selecciona un archivo</span> (PDF)</p>
-                        <input id="doc-acta" type="file" accept=".pdf" class="mt-3 mx-auto text-xs text-slate-500">
+                        <label for="doc-acta" class="block font-semibold text-slate-700 text-sm">Acta Constitutiva</label>
+                        <p id="doc-acta-help" class="text-xs text-slate-400 mt-1">Arrastra o <span class="text-primary-600 font-medium">selecciona un archivo</span> (PDF)</p>
+                        <input id="doc-acta" type="file" accept=".pdf" aria-describedby="doc-acta-help" class="mt-3 mx-auto text-xs text-slate-500">
                     </div>
                     <div class="border-2 border-dashed border-slate-200 rounded-xl p-6 text-center hover:border-primary-300 transition-colors cursor-pointer">
                         <i class="ph ph-upload-simple text-2xl text-slate-400 mb-2"></i>
-                        <p class="font-semibold text-slate-700 text-sm">Constancia de Situación Fiscal (SAT)</p>
-                        <p class="text-xs text-slate-400 mt-1">Arrastra o <span class="text-primary-600 font-medium">selecciona un archivo</span> (PDF)</p>
-                        <input id="doc-constancia" type="file" accept=".pdf" class="mt-3 mx-auto text-xs text-slate-500">
+                        <label for="doc-constancia" class="block font-semibold text-slate-700 text-sm">Constancia de Situación Fiscal (SAT)</label>
+                        <p id="doc-constancia-help" class="text-xs text-slate-400 mt-1">Arrastra o <span class="text-primary-600 font-medium">selecciona un archivo</span> (PDF)</p>
+                        <input id="doc-constancia" type="file" accept=".pdf" aria-describedby="doc-constancia-help" class="mt-3 mx-auto text-xs text-slate-500">
                     </div>
                     <div class="border-2 border-dashed border-slate-200 rounded-xl p-6 text-center hover:border-primary-300 transition-colors cursor-pointer">
                         <i class="ph ph-upload-simple text-2xl text-slate-400 mb-2"></i>
-                        <p class="font-semibold text-slate-700 text-sm">Identificación del Representante Legal</p>
-                        <p class="text-xs text-slate-400 mt-1">Arrastra o <span class="text-primary-600 font-medium">selecciona un archivo</span> (PDF o imagen)</p>
-                        <input id="doc-identificacion" type="file" accept=".pdf,.jpg,.png" class="mt-3 mx-auto text-xs text-slate-500">
+                        <label for="doc-identificacion" class="block font-semibold text-slate-700 text-sm">Identificación del Representante Legal</label>
+                        <p id="doc-identificacion-help" class="text-xs text-slate-400 mt-1">Arrastra o <span class="text-primary-600 font-medium">selecciona un archivo</span> (PDF o imagen)</p>
+                        <input id="doc-identificacion" type="file" accept=".pdf,.jpg,.png" aria-describedby="doc-identificacion-help" class="mt-3 mx-auto text-xs text-slate-500">
                     </div>
                 </div>
 
@@ -255,7 +256,7 @@
             <div class="flex items-start gap-3">
                 <input type="checkbox" id="terms" required class="w-4 h-4 mt-0.5 text-primary-600 rounded border-slate-300 focus:ring-primary-500">
                 <label for="terms" class="text-sm text-slate-600">
-                    Acepto los <a href="#" class="text-primary-600 hover:underline">Términos de Uso</a> y el <a href="#" class="text-primary-600 hover:underline">Aviso de Privacidad</a> del sistema SGPLOPyPC. Confirmo que la información proporcionada es verídica y está completa.
+                    Acepto los <a href="#" class="text-primary-600 underline hover:no-underline">Términos de Uso</a> y el <a href="#" class="text-primary-600 underline hover:no-underline">Aviso de Privacidad</a> del sistema SGPLOPyPC. Confirmo que la información proporcionada es verídica y está completa.
                 </label>
             </div>
 

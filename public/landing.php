@@ -23,6 +23,7 @@
             }
         }
     </script>
+    <link rel="stylesheet" href="/frontend/shared/public-accessibility.css">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <style>
         html { scroll-behavior: smooth; }

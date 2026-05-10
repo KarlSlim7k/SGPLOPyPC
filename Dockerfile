@@ -3,6 +3,7 @@ FROM php:8.2-apache
 # Instalar extensiones PHP necesarias en un solo RUN para optimizar capas
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libzip-dev \
+    default-mysql-client \
     unzip \
     curl \
     && docker-php-ext-install -j$(nproc) mysqli pdo pdo_mysql \
@@ -25,7 +26,7 @@ COPY . /var/www/html/
 COPY docker/apache-site.conf /etc/apache2/sites-available/000-default.conf
 
 # Dar permisos y configurar entrypoint en un solo paso
-RUN chmod +x /var/www/html/docker/entrypoint.sh \
+RUN chmod +x /var/www/html/docker/entrypoint.sh /var/www/html/scripts/migrate.sh \
     && ln -sf /var/www/html/docker/entrypoint.sh /usr/local/bin/docker-entrypoint.sh \
     && chown -R www-data:www-data /var/www/html/ \
     && chmod -R 755 /var/www/html/

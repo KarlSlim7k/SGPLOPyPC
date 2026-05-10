@@ -23,6 +23,7 @@
             }
         }
     </script>
+    <link rel="stylesheet" href="/frontend/shared/public-accessibility.css">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <style>
         html { scroll-behavior: smooth; }
@@ -110,7 +111,7 @@
             <div class="px-6 py-4 border-b border-slate-100 flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
                 <h2 class="font-bold text-slate-800">Contratos Recientes</h2>
                 <div class="flex items-center gap-2 text-sm">
-                    <span class="text-slate-500">Filtrar:</span>
+                    <label for="contratos-estatus" class="text-slate-500">Filtrar:</label>
                     <select id="contratos-estatus" class="border border-slate-200 rounded-lg px-3 py-1.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500">
                         <option value="">Todos los estados</option>
                         <option value="EN_EJECUCION">En ejecución</option>

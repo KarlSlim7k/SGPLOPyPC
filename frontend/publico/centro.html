@@ -17,6 +17,7 @@
       }
     }
   </script>
+  <link rel="stylesheet" href="/frontend/shared/public-accessibility.css">
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
 </head>
 <body class="bg-slate-50 text-slate-900 font-sans antialiased">
@@ -43,7 +44,7 @@
       <p class="text-slate-500 text-sm mt-2">Este espacio te permite consultar actividad pública y seguimiento de notificaciones de procesos.</p>
     </section>
 
-    <section class="grid md:grid-cols-4 gap-4">
+    <section class="grid md:grid-cols-5 gap-4">
       <a href="/#convocatorias" class="bg-white border border-slate-200 rounded-xl p-5 hover:shadow-sm transition-shadow">
         <p class="text-slate-800 font-semibold">Convocatorias</p>
         <p class="text-slate-500 text-sm mt-1">Revisa convocatorias publicadas.</p>
@@ -60,6 +61,34 @@
         <p class="text-slate-800 font-semibold">Historial</p>
         <p class="text-slate-500 text-sm mt-1">Consulta procesos concluidos.</p>
       </a>
+      <a href="/resultados.php" class="bg-white border border-slate-200 rounded-xl p-5 hover:shadow-sm transition-shadow">
+        <p class="text-slate-800 font-semibold">Resultados</p>
+        <p class="text-slate-500 text-sm mt-1">Revisa fallos publicados.</p>
+      </a>
+    </section>
+
+    <section class="bg-white border border-slate-200 rounded-2xl overflow-hidden">
+      <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
+        <h2 class="font-bold text-slate-800">Mi acceso público</h2>
+        <span id="publico-estado-cuenta" class="text-xs px-2 py-1 rounded-full bg-emerald-50 text-emerald-700 font-semibold">Activo</span>
+      </div>
+      <div class="grid md:grid-cols-3 divide-y md:divide-y-0 md:divide-x divide-slate-100">
+        <div class="p-5">
+          <p class="text-xs text-slate-500">Correo registrado</p>
+          <p id="publico-email" class="font-semibold text-slate-800 mt-1 break-all">--</p>
+        </div>
+        <div class="p-5">
+          <p class="text-xs text-slate-500">Último acceso</p>
+          <p id="publico-ultimo-acceso" class="font-semibold text-slate-800 mt-1">--</p>
+        </div>
+        <div class="p-5">
+          <p class="text-xs text-slate-500">Siguiente acción</p>
+          <a href="/registro.php" class="inline-flex items-center gap-2 text-primary-700 font-semibold text-sm mt-1 underline hover:no-underline">
+            <i class="ph ph-user-plus"></i>
+            Registrar o actualizar proveedor
+          </a>
+        </div>
+      </div>
     </section>
 
     <section class="grid md:grid-cols-3 gap-4">
@@ -142,6 +171,11 @@
         if (me && me.nombre) {
           bienvenida.textContent = 'Bienvenido, ' + me.nombre;
           SGPLAdmin.setUser(me);
+        }
+        if (me) {
+          document.getElementById('publico-email').textContent = me.email || user.email || '--';
+          document.getElementById('publico-ultimo-acceso').textContent = SGPLAdmin.formatDateTime(me.ultimo_acceso);
+          document.getElementById('publico-estado-cuenta').textContent = me.activo ? 'Activo' : 'Inactivo';
         }
 
         const notificaciones = (notifResp && notifResp.data) || [];

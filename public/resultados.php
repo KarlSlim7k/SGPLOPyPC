@@ -23,6 +23,7 @@
             }
         }
     </script>
+    <link rel="stylesheet" href="/frontend/shared/public-accessibility.css">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
 </head>
 <body class="bg-slate-50 text-slate-900 font-sans antialiased">

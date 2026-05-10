@@ -1,0 +1,43 @@
+/* Contrast helpers for public WCAG AA audits. */
+.text-slate-400 {
+  color: #475569 !important;
+}
+
+.text-slate-500 {
+  color: #475569 !important;
+}
+
+.text-emerald-600 {
+  color: #047857 !important;
+}
+
+.text-primary-600 {
+  color: #1d4ed8 !important;
+}
+
+footer .text-slate-400,
+footer .text-slate-500,
+footer .text-slate-600,
+footer a {
+  color: #cbd5e1 !important;
+}
+
+footer,
+footer.text-slate-400,
+footer.text-slate-500,
+footer.text-slate-600,
+.bg-slate-900 .text-slate-400,
+.bg-slate-900 .text-slate-500,
+.bg-slate-900 .text-slate-600,
+.bg-slate-950 .text-slate-400,
+.bg-slate-950 .text-slate-500,
+.bg-slate-950 .text-slate-600,
+.bg-white\/5 .text-slate-400,
+.bg-white\/5 .text-slate-500,
+.bg-white\/5 .text-slate-600 {
+  color: #cbd5e1 !important;
+}
+
+footer a:hover {
+  color: #ffffff !important;
+}

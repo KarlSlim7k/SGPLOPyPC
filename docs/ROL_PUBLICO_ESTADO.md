@@ -1,6 +1,6 @@
 # Estado Técnico del Rol Público - SGPLOPyPC
 
-> Actualizado: 2026-05-10 14:14 CST.
+> Actualizado: 2026-05-10 14:44 CST.
 > Verificación realizada contra producción Railway y base de datos MySQL.
 
 ## 1. Resumen Ejecutivo
@@ -12,8 +12,10 @@ El rol PUBLICO esta operativo en produccion. Las fases 1 a 5 quedaron implementa
 - Los endpoints administrativos y de proveedor rechazan tokens PUBLICO con 403.
 - `/api/v1/licitaciones` y `/api/v1/licitaciones/{id}` ya no exponen informacion interna al rol PUBLICO.
 - Los endpoints publicos de lectura tienen rate limiting.
-- Los datos E2E siguen en la base productiva, pero la API publica los filtra mediante `licitacion.is_test`.
+- Los datos E2E fueron limpiados fisicamente de la base productiva y se conserva el filtrado defensivo por `licitacion.is_test`.
 - El error 500 en filtros `q` publicos fue corregido y desplegado por Railway CLI.
+- Las migraciones se ejecutan automaticamente al iniciar el contenedor mediante `docker/entrypoint.sh`.
+- La auditoria de accesibilidad publica es gate estricto para violaciones `critical` y `serious`.
 
 ## 2. Entorno Verificado
 
@@ -24,7 +26,7 @@ El rol PUBLICO esta operativo en produccion. Las fases 1 a 5 quedaron implementa
 | URL produccion | `https://sgplopypc-production.up.railway.app` |
 | Base de datos | MySQL `mysql-volume` online |
 | Runtime | PHP 8.2 + Apache |
-| Ultimo deploy CLI verificado | `bf08e9ba-af3d-4af2-9419-bc7bc6934d5b` |
+| Ultimo deploy CLI verificado | `1df36a12-4132-4a87-8a5e-872bfcecf604` |
 
 Variables verificadas:
 
@@ -64,7 +66,7 @@ Funcionalidades disponibles:
 - Descarga/listado de documentos publicos cuando existan documentos visibles.
 - Registro publico de proveedor.
 - Ticket publico de soporte.
-- Centro autenticado del rol PUBLICO con resumen y accesos.
+- Centro autenticado del rol PUBLICO con resumen, estado de acceso y accesos rapidos.
 
 ## 4. API y Seguridad
 
@@ -107,19 +109,19 @@ Permisos con token PUBLICO:
 
 ## 5. Base de Datos
 
-Conteos verificados en MySQL despues de pruebas E2E:
+Conteos verificados en MySQL despues de limpieza fisica E2E:
 
 | Dato | Valor |
 |---|---:|
-| Licitaciones totales | 15 |
-| Licitaciones marcadas/detectadas E2E | 12 |
+| Licitaciones totales | 3 |
+| Licitaciones marcadas/detectadas E2E | 0 |
 | Licitaciones no test (`is_test = 0`) | 3 |
-| Licitaciones activas totales | 5 |
-| Licitaciones adjudicadas totales | 2 |
-| Proveedores | 8 |
-| Proveedores activos | 8 |
-| Contratos | 2 |
-| Monto total de contratos | 2599000.00 |
+| Licitaciones activas totales | 2 |
+| Licitaciones adjudicadas totales | 1 |
+| Proveedores | 1 |
+| Proveedores activos | 1 |
+| Contratos | 1 |
+| Monto total de contratos | 1200000.00 |
 | Documentos | 7 |
 | Notificaciones usuario demo PUBLICO | 0 |
 
@@ -130,7 +132,12 @@ Integridad e indices verificados:
 - `notificacion` tiene indice `idx_notificacion_usuario_leida_envio(id_usuario_destino, leida, fecha_envio)`.
 - No hay duplicados actuales por `(id_licitacion, tipo_fecha)` en `fecha_proceso`.
 
-Nota de datos: los registros E2E permanecen en produccion, pero ya no contaminan la API publica porque las consultas filtran `is_test` o patrones E2E legacy.
+Migraciones automatizadas:
+
+- `docker/entrypoint.sh` ejecuta `scripts/migrate.sh` en arranque cuando `RUN_MIGRATIONS_ON_START=1`.
+- `scripts/migrate.sh` espera conectividad por PHP/PDO y ejecuta `scripts/migrate.php`.
+- `scripts/migrate.php` aplica las migraciones productivas idempotentes, incluida `010_cleanup_e2e_data.sql`.
+- Respaldo previo a la limpieza E2E: `/tmp/sgplopypc_pre_e2e_cleanup_20260510_142240.sql.gz`.
 
 ## 6. Pruebas Ejecutadas
 
@@ -150,15 +157,18 @@ cd e2e && E2E_BASE_URL='https://sgplopypc-production.up.railway.app' \
   npx playwright test tests/public-accessibility.spec.ts --reporter=list
 ```
 
-Resultado: 6/6 passed como auditoria automatizada.
+Resultado: 6/6 passed como gate estricto, sin violaciones `critical` ni `serious`.
 
-Validacion PHP:
+Validacion PHP y migraciones:
 
 ```bash
 php -l app/repositories/PublicRepository.php
+php -l scripts/migrate.php
+bash -n scripts/migrate.sh
+railway logs --deployment 1df36a12-4132-4a87-8a5e-872bfcecf604 --service SGPLOPyPC
 ```
 
-Resultado: sin errores de sintaxis.
+Resultado: sin errores de sintaxis y migraciones completadas en logs de deploy.
 
 ## 7. Documentacion Generada
 
@@ -171,11 +181,9 @@ Resultado: sin errores de sintaxis.
 
 ## 8. Pendientes Reales
 
-1. Corregir hallazgos de accesibilidad documentados en `docs/FASE5_PUBLICO_ACCESIBILIDAD.md` si se quiere convertir la auditoria en gate estricto WCAG AA.
-2. Decidir si se eliminan fisicamente los datos E2E de produccion o si se conserva el filtrado por `is_test`.
-3. Agregar automatizacion formal para ejecutar migraciones en deploy; actualmente las migraciones se aplican manualmente cuando cambia el esquema.
-4. Evaluar refresh tokens o mecanismo de revocacion si el riesgo operativo de JWT de 24h aumenta.
+1. Evaluar refresh tokens o mecanismo de revocacion si el riesgo operativo de JWT de 24h aumenta.
+2. Mantener respaldo y monitoreo de migraciones automaticas en cada deploy Railway.
 
 ## 9. Estado Final
 
-El rol PUBLICO queda verificado y funcional en produccion. La discrepancia encontrada durante esta revision fue el error 500 en busquedas publicas con `q`, corregido en `PublicRepository` y desplegado por Railway CLI. Tambien se aplico la migracion 009 en MySQL para completar el indice compuesto de notificaciones.
+El rol PUBLICO queda verificado y funcional en produccion. La discrepancia encontrada durante la revision fue el error 500 en busquedas publicas con `q`, corregido en `PublicRepository` y desplegado por Railway CLI. Posteriormente se cerraron los pendientes operativos: accesibilidad estricta, limpieza fisica de datos E2E, migraciones automaticas y mejora del centro publico.

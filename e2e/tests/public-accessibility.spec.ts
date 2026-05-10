@@ -12,29 +12,15 @@ const PAGES = [
 
 test.describe('Accesibilidad pública WCAG 2.1 AA', () => {
   for (const path of PAGES) {
-    test(`Axe audit en ${path}`, async ({ page }) => {
+    test(`Axe sin violaciones críticas/serias en ${path}`, async ({ page }) => {
       await page.goto(path);
 
       const results = await new AxeBuilder({ page })
         .withTags(['wcag2a', 'wcag2aa'])
         .analyze();
 
-      const critical = results.violations.filter((v) => v.impact === 'critical');
-      const serious = results.violations.filter((v) => v.impact === 'serious');
-
-      if (serious.length > 0) {
-        test.info().annotations.push({
-          type: 'a11y-serious',
-          description: `${path}: ${serious.map((v) => v.id).join(', ')}`,
-        });
-      }
-
-      test.info().annotations.push({
-        type: 'a11y-critical-count',
-        description: `${path}: ${critical.length}`,
-      });
-
-      expect(Array.isArray(results.violations)).toBeTruthy();
+      const criticalOrSerious = results.violations.filter((v) => v.impact === 'critical' || v.impact === 'serious');
+      expect(criticalOrSerious, JSON.stringify(criticalOrSerious, null, 2)).toEqual([]);
     });
   }
 });

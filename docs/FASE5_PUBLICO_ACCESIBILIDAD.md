@@ -15,24 +15,27 @@ Herramienta: `@axe-core/playwright`
 
 | Página | Critical | Serious |
 |---|---|---|
-| `/` | ninguno | `color-contrast` |
-| `/evaluacion.php` | ninguno | `color-contrast` |
-| `/historial.php` | `select-name` | `color-contrast` |
-| `/contratos.php` | `select-name` | `color-contrast` |
+| `/` | ninguno | ninguno |
+| `/evaluacion.php` | ninguno | ninguno |
+| `/historial.php` | ninguno | ninguno |
+| `/contratos.php` | ninguno | ninguno |
 | `/resultados.php` | ninguno | ninguno |
-| `/registro.php` | `label` | `color-contrast`, `link-in-text-block` |
+| `/registro.php` | ninguno | ninguno |
 
-## Hallazgos clave
-1. `select-name` (critical): filtros `select` sin nombre accesible en historial y contratos.
-2. `label` (critical): inputs de archivo sin etiqueta accesible en registro.
-3. `color-contrast` (serious): combinaciones de color con contraste insuficiente en varias vistas.
-4. `link-in-text-block` (serious): enlaces de texto no distinguibles por algo más que color en registro.
+## Correcciones aplicadas
+1. `select-name`: filtros `select` de historial y contratos tienen etiqueta accesible.
+2. `label`: inputs de archivo en registro tienen etiquetas y descripciones asociadas.
+3. `color-contrast`: se agregó `frontend/shared/public-accessibility.css` para reforzar contraste en vistas públicas.
+4. `link-in-text-block`: enlaces legales de registro tienen subrayado visible.
 
 ## Estado
-- Se agregó prueba E2E de auditoría: `e2e/tests/public-accessibility.spec.ts`.
-- La prueba corre en CI como auditoría y no bloquea despliegue.
+- La prueba E2E `e2e/tests/public-accessibility.spec.ts` corre como gate estricto.
+- El gate falla ante cualquier violación `critical` o `serious` de Axe.
+- Resultado verificado contra producción Railway: 6/6 passed.
 
-## Remediación recomendada
-1. Agregar `<label for="...">` o `aria-label` a todos los `select` e `input type="file"`.
-2. Ajustar tokens de color para cumplir contraste mínimo AA.
-3. Subrayar o reforzar estado visual de enlaces dentro de bloques de texto.
+## Comando verificado
+
+```bash
+cd e2e && E2E_BASE_URL='https://sgplopypc-production.up.railway.app' \
+  npx playwright test tests/public-accessibility.spec.ts --reporter=list
+```

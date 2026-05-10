@@ -22,5 +22,13 @@ echo "✅ Apache starting on port ${PORT:-80}"
 echo "   Backend  → /var/www/html/public"
 echo "   Frontend → /var/www/html/frontend (aliased to /frontend)"
 
+if [ "${RUN_MIGRATIONS_ON_START:-1}" = "1" ]; then
+    if [ "${WAIT_FOR_MIGRATIONS:-0}" = "1" ]; then
+        /var/www/html/scripts/migrate.sh
+    else
+        (/var/www/html/scripts/migrate.sh || echo "Migraciones no aplicadas en arranque; revisar conectividad DB.") &
+    fi
+fi
+
 # Ejecutar el comando original de Apache
 exec apache2-foreground

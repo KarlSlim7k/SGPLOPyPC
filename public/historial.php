@@ -23,6 +23,7 @@
             }
         }
     </script>
+    <link rel="stylesheet" href="/frontend/shared/public-accessibility.css">
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <style>
         html { scroll-behavior: smooth; }
@@ -89,7 +90,7 @@
                     <input id="historial-search" type="text" placeholder="Ej: LO-902002994, Construcción..." class="w-full border border-slate-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500">
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold text-slate-600 mb-1.5">Ejercicio Fiscal</label>
+                    <label for="historial-year" class="block text-xs font-semibold text-slate-600 mb-1.5">Ejercicio Fiscal</label>
                     <select id="historial-year" class="border border-slate-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500">
                         <option value="">Todos</option>
                         <option value="2026">2026</option>
@@ -99,7 +100,7 @@
                     </select>
                 </div>
                 <div>
-                    <label class="block text-xs font-semibold text-slate-600 mb-1.5">Tipo</label>
+                    <label for="historial-tipo" class="block text-xs font-semibold text-slate-600 mb-1.5">Tipo</label>
                     <select id="historial-tipo" class="border border-slate-200 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500">
                         <option value="">Todos</option>
                         <option value="LICITACION_PUBLICA">Licitación Pública</option>
