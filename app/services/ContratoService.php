@@ -28,6 +28,29 @@ class ContratoService {
         return $this->repo->findAll($estatus);
     }
 
+    public function listMios(int $idUsuario, int $page, int $limit, ?string $estatus = null, ?string $search = null): array {
+        $proveedor = $this->provRepo->findByUsuario($idUsuario);
+        if (!$proveedor) {
+            return ['ok' => false, 'errors' => ['El usuario no tiene un perfil de proveedor registrado.']];
+        }
+
+        $page = max(1, $page);
+        $limit = min(100, max(1, $limit));
+        $normalizedEstatus = ($estatus !== null && trim($estatus) !== '') ? strtoupper(trim($estatus)) : null;
+        $normalizedSearch = ($search !== null && trim($search) !== '') ? trim($search) : null;
+
+        return [
+            'ok' => true,
+            'data' => $this->repo->findByProveedorForPortal(
+                (int) $proveedor['id_proveedor'],
+                $page,
+                $limit,
+                $normalizedEstatus,
+                $normalizedSearch
+            ),
+        ];
+    }
+
     public function create(array $input, int $idUsuario): array {
         $errors = $this->validateCreate($input);
         if (!empty($errors)) {

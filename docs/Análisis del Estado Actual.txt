@@ -184,3 +184,8 @@ Actualización de detalle de licitación para PROVEEDOR:
 - Se habilitó `/frontend/proveedor/licitacion.html?id={id_licitacion}`.
 - La vista muestra información general, cronograma, reglas operativas de participación y documentos públicos de la convocatoria.
 - El listado de convocatorias del proveedor ahora enlaza al detalle antes de la inscripción.
+
+Actualización de módulo Mis contratos:
+- Se incorporó `GET /api/v1/contratos/mios` para proveedores autenticados.
+- El endpoint devuelve contratos adjudicados al proveedor con paginación y filtros por `estatus` y `q`.
+- Se habilitó `/frontend/proveedor/contratos.html` y el centro del proveedor ahora enlaza a contratos propios en lugar del listado público general.

@@ -132,6 +132,13 @@
 }
 ```
 
+### Contratos
+
+| Método | Ruta | Descripción | Protección |
+|--------|------|-------------|------------|
+| GET | `/api/v1/contratos/mios` | Historial de contratos adjudicados al proveedor autenticado | Autenticado + PROVEEDOR |
+| GET | `/api/v1/contratos` | Listado administrativo de contratos | Autenticado + ADMINISTRADOR |
+
 ### Documentos
 
 | Método | Ruta | Descripción | Protección |
@@ -176,6 +183,7 @@ Módulos frontend del rol proveedor:
 - `/frontend/proveedor/participaciones.html`
 - `/frontend/proveedor/propuestas.html`
 - `/frontend/proveedor/documentos.html`
+- `/frontend/proveedor/contratos.html`
 
 ## Dependencias de prueba (Fase 2)
 

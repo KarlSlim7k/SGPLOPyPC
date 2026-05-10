@@ -297,6 +297,12 @@ try {
             break;
 
         // Contratos
+        case $route === '/contratos/mios' && $requestMethod === 'GET':
+            AuthMiddleware::handle();
+            RoleMiddleware::handle('PROVEEDOR');
+            (new ContratoController())->listMios();
+            break;
+
         case $route === '/contratos' && $requestMethod === 'POST':
             AuthMiddleware::handle();
             RoleMiddleware::handle('ADMINISTRADOR');

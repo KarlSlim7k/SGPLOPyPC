@@ -248,6 +248,44 @@ Emite el dictamen final de una evaluación (ADMINISTRADOR).
 
 ## Contratos
 
+### GET /api/v1/contratos/mios
+Lista contratos del proveedor autenticado (PROVEEDOR) con paginación y filtros.
+
+**Query params:**
+- `page`: número de página (default `1`)
+- `limit`: tamaño de página, máximo `100` (default `20`)
+- `estatus`: `EN_FORMALIZACION | VIGENTE | EN_EJECUCION | CONCLUIDO | RESCINDIDO`
+- `q`: búsqueda por número de contrato, número de licitación, descripción o dependencia
+
+**Response 200:**
+```json
+{
+  "success": true,
+  "message": "Mis contratos",
+  "data": {
+    "items": [
+      {
+        "id_contrato": 1,
+        "id_licitacion": 1,
+        "numero_contrato": "CT-2026-001",
+        "monto_contrato": "950000.00",
+        "fecha_adjudicacion": "2026-05-06",
+        "fecha_inicio": "2026-05-10",
+        "fecha_fin": "2026-12-31",
+        "estatus": "VIGENTE",
+        "numero_licitacion": "LO-001-2026",
+        "descripcion_proyecto": "Obra pública",
+        "estado_proceso": "ADJUDICADA",
+        "dependencia_nombre": "Secretaría de Obras"
+      }
+    ],
+    "total": 1,
+    "page": 1,
+    "limit": 20
+  }
+}
+```
+
 ### POST /api/v1/contratos
 Crea un contrato a partir de una licitación adjudicada (ADMINISTRADOR).
 

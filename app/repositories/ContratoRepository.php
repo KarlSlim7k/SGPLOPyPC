@@ -39,6 +39,65 @@ class ContratoRepository {
         return $stmt->fetchAll(PDO::FETCH_ASSOC);
     }
 
+    public function findByProveedorForPortal(
+        int $idProveedor,
+        int $page,
+        int $limit,
+        ?string $estatus = null,
+        ?string $search = null
+    ): array {
+        $offset = ($page - 1) * $limit;
+        $where = ['c.id_proveedor = :id_proveedor'];
+        $params = ['id_proveedor' => $idProveedor];
+
+        if ($estatus !== null && trim($estatus) !== '') {
+            $where[] = 'c.estatus = :estatus';
+            $params['estatus'] = trim($estatus);
+        }
+
+        if ($search !== null && trim($search) !== '') {
+            $where[] = '(c.numero_contrato LIKE :search_contrato OR li.numero_licitacion LIKE :search_licitacion OR li.descripcion_proyecto LIKE :search_descripcion OR d.nombre LIKE :search_dependencia)';
+            $searchLike = '%' . trim($search) . '%';
+            $params['search_contrato'] = $searchLike;
+            $params['search_licitacion'] = $searchLike;
+            $params['search_descripcion'] = $searchLike;
+            $params['search_dependencia'] = $searchLike;
+        }
+
+        $whereSql = ' WHERE ' . implode(' AND ', $where);
+
+        $sql = 'SELECT c.id_contrato, c.id_licitacion, c.numero_contrato, c.monto_contrato, '
+             . 'c.fecha_adjudicacion, c.fecha_inicio, c.fecha_fin, c.estatus, c.fecha_creacion, '
+             . 'li.numero_licitacion, li.descripcion_proyecto, li.estado_proceso, d.nombre AS dependencia_nombre '
+             . 'FROM contrato c '
+             . 'JOIN licitacion li ON c.id_licitacion = li.id_licitacion '
+             . 'JOIN dependencia d ON li.id_dependencia = d.id_dependencia '
+             . $whereSql
+             . ' ORDER BY c.fecha_adjudicacion DESC, c.fecha_creacion DESC LIMIT :limit OFFSET :offset';
+
+        $stmt = $this->db->prepare($sql);
+        foreach ($params as $k => $v) {
+            $stmt->bindValue($k, $v);
+        }
+        $stmt->bindValue('limit', $limit, PDO::PARAM_INT);
+        $stmt->bindValue('offset', $offset, PDO::PARAM_INT);
+        $stmt->execute();
+        $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
+
+        $countSql = 'SELECT COUNT(*) FROM contrato c '
+                  . 'JOIN licitacion li ON c.id_licitacion = li.id_licitacion '
+                  . 'JOIN dependencia d ON li.id_dependencia = d.id_dependencia '
+                  . $whereSql;
+        $countStmt = $this->db->prepare($countSql);
+        foreach ($params as $k => $v) {
+            $countStmt->bindValue($k, $v);
+        }
+        $countStmt->execute();
+        $total = (int) $countStmt->fetchColumn();
+
+        return ['items' => $items, 'total' => $total, 'page' => $page, 'limit' => $limit];
+    }
+
     public function findByLicitacion(int $idLicitacion): ?array {
         $stmt = $this->db->prepare(
             'SELECT c.*, l.numero_licitacion, p.nombre_empresa, p.registro_fiscal '
