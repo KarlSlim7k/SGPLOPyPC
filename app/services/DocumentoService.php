@@ -3,15 +3,23 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../repositories/DocumentoRepository.php';
 require_once __DIR__ . '/../helpers/audit.php';
+require_once __DIR__ . '/../repositories/ProveedorRepository.php';
+require_once __DIR__ . '/../repositories/ParticipacionRepository.php';
 
 class DocumentoService {
     private DocumentoRepository $repo;
+    private ProveedorRepository $provRepo;
+    private ParticipacionRepository $partRepo;
+    private PropuestaRepository $propRepo;
 
     public function __construct() {
         $this->repo = new DocumentoRepository();
+        $this->provRepo = new ProveedorRepository();
+        $this->partRepo = new ParticipacionRepository();
+        $this->propRepo = new PropuestaRepository();
     }
 
-    public function upload(array $file, array $input, int $idUsuario): array {
+    public function upload(array $file, array $input, int $idUsuario, string $rol): array {
         $errors = [];
         if (!isset($file['tmp_name']) || !is_uploaded_file($file['tmp_name'])) {
             $errors[] = 'No se recibió un archivo válido.';
@@ -21,6 +29,16 @@ class DocumentoService {
         if (!in_array($tipoDoc, $tiposValidos, true)) {
             $errors[] = 'Tipo de documento no válido.';
         }
+
+        if ($rol === 'PROVEEDOR') {
+            $providerValidation = $this->normalizeProviderUploadContext($input, $idUsuario, $tipoDoc);
+            if (!$providerValidation['ok']) {
+                $errors = array_merge($errors, $providerValidation['errors']);
+            } else {
+                $input = $providerValidation['input'];
+            }
+        }
+
         $contextoCount = 0;
         $contextos = ['id_licitacion','id_propuesta','id_proveedor','id_contrato','id_evaluacion'];
         foreach ($contextos as $c) {
@@ -84,6 +102,37 @@ class DocumentoService {
         return ['ok' => true, 'id' => $id];
     }
 
+    public function listMios(
+        int $idUsuario,
+        int $page,
+        int $limit,
+        ?string $context = null,
+        ?int $idPropuesta = null,
+        ?string $tipoDocumento = null
+    ): array {
+        $proveedor = $this->provRepo->findByUsuario($idUsuario);
+        if (!$proveedor) {
+            return ['ok' => false, 'errors' => ['El usuario no tiene un perfil de proveedor registrado.']];
+        }
+
+        $page = max(1, $page);
+        $limit = min(100, max(1, $limit));
+        $normalizedContext = ($context !== null && in_array($context, ['proveedor', 'propuesta'], true)) ? $context : null;
+        $normalizedTipo = ($tipoDocumento !== null && trim($tipoDocumento) !== '') ? strtoupper(trim($tipoDocumento)) : null;
+
+        return [
+            'ok' => true,
+            'data' => $this->repo->findByProveedorForPortal(
+                (int) $proveedor['id_proveedor'],
+                $page,
+                $limit,
+                $normalizedContext,
+                ($idPropuesta !== null && $idPropuesta > 0) ? $idPropuesta : null,
+                $normalizedTipo
+            ),
+        ];
+    }
+
     public function get(int $id, int $idUsuario, string $rol): ?array {
         $doc = $this->repo->findById($id);
         if (!$doc) return null;
@@ -129,5 +178,63 @@ class DocumentoService {
             }
         }
         return null;
+    }
+
+    public function download(int $id, int $idUsuario, string $rol): array {
+        $doc = $this->get($id, $idUsuario, $rol);
+        if (!$doc) {
+            return ['ok' => false, 'errors' => ['Documento no encontrado o sin acceso.']];
+        }
+
+        $absolutePath = realpath(__DIR__ . '/../../' . $doc['ruta_almacenamiento']);
+        $storageBase = realpath(__DIR__ . '/../../storage');
+        if (!$absolutePath || !$storageBase || !str_starts_with($absolutePath, $storageBase) || !is_file($absolutePath)) {
+            return ['ok' => false, 'errors' => ['El archivo solicitado no está disponible.']];
+        }
+
+        return [
+            'ok' => true,
+            'data' => [
+                'path' => $absolutePath,
+                'nombre_archivo' => $doc['nombre_archivo'],
+                'mime_type' => mime_content_type($absolutePath) ?: 'application/octet-stream',
+            ],
+        ];
+    }
+
+    private function normalizeProviderUploadContext(array $input, int $idUsuario, string $tipoDoc): array {
+        $proveedor = $this->provRepo->findByUsuario($idUsuario);
+        if (!$proveedor) {
+            return ['ok' => false, 'errors' => ['El usuario no tiene un perfil de proveedor registrado.']];
+        }
+
+        $idProveedor = (int) $proveedor['id_proveedor'];
+
+        if (!empty($input['id_proveedor']) && (int) $input['id_proveedor'] !== $idProveedor) {
+            return ['ok' => false, 'errors' => ['No puedes asociar documentos a otro proveedor.']];
+        }
+
+        if (!empty($input['id_propuesta'])) {
+            $allowedProposalTypes = ['PROPUESTA_TECNICA', 'PROPUESTA_ECONOMICA', 'DOC_COMPLEMENTARIA'];
+            if (!in_array($tipoDoc, $allowedProposalTypes, true)) {
+                return ['ok' => false, 'errors' => ['Tipo de documento no válido para propuesta.']];
+            }
+
+            $prop = $this->propRepo->findById((int) $input['id_propuesta']);
+            $part = $prop ? $this->partRepo->findById((int) $prop['id_participacion']) : null;
+            if (!$part || (int) $part['id_proveedor'] !== $idProveedor) {
+                return ['ok' => false, 'errors' => ['No puedes asociar documentos a una propuesta ajena.']];
+            }
+            unset($input['id_proveedor'], $input['id_licitacion'], $input['id_contrato'], $input['id_evaluacion']);
+            return ['ok' => true, 'input' => $input];
+        }
+
+        if ($tipoDoc !== 'DOC_LEGAL_PROVEEDOR') {
+            return ['ok' => false, 'errors' => ['Solo puedes subir documentos legales de proveedor o documentos asociados a tus propuestas.']];
+        }
+
+        $input['id_proveedor'] = $idProveedor;
+        unset($input['id_propuesta'], $input['id_licitacion'], $input['id_contrato'], $input['id_evaluacion']);
+        return ['ok' => true, 'input' => $input];
     }
 }

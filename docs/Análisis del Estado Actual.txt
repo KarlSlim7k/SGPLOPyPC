@@ -173,3 +173,9 @@ Actualización de módulo Mis propuestas:
 - Se incorporó `GET /api/v1/propuestas/mias` para proveedores autenticados.
 - Se habilitó `/frontend/proveedor/propuestas.html` para consultar propuestas propias, revisar estatus y enviar propuesta desde participaciones en `RECEPCION_PROPUESTAS`.
 - La creación usa el endpoint existente `POST /api/v1/participaciones/{id}/propuesta` y conserva la regla de una propuesta por participación.
+
+Actualización de módulo Documentos:
+- Se incorporó `GET /api/v1/documentos/mios` para listar documentos propios del proveedor.
+- Se incorporó `GET /api/v1/documentos/{id}/download` con control de acceso autenticado.
+- Se habilitó `/frontend/proveedor/documentos.html` para carga de documentos legales del proveedor y documentos asociados a propuestas propias.
+- El upload para PROVEEDOR valida pertenencia del proveedor/propuesta antes de guardar documentos.

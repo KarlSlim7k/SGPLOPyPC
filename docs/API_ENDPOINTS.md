@@ -309,8 +309,24 @@ Cambia el estatus del contrato (ADMINISTRADOR).
 ### POST /api/v1/documentos/upload
 Sube un documento asociado a una entidad.
 
+Reglas para PROVEEDOR:
+- `DOC_LEGAL_PROVEEDOR` se asocia automáticamente al proveedor autenticado si no se envía `id_proveedor`.
+- `PROPUESTA_TECNICA`, `PROPUESTA_ECONOMICA` y `DOC_COMPLEMENTARIA` requieren `id_propuesta` propia.
+
+### GET /api/v1/documentos/mios
+Lista documentos del proveedor autenticado (PROVEEDOR).
+
+Query params opcionales:
+- `page`, `limit`
+- `context` (`proveedor` o `propuesta`)
+- `id_propuesta`
+- `tipo_documento`
+
 ### GET /api/v1/documentos/{id}
 Obtiene metadatos de un documento.
+
+### GET /api/v1/documentos/{id}/download
+Descarga autenticada del archivo si el usuario tiene acceso.
 
 ---
 

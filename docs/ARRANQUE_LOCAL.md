@@ -137,12 +137,15 @@
 | Método | Ruta | Descripción | Protección |
 |--------|------|-------------|------------|
 | POST | `/api/v1/documentos/upload` | Subir documento | Autenticado |
+| GET | `/api/v1/documentos/mios` | Listar documentos del proveedor autenticado | Autenticado + PROVEEDOR |
 | GET | `/api/v1/documentos/{id}` | Metadatos del documento | Autenticado (según permisos) |
+| GET | `/api/v1/documentos/{id}/download` | Descargar archivo del documento | Autenticado (según permisos) |
 
 **Restricciones de upload:**
 - Tipos MIME permitidos: `application/pdf`, `application/vnd.openxmlformats-officedocument.wordprocessingml.document`, `application/vnd.openxmlformats-officedocument.spreadsheetml.sheet`, `image/png`, `image/jpeg`
 - Tamaño máximo: 10 MB
 - Requiere asociación a al menos un contexto (`id_licitacion`, `id_propuesta`, `id_proveedor`, `id_contrato`, `id_evaluacion`)
+- Para PROVEEDOR, `DOC_LEGAL_PROVEEDOR` se asocia automáticamente a su perfil y documentos de propuesta requieren una propuesta propia.
 
 **Ejemplo curl (upload):**
 ```bash
@@ -171,6 +174,7 @@ Módulos frontend del rol proveedor:
 - `/frontend/proveedor/convocatorias.html`
 - `/frontend/proveedor/participaciones.html`
 - `/frontend/proveedor/propuestas.html`
+- `/frontend/proveedor/documentos.html`
 
 ## Dependencias de prueba (Fase 2)
 

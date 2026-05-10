@@ -1,0 +1,308 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Documentos Proveedor - SGPLOPyPC</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] },
+          colors: { primary: { 500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8' } }
+        }
+      }
+    }
+  </script>
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+<body class="bg-slate-50 text-slate-900 font-sans antialiased">
+  <nav class="bg-white border-b border-slate-200 sticky top-0 z-40">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+      <a href="/frontend/proveedor/centro.html" class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-lg bg-primary-700 text-white flex items-center justify-center font-bold text-sm">SG</div>
+        <div>
+          <p class="font-bold text-sm">SGPLOPyPC</p>
+          <p class="text-xs text-slate-500">Documentos</p>
+        </div>
+      </a>
+      <div class="flex items-center gap-2">
+        <a href="/frontend/proveedor/propuestas.html" class="inline-flex items-center gap-2 text-sm font-semibold px-3 py-2 rounded-lg border border-slate-200 hover:bg-slate-50">
+          <i class="ph ph-file-text"></i>
+          Propuestas
+        </a>
+        <button data-action="logout" class="inline-flex items-center gap-2 text-sm font-semibold px-3 py-2 rounded-lg border border-slate-200 hover:bg-slate-50">
+          <i class="ph ph-sign-out"></i>
+          Cerrar sesión
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="max-w-6xl mx-auto px-4 py-8 space-y-6">
+    <section class="bg-white border border-slate-200 rounded-2xl p-6">
+      <p class="text-xs uppercase tracking-wide text-primary-700 font-semibold">Rol Proveedor</p>
+      <h1 class="text-2xl font-bold mt-1">Documentos</h1>
+      <p class="text-slate-500 text-sm mt-2">Carga documentos legales de proveedor y documentos asociados a propuestas enviadas.</p>
+    </section>
+
+    <section class="grid lg:grid-cols-2 gap-4">
+      <form id="legal-form" class="bg-white border border-slate-200 rounded-2xl p-5 space-y-4">
+        <div>
+          <p class="font-bold text-slate-900">Documento legal de proveedor</p>
+          <p class="text-xs text-slate-500 mt-1">PDF, DOCX, XLSX, PNG o JPG. Máximo 10 MB.</p>
+        </div>
+        <input id="legal-file" type="file" required accept=".pdf,.docx,.xlsx,.png,.jpg,.jpeg" class="block w-full text-sm text-slate-600 file:mr-3 file:rounded-lg file:border-0 file:bg-primary-600 file:px-3 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-primary-700">
+        <button type="submit" class="inline-flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white font-semibold px-4 py-2 rounded-lg text-sm">
+          <i class="ph ph-upload-simple"></i>
+          Subir legal
+        </button>
+      </form>
+
+      <form id="proposal-form" class="bg-white border border-slate-200 rounded-2xl p-5 space-y-4">
+        <div>
+          <p class="font-bold text-slate-900">Documento de propuesta</p>
+          <p class="text-xs text-slate-500 mt-1">Asocia documentos técnicos, económicos o complementarios a una propuesta propia.</p>
+        </div>
+        <select id="proposal-select" required class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary-500">
+          <option value="">Cargando propuestas...</option>
+        </select>
+        <select id="proposal-doc-type" required class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary-500">
+          <option value="PROPUESTA_TECNICA">PROPUESTA_TECNICA</option>
+          <option value="PROPUESTA_ECONOMICA">PROPUESTA_ECONOMICA</option>
+          <option value="DOC_COMPLEMENTARIA">DOC_COMPLEMENTARIA</option>
+        </select>
+        <input id="proposal-file" type="file" required accept=".pdf,.docx,.xlsx,.png,.jpg,.jpeg" class="block w-full text-sm text-slate-600 file:mr-3 file:rounded-lg file:border-0 file:bg-slate-800 file:px-3 file:py-2 file:text-sm file:font-semibold file:text-white hover:file:bg-slate-900">
+        <button id="proposal-submit" type="submit" class="inline-flex items-center gap-2 bg-slate-800 hover:bg-slate-900 text-white font-semibold px-4 py-2 rounded-lg text-sm">
+          <i class="ph ph-upload-simple"></i>
+          Subir a propuesta
+        </button>
+      </form>
+    </section>
+
+    <p id="flash" class="hidden text-sm rounded-lg px-3 py-2"></p>
+
+    <section class="bg-white border border-slate-200 rounded-2xl p-4 md:p-5">
+      <form id="filters-form" class="grid md:grid-cols-4 gap-3">
+        <select id="f-context" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary-500">
+          <option value="">Todos los contextos</option>
+          <option value="proveedor">Proveedor</option>
+          <option value="propuesta">Propuesta</option>
+        </select>
+        <select id="f-tipo" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary-500">
+          <option value="">Todos los tipos</option>
+          <option value="DOC_LEGAL_PROVEEDOR">DOC_LEGAL_PROVEEDOR</option>
+          <option value="PROPUESTA_TECNICA">PROPUESTA_TECNICA</option>
+          <option value="PROPUESTA_ECONOMICA">PROPUESTA_ECONOMICA</option>
+          <option value="DOC_COMPLEMENTARIA">DOC_COMPLEMENTARIA</option>
+        </select>
+        <select id="f-propuesta" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary-500">
+          <option value="">Todas las propuestas</option>
+        </select>
+        <button type="submit" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-semibold px-3 py-2 rounded-lg text-sm">
+          Aplicar filtros
+        </button>
+      </form>
+    </section>
+
+    <section class="bg-white border border-slate-200 rounded-2xl overflow-hidden">
+      <div class="px-5 py-3 border-b border-slate-100 flex items-center justify-between">
+        <p class="font-semibold text-slate-800">Archivos</p>
+        <p id="summary" class="text-xs text-slate-500">Cargando...</p>
+      </div>
+      <div class="overflow-x-auto">
+        <table class="w-full min-w-[980px] text-sm">
+          <thead class="bg-slate-50 text-slate-600">
+            <tr>
+              <th class="px-4 py-3 text-left font-semibold">Archivo</th>
+              <th class="px-4 py-3 text-left font-semibold">Tipo</th>
+              <th class="px-4 py-3 text-left font-semibold">Licitación</th>
+              <th class="px-4 py-3 text-left font-semibold">Tamaño</th>
+              <th class="px-4 py-3 text-left font-semibold">Fecha</th>
+              <th class="px-4 py-3 text-right font-semibold">Acción</th>
+            </tr>
+          </thead>
+          <tbody id="rows">
+            <tr><td colspan="6" class="px-4 py-8 text-center text-slate-500">Cargando documentos...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <script src="/frontend/shared/admin.js"></script>
+  <script>
+    SGPLAdmin.attachLogoutHandlers();
+    let propuestas = [];
+
+    function setFlash(message, tone) {
+      const flash = document.getElementById('flash');
+      flash.className = 'text-sm rounded-lg px-3 py-2 ' + (tone === 'ok'
+        ? 'bg-emerald-50 border border-emerald-200 text-emerald-700'
+        : 'bg-red-50 border border-red-200 text-red-700');
+      flash.textContent = message;
+      flash.classList.remove('hidden');
+    }
+
+    function formatSize(bytes) {
+      const n = Number(bytes || 0);
+      if (n < 1024) return n + ' B';
+      if (n < 1024 * 1024) return Math.round(n / 1024) + ' KB';
+      return (n / (1024 * 1024)).toFixed(1) + ' MB';
+    }
+
+    function proposalLabel(item) {
+      return '#' + item.id_propuesta + ' - ' + (item.numero_licitacion || 'Licitación');
+    }
+
+    async function loadPropuestas() {
+      const response = await SGPLAdmin.authFetch('/propuestas/mias?page=1&limit=100', { method: 'GET' });
+      const payload = (response && response.data) || { items: [] };
+      propuestas = payload.items || [];
+
+      const options = propuestas.map(function (item) {
+        return '<option value="' + String(item.id_propuesta) + '">' + SGPLAdmin.escapeHtml(proposalLabel(item)) + '</option>';
+      }).join('');
+
+      const proposalSelect = document.getElementById('proposal-select');
+      const filterSelect = document.getElementById('f-propuesta');
+      if (!propuestas.length) {
+        proposalSelect.innerHTML = '<option value="">Sin propuestas disponibles</option>';
+        proposalSelect.disabled = true;
+        document.getElementById('proposal-submit').disabled = true;
+      } else {
+        proposalSelect.innerHTML = '<option value="">Selecciona propuesta</option>' + options;
+        proposalSelect.disabled = false;
+        document.getElementById('proposal-submit').disabled = false;
+      }
+      filterSelect.innerHTML = '<option value="">Todas las propuestas</option>' + options;
+    }
+
+    async function uploadDocument(formData) {
+      await SGPLAdmin.authFetch('/documentos/upload', {
+        method: 'POST',
+        body: formData,
+      });
+      setFlash('Documento subido correctamente.', 'ok');
+      await loadDocumentos();
+    }
+
+    async function loadDocumentos() {
+      const rows = document.getElementById('rows');
+      const summary = document.getElementById('summary');
+      rows.innerHTML = '<tr><td colspan="6" class="px-4 py-8 text-center text-slate-500">Cargando documentos...</td></tr>';
+
+      try {
+        const params = new URLSearchParams({ page: '1', limit: '100' });
+        const context = document.getElementById('f-context').value;
+        const tipo = document.getElementById('f-tipo').value;
+        const idPropuesta = document.getElementById('f-propuesta').value;
+        if (context) params.set('context', context);
+        if (tipo) params.set('tipo_documento', tipo);
+        if (idPropuesta) params.set('id_propuesta', idPropuesta);
+
+        const response = await SGPLAdmin.authFetch('/documentos/mios?' + params.toString(), { method: 'GET' });
+        const payload = (response && response.data) || { items: [], total: 0 };
+        const items = payload.items || [];
+        summary.textContent = 'Mostrando ' + items.length + ' de ' + (payload.total || items.length);
+
+        if (!items.length) {
+          rows.innerHTML = '<tr><td colspan="6" class="px-4 py-8 text-center text-slate-500">Sin documentos para los filtros seleccionados.</td></tr>';
+          return;
+        }
+
+        rows.innerHTML = items.map(function (item) {
+          return '<tr class="border-t border-slate-100">'
+            + '<td class="px-4 py-3"><p class="font-semibold text-slate-800">' + SGPLAdmin.escapeHtml(item.nombre_archivo || 'Documento') + '</p><p class="text-xs text-slate-500 mt-1">Versión ' + SGPLAdmin.escapeHtml(item.version || 1) + '</p></td>'
+            + '<td class="px-4 py-3 text-slate-600">' + SGPLAdmin.escapeHtml(item.tipo_documento || 'N/A') + '</td>'
+            + '<td class="px-4 py-3 text-slate-600">' + SGPLAdmin.escapeHtml(item.numero_licitacion || 'N/A') + '</td>'
+            + '<td class="px-4 py-3 text-slate-600">' + formatSize(item.tamano_bytes) + '</td>'
+            + '<td class="px-4 py-3 text-slate-600">' + SGPLAdmin.formatDate(item.fecha_subida) + '</td>'
+            + '<td class="px-4 py-3 text-right"><button data-download="' + String(item.id_documento) + '" data-name="' + SGPLAdmin.escapeHtml(item.nombre_archivo || 'documento') + '" class="px-3 py-2 rounded-lg text-xs font-semibold border border-slate-200 hover:bg-slate-50">Descargar</button></td>'
+            + '</tr>';
+        }).join('');
+      } catch (error) {
+        summary.textContent = 'Error al cargar';
+        rows.innerHTML = '<tr><td colspan="6" class="px-4 py-8 text-center text-red-600">No se pudieron cargar los documentos.</td></tr>';
+      }
+    }
+
+    document.getElementById('legal-form').addEventListener('submit', async function (e) {
+      e.preventDefault();
+      const file = document.getElementById('legal-file').files[0];
+      if (!file) return;
+      const fd = new FormData();
+      fd.append('archivo', file);
+      fd.append('tipo_documento', 'DOC_LEGAL_PROVEEDOR');
+      try {
+        await uploadDocument(fd);
+        e.target.reset();
+      } catch (error) {
+        const details = Array.isArray(error.errors) && error.errors.length ? ' ' + error.errors[0] : '';
+        setFlash((error.message || 'No se pudo subir el documento.') + details, 'error');
+      }
+    });
+
+    document.getElementById('proposal-form').addEventListener('submit', async function (e) {
+      e.preventDefault();
+      const file = document.getElementById('proposal-file').files[0];
+      const idPropuesta = document.getElementById('proposal-select').value;
+      if (!file || !idPropuesta) return;
+      const fd = new FormData();
+      fd.append('archivo', file);
+      fd.append('id_propuesta', idPropuesta);
+      fd.append('tipo_documento', document.getElementById('proposal-doc-type').value);
+      try {
+        await uploadDocument(fd);
+        e.target.reset();
+      } catch (error) {
+        const details = Array.isArray(error.errors) && error.errors.length ? ' ' + error.errors[0] : '';
+        setFlash((error.message || 'No se pudo subir el documento.') + details, 'error');
+      }
+    });
+
+    document.getElementById('filters-form').addEventListener('submit', function (e) {
+      e.preventDefault();
+      loadDocumentos();
+    });
+
+    document.getElementById('rows').addEventListener('click', async function (e) {
+      const btn = e.target.closest('button[data-download]');
+      if (!btn) return;
+      try {
+        await SGPLAdmin.downloadApiFile('/documentos/' + btn.getAttribute('data-download') + '/download', btn.getAttribute('data-name') || 'documento');
+      } catch (_) {
+        setFlash('No se pudo descargar el documento.', 'error');
+      }
+    });
+
+    (async function init() {
+      if (!SGPLAdmin.protectRoute()) return;
+      const user = SGPLAdmin.getUser() || {};
+      if (user.rol !== 'PROVEEDOR') {
+        window.location.href = '/';
+        return;
+      }
+
+      try {
+        const meResp = await SGPLAdmin.authFetch('/me', { method: 'GET' });
+        const me = (meResp && meResp.data) || null;
+        if (!me || me.rol !== 'PROVEEDOR') {
+          window.location.href = '/';
+          return;
+        }
+        SGPLAdmin.setUser(me);
+      } catch (_) {
+        window.location.href = '/frontend/auth/login.html';
+        return;
+      }
+
+      await loadPropuestas();
+      await loadDocumentos();
+    })();
+  </script>
+</body>
+</html>

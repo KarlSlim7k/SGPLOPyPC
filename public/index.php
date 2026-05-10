@@ -239,6 +239,12 @@ try {
             break;
 
         // Documentos
+        case $route === '/documentos/mios' && $requestMethod === 'GET':
+            AuthMiddleware::handle();
+            RoleMiddleware::handle('PROVEEDOR');
+            (new DocumentoController())->listMios();
+            break;
+
         case $route === '/documentos/upload' && $requestMethod === 'POST':
             AuthMiddleware::handle();
             $rl = new RateLimiter(10, 60);
@@ -253,6 +259,11 @@ try {
         case preg_match('#^/documentos/(\d+)$#', $route, $m) && $requestMethod === 'GET':
             AuthMiddleware::handle();
             (new DocumentoController())->get((int) $m[1]);
+            break;
+
+        case preg_match('#^/documentos/(\d+)/download$#', $route, $m) && $requestMethod === 'GET':
+            AuthMiddleware::handle();
+            (new DocumentoController())->download((int) $m[1]);
             break;
 
         // Evaluaciones
