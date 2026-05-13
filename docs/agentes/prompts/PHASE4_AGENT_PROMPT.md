@@ -16,14 +16,14 @@ Implementar la **Fase 4 — Reportes y Transparencia** con foco en visibilidad o
 4. Notificaciones a proveedores.
 
 ### Contexto obligatorio a leer antes de codificar
-- `docs/contexto.md`
-- `docs/arquitectura_infraestructura.md`
-- `docs/modelado_base_de_datos.md`
-- `docs/AGENTS.md`
-- `docs/ROADMAP.md`
-- `docs/DESIGN.md`
-- `docs/DATABASE_GUIDELINES.md`
-- `docs/FRONTEND_GUIDELINES.md`
+- `docs/arquitectura/contexto.md`
+- `docs/arquitectura/arquitectura_infraestructura.md`
+- `docs/arquitectura/modelado_base_de_datos.md`
+- `docs/agentes/AGENTS.md`
+- `docs/producto/ROADMAP.md`
+- `docs/guias/DESIGN.md`
+- `docs/guias/DATABASE_GUIDELINES.md`
+- `docs/guias/FRONTEND_GUIDELINES.md`
 - Revisión del resultado de Fase 3 (commit: `6a7229cc6dd9868832513027c798db02c76df729`)
 
 ### Reglas de trabajo

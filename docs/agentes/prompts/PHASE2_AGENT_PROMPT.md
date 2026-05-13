@@ -16,14 +16,14 @@ Implementar la **Fase 2 — Núcleo transaccional** con enfoque incremental, est
 4. Gestión documental inicial (uploads controlados).
 
 ### Contexto obligatorio a leer antes de codificar
-- `docs/contexto.md`
-- `docs/arquitectura_infraestructura.md`
-- `docs/modelado_base_de_datos.md`
-- `docs/AGENTS.md`
-- `docs/ROADMAP.md`
-- `docs/DESIGN.md`
-- `docs/DATABASE_GUIDELINES.md`
-- `docs/FRONTEND_GUIDELINES.md`
+- `docs/arquitectura/contexto.md`
+- `docs/arquitectura/arquitectura_infraestructura.md`
+- `docs/arquitectura/modelado_base_de_datos.md`
+- `docs/agentes/AGENTS.md`
+- `docs/producto/ROADMAP.md`
+- `docs/guias/DESIGN.md`
+- `docs/guias/DATABASE_GUIDELINES.md`
+- `docs/guias/FRONTEND_GUIDELINES.md`
 - Revisión del resultado de Fase 1 (commit: `d009a4418b12f2a223aeb36bca0688ba5f4be3fa`)
 
 ### Reglas de trabajo

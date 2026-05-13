@@ -21,22 +21,23 @@ Se ejecutó la fase de cierre posterior a la funcionalización del frontend admi
   - Corregida métrica de KPI para mostrar **conteo de contratos** en lugar de moneda.
   - Ajustado subtítulo a `Contratos registrados` para coherencia semántica.
 
-## Estado de la fase
+## Estado historico de la fase
 
 - Completado:
   - Estabilización de wiring frontend/backend en módulos admin.
   - Validación de sintaxis backend.
   - Verificación de arranque API y diagnóstico de bloqueo de entorno.
 
-- Pendiente condicionado a entorno:
-  - Pruebas E2E funcionales completas (requieren variables de BD y datos operativos).
+- Resuelto posteriormente:
+  - Variables productivas de BD verificadas en Railway.
+  - Salud de API y BD verificada en producción.
+  - Pruebas E2E funcionales completas ejecutadas con datos operativos.
 
-## Siguiente acción recomendada
+## Acción vigente
 
-1. Cargar variables de entorno de BD en `.env`.
-2. Repetir prueba de salud (`/api/v1/health`) hasta estado exitoso.
-3. Ejecutar recorrido E2E completo:
-   - Login -> Convocatorias -> Propuestas -> Evaluación -> Adjudicación/Contratos -> Reportes.
+- No hay bloqueo activo derivado de esta sección.
+- Para desarrollo local, cargar `.env` solo si se necesita reproducir flujos con BD local.
+- Para cierre operativo, usar la evidencia de `Cierre Final` y `Cierre operativo`.
 
 ---
 

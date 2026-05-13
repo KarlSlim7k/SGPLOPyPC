@@ -3,7 +3,7 @@
 Documentación de endpoints REST JSON de la API backend (`/api/v1`).
 
 Contrato OpenAPI público (Fase 5):
-- `docs/openapi-public.yaml`
+- `docs/api/openapi-public.yaml`
 
 ## Formato de respuesta
 

@@ -16,14 +16,14 @@ Implementar la **Fase 5 — Hardening y Escalabilidad** para elevar seguridad, r
 4. Monitoreo y alertamiento operativo.
 
 ### Contexto obligatorio a leer antes de codificar
-- `docs/contexto.md`
-- `docs/arquitectura_infraestructura.md`
-- `docs/modelado_base_de_datos.md`
-- `docs/AGENTS.md`
-- `docs/ROADMAP.md`
-- `docs/DESIGN.md`
-- `docs/DATABASE_GUIDELINES.md`
-- `docs/FRONTEND_GUIDELINES.md`
+- `docs/arquitectura/contexto.md`
+- `docs/arquitectura/arquitectura_infraestructura.md`
+- `docs/arquitectura/modelado_base_de_datos.md`
+- `docs/agentes/AGENTS.md`
+- `docs/producto/ROADMAP.md`
+- `docs/guias/DESIGN.md`
+- `docs/guias/DATABASE_GUIDELINES.md`
+- `docs/guias/FRONTEND_GUIDELINES.md`
 - Revisión del resultado de Fase 4 (commit: `7b8975d8a62d7112555888ac998769327b4839ff`)
 
 ### Reglas de trabajo

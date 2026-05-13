@@ -16,14 +16,14 @@ Implementar la **Fase 1 — Fundación operativa** con alcance mínimo viable y 
 4. Configurar entorno de desarrollo reproducible alineado con Docker/Railway.
 
 ### Contexto obligatorio a leer antes de codificar
-- `docs/contexto.md`
-- `docs/arquitectura_infraestructura.md`
-- `docs/modelado_base_de_datos.md`
-- `docs/AGENTS.md`
-- `docs/ROADMAP.md`
-- `docs/DESIGN.md`
-- `docs/DATABASE_GUIDELINES.md`
-- `docs/FRONTEND_GUIDELINES.md`
+- `docs/arquitectura/contexto.md`
+- `docs/arquitectura/arquitectura_infraestructura.md`
+- `docs/arquitectura/modelado_base_de_datos.md`
+- `docs/agentes/AGENTS.md`
+- `docs/producto/ROADMAP.md`
+- `docs/guias/DESIGN.md`
+- `docs/guias/DATABASE_GUIDELINES.md`
+- `docs/guias/FRONTEND_GUIDELINES.md`
 
 ### Reglas de trabajo
 1. Haz cambios **pequeños, atómicos y trazables**.

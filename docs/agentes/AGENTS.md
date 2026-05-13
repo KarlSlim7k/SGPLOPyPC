@@ -33,9 +33,9 @@ Cuando un agente contribuya, debe priorizar:
 
 ## 5) Flujo recomendado para tareas
 1. Leer primero:
-   - `docs/contexto.md`
-   - `docs/arquitectura_infraestructura.md`
-   - `docs/modelado_base_de_datos.md`
+   - `docs/arquitectura/contexto.md`
+   - `docs/arquitectura/arquitectura_infraestructura.md`
+   - `docs/arquitectura/modelado_base_de_datos.md`
 2. Identificar módulo impactado.
 3. Proponer cambios mínimos viables.
 4. Ejecutar validaciones básicas (lint/tests/checks disponibles).
@@ -60,8 +60,8 @@ Cuando un agente contribuya, debe priorizar:
 - No mezclar refactors grandes con features en el mismo cambio.
 
 ## 9) Documentos complementarios
-- `docs/ROADMAP.md`
-- `docs/DESIGN.md`
-- `docs/FRONTEND_GUIDELINES.md`
-- `docs/DATABASE_GUIDELINES.md`
+- `docs/producto/ROADMAP.md`
+- `docs/guias/DESIGN.md`
+- `docs/guias/FRONTEND_GUIDELINES.md`
+- `docs/guias/DATABASE_GUIDELINES.md`
 

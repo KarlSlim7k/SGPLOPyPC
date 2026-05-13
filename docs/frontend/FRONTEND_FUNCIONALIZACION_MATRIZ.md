@@ -62,4 +62,4 @@ Convertir las vistas de `frontend/admin` de mockup visual a flujos operativos co
 - `admin/reportes/index.html`: funcional con KPIs dinámicos, desglose y export.
 
 Pendiente de cierre total:
-- Ejecución E2E completa en entorno con BD configurada (`DB_*`), documentada en `docs/FASE_CIERRE_VALIDACION.md`.
+- Ejecución E2E completa en entorno con BD configurada (`DB_*`), documentada en `docs/operacion/FASE_CIERRE_VALIDACION.md`.

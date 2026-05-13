@@ -16,14 +16,14 @@ Implementar la **Fase 3 — Evaluación y Adjudicación** con enfoque incrementa
 4. Auditoría en operaciones críticas del flujo.
 
 ### Contexto obligatorio a leer antes de codificar
-- `docs/contexto.md`
-- `docs/arquitectura_infraestructura.md`
-- `docs/modelado_base_de_datos.md`
-- `docs/AGENTS.md`
-- `docs/ROADMAP.md`
-- `docs/DESIGN.md`
-- `docs/DATABASE_GUIDELINES.md`
-- `docs/FRONTEND_GUIDELINES.md`
+- `docs/arquitectura/contexto.md`
+- `docs/arquitectura/arquitectura_infraestructura.md`
+- `docs/arquitectura/modelado_base_de_datos.md`
+- `docs/agentes/AGENTS.md`
+- `docs/producto/ROADMAP.md`
+- `docs/guias/DESIGN.md`
+- `docs/guias/DATABASE_GUIDELINES.md`
+- `docs/guias/FRONTEND_GUIDELINES.md`
 - Revisión del resultado de Fase 2 (commit: `600737638dc91cc454b6d7eb10575bbecb5ad34a`)
 
 ### Reglas de trabajo

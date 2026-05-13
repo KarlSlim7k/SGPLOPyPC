@@ -174,10 +174,10 @@ Resultado: sin errores de sintaxis y migraciones completadas en logs de deploy.
 
 | Documento | Proposito |
 |---|---|
-| `docs/openapi-public.yaml` | Contrato OpenAPI de la API publica |
-| `docs/FASE5_PUBLICO_PENTEST.md` | Evidencia de pentest basico |
-| `docs/FASE5_PUBLICO_ACCESIBILIDAD.md` | Auditoria de accesibilidad |
-| `docs/API_ENDPOINTS.md` | Referencia general con enlace al OpenAPI publico |
+| `docs/api/openapi-public.yaml` | Contrato OpenAPI de la API publica |
+| `docs/fases/fase5/FASE5_PUBLICO_PENTEST.md` | Evidencia de pentest basico |
+| `docs/fases/fase5/FASE5_PUBLICO_ACCESIBILIDAD.md` | Auditoria de accesibilidad |
+| `docs/api/API_ENDPOINTS.md` | Referencia general con enlace al OpenAPI publico |
 
 ## 8. Pendientes Reales
 
