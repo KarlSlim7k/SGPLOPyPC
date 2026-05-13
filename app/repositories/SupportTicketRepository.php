@@ -36,8 +36,12 @@ class SupportTicketRepository {
             $params['estado'] = $estado;
         }
         if ($search !== null && trim($search) !== '') {
-            $where[] = '(folio LIKE :search OR nombre LIKE :search OR email LIKE :search OR asunto LIKE :search)';
-            $params['search'] = '%' . trim($search) . '%';
+            $where[] = '(folio LIKE :search_folio OR nombre LIKE :search_nombre OR email LIKE :search_email OR asunto LIKE :search_asunto)';
+            $like = '%' . trim($search) . '%';
+            $params['search_folio'] = $like;
+            $params['search_nombre'] = $like;
+            $params['search_email'] = $like;
+            $params['search_asunto'] = $like;
         }
 
         $whereSql = ' WHERE ' . implode(' AND ', $where);
