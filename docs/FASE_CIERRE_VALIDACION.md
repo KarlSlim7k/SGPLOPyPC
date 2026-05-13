@@ -80,6 +80,7 @@ Lotes ejecutados:
 | `b147e89` | `22223ba7-0f4c-4625-aa29-2e20722ca835` | fix demo data |
 | `db2cad9` | `4683b3aa-c714-49d4-ada7-768a1c4f1470` | fix UI hamburger móvil |
 | `bb506da` | (auto-deploy activo) | fix E2E rate limit |
+| `47ad782` | `22c0c15c-d321-43e7-a47b-1efb7e1a577b` | documentación final de cierre |
 
 ### Credenciales demo
 
@@ -98,3 +99,16 @@ Lotes ejecutados:
 - ✅ Documentación existente actualizada
 - ✅ Rendimiento aceptable (~330ms por endpoint)
 - ✅ Accesibilidad WCAG 2.1 AA sin violaciones críticas/serias
+
+### Cierre operativo — 2026-05-12
+
+- Rama `main` sincronizada con `origin/main` antes del cierre documental.
+- Deployment Railway vigente verificado: `22c0c15c-d321-43e7-a47b-1efb7e1a577b` en estado `SUCCESS`.
+- Servicio `SGPLOPyPC` online en `https://sgplopypc-production.up.railway.app`.
+- MySQL `mysql-volume` online.
+- Smoke final ejecutado:
+  - `GET /` -> 200
+  - `GET /healthz` -> 200 (`ok`)
+  - `GET /api/v1/health` -> 200, `app.status=ok`, `db.status=ok`
+- No se ejecutó `railway up`; el flujo operativo vigente es commit + push a GitHub y auto-deploy Railway.
+- No se repitieron E2E completos en este cierre; se conserva como evidencia vigente `54 passed / 1 skipped / 0 failed`.

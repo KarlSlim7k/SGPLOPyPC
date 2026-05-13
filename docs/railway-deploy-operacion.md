@@ -1,6 +1,6 @@
 # Railway Deploy - Operacion Rapida
 
-Ultima actualizacion: 2026-05-08 (America/Mexico_City)
+Ultima actualizacion: 2026-05-12 (America/Mexico_City)
 
 ## Politica actual
 
@@ -29,8 +29,15 @@ Validar endpoints base:
 
 ```bash
 curl -fsSL https://sgplopypc-production.up.railway.app/ | head
+curl -fsSL https://sgplopypc-production.up.railway.app/healthz
 curl -fsSL https://sgplopypc-production.up.railway.app/api/v1/health
 ```
+
+Para cierres documentales u operativos sin cambios funcionales:
+- Mantener el flujo GitHub -> Railway.
+- No usar `railway up`.
+- Confirmar el deployment posterior al push con `railway deployment list --limit 10`.
+- Repetir smoke base; no repetir E2E completos salvo que el smoke falle o se hayan tocado flujos funcionales.
 
 Validar endpoints de soporte (admin):
 
