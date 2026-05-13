@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Centro Público — SGPLOPyPC</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
   <script src="https://cdn.tailwindcss.com"></script>
   <script>
     tailwind.config = {
@@ -138,6 +138,28 @@
       </div>
       <div id="publico-notificaciones" class="divide-y divide-slate-100">
         <div class="px-6 py-5 text-sm text-slate-500">Cargando notificaciones...</div>
+      </div>
+    </section>
+
+    <section class="bg-slate-950 text-slate-100 rounded-2xl p-6 md:p-7">
+      <div class="flex flex-col gap-5 md:flex-row md:items-end md:justify-between">
+        <div class="max-w-2xl">
+          <p class="text-xs uppercase tracking-[0.22em] text-blue-300 font-semibold">Marco legal</p>
+          <h2 class="mt-2 text-xl font-bold">Consulta los documentos legales de la plataforma</h2>
+          <p class="mt-2 text-sm text-slate-300 leading-relaxed">
+            Revisa el alcance de uso de SGPLOPyPC y el tratamiento de datos personales con base en el marco aplicable en México.
+          </p>
+        </div>
+        <div class="flex flex-wrap gap-3">
+          <a href="/frontend/publico/terminos-de-uso.html" class="inline-flex items-center gap-2 rounded-xl border border-white/15 bg-white/5 px-4 py-2.5 text-sm font-semibold hover:bg-white/10 transition-colors">
+            <i class="ph ph-scroll"></i>
+            Términos de Uso
+          </a>
+          <a href="/frontend/publico/aviso-de-privacidad.html" class="inline-flex items-center gap-2 rounded-xl bg-primary-600 px-4 py-2.5 text-sm font-semibold text-white hover:bg-primary-700 transition-colors">
+            <i class="ph ph-shield-check"></i>
+            Aviso de Privacidad
+          </a>
+        </div>
       </div>
     </section>
   </main>

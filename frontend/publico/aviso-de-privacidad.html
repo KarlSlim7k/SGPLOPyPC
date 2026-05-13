@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Aviso de Privacidad — SGPLOPyPC</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&amp;display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] },
+          colors: {
+            primary: { 500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8' }
+          }
+        }
+      }
+    }
+  </script>
+  <link rel="stylesheet" href="/frontend/shared/public-accessibility.css">
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+<body class="bg-slate-50 text-slate-900 font-sans antialiased min-h-screen">
+  <header class="bg-slate-950 text-white relative overflow-hidden">
+    <div class="absolute inset-0 opacity-[0.06]" aria-hidden="true">
+      <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <pattern id="legal-grid-privacy" width="28" height="28" patternUnits="userSpaceOnUse">
+            <circle cx="2" cy="2" r="1" fill="white"></circle>
+          </pattern>
+        </defs>
+        <rect width="100%" height="100%" fill="url(#legal-grid-privacy)"></rect>
+      </svg>
+    </div>
+    <div class="relative max-w-5xl mx-auto px-4 py-10 md:py-14">
+      <div class="flex flex-wrap items-center gap-3 text-sm text-slate-300">
+        <a href="/" class="inline-flex items-center gap-2 hover:text-white transition-colors">
+          <i class="ph ph-house"></i>
+          Inicio
+        </a>
+        <span>/</span>
+        <a href="/frontend/auth/login.html" class="inline-flex items-center gap-2 hover:text-white transition-colors">
+          <i class="ph ph-sign-in"></i>
+          Acceso
+        </a>
+      </div>
+      <div class="mt-6 max-w-3xl">
+        <p class="text-xs uppercase tracking-[0.24em] text-blue-300 font-semibold">Protección de datos personales</p>
+        <h1 class="mt-3 text-3xl md:text-5xl font-extrabold leading-tight">Aviso de Privacidad Integral</h1>
+        <p class="mt-4 text-sm md:text-base text-slate-300 leading-relaxed">
+          Documento aplicable al tratamiento de datos personales recabados mediante SGPLOPyPC, conforme al marco normativo mexicano para sujetos obligados.
+        </p>
+        <div class="mt-5 inline-flex items-center gap-2 rounded-full border border-white/15 bg-white/5 px-3 py-1.5 text-xs text-slate-200">
+          <i class="ph ph-calendar"></i>
+          Última actualización: 12 de mayo de 2026
+        </div>
+      </div>
+    </div>
+  </header>
+
+  <main class="max-w-5xl mx-auto px-4 py-8 md:py-10">
+    <div class="grid gap-6 lg:grid-cols-[minmax(0,1fr)_280px]">
+      <article class="space-y-6">
+        <section class="bg-amber-50 border border-amber-200 rounded-2xl p-6 md:p-8">
+          <p class="text-sm text-amber-900 leading-relaxed">
+            Este aviso toma como base la Ley General de Protección de Datos Personales en Posesión de Sujetos Obligados, sus lineamientos y principios aplicables en México. Los datos de identificación y contacto asentados en esta versión son provisionales y podrán sustituirse cuando el ente público responsable proporcione la versión institucional definitiva.
+          </p>
+        </section>
+
+        <section class="bg-white border border-slate-200 rounded-2xl p-6 md:p-8 space-y-4">
+          <h2 class="text-xl font-bold">1. Responsable del tratamiento</h2>
+          <p class="text-sm text-slate-600 leading-relaxed">
+            La Dirección General de Contrataciones Públicas SGPLOPyPC, con domicilio provisional en Palacio Municipal S/N, Centro, C.P. 91500, Coatepec, Veracruz, es responsable del tratamiento de los datos personales recabados a través de esta plataforma. Para atención inicial se encuentran disponibles el correo <a href="mailto:soporte@sgplopypc.gob.mx" class="font-semibold text-primary-700 underline underline-offset-2">soporte@sgplopypc.gob.mx</a> y el teléfono 01 800 123 4567.
+          </p>
+        </section>
+
+        <section class="bg-white border border-slate-200 rounded-2xl p-6 md:p-8 space-y-4">
+          <h2 class="text-xl font-bold">2. Datos personales recabados</h2>
+          <p class="text-sm text-slate-600 leading-relaxed">
+            Dependiendo del perfil de acceso y del trámite realizado, la plataforma puede recabar datos de identificación, contacto, laborales, fiscales, patrimoniales y documentales, incluyendo nombre, correo electrónico, teléfono, razón social, RFC, domicilio, representación legal, firma, constancias, historial de participación y metadatos de acceso.
+          </p>
+        </section>
+
+        <section class="bg-white border border-slate-200 rounded-2xl p-6 md:p-8 space-y-4">
+          <h2 class="text-xl font-bold">3. Finalidades del tratamiento</h2>
+          <ul class="space-y-3 text-sm text-slate-600 leading-relaxed list-disc pl-5">
+            <li>Gestionar altas, autenticación, perfiles y control de acceso.</li>
+            <li>Recibir, validar y administrar documentación de proveedores y participantes.</li>
+            <li>Dar seguimiento a convocatorias, propuestas, evaluaciones, adjudicaciones, contratos, tickets y notificaciones.</li>
+            <li>Integrar expedientes electrónicos, bitácoras de auditoría y evidencia administrativa.</li>
+            <li>Atender requerimientos de autoridades competentes, órganos internos de control, transparencia y fiscalización.</li>
+            <li>Generar reportes estadísticos, operativos y de cumplimiento institucional.</li>
+          </ul>
+        </section>
+
+        <section class="bg-white border border-slate-200 rounded-2xl p-6 md:p-8 space-y-4">
+          <h2 class="text-xl font-bold">4. Fundamento legal</h2>
+          <p class="text-sm text-slate-600 leading-relaxed">
+            El tratamiento de los datos personales se realiza con fundamento en la Ley General de Protección de Datos Personales en Posesión de Sujetos Obligados, la legislación de transparencia aplicable, la normativa de contratación pública, archivos, responsabilidades administrativas y demás disposiciones que faculten la operación de SGPLOPyPC.
+          </p>
+        </section>
+
+        <section class="bg-white border border-slate-200 rounded-2xl p-6 md:p-8 space-y-4">
+          <h2 class="text-xl font-bold">5. Transferencias de datos personales</h2>
+          <p class="text-sm text-slate-600 leading-relaxed">
+            Los datos personales podrán ser transferidos, sin requerir consentimiento adicional cuando proceda legalmente, a autoridades competentes, órganos fiscalizadores, instancias jurisdiccionales, autoridades de transparencia o entes públicos relacionados con el procedimiento administrativo, únicamente dentro de los supuestos previstos por la normatividad mexicana aplicable.
+          </p>
+        </section>
+
+        <section class="bg-white border border-slate-200 rounded-2xl p-6 md:p-8 space-y-4">
+          <h2 class="text-xl font-bold">6. Derechos ARCO y medios para ejercerlos</h2>
+          <p class="text-sm text-slate-600 leading-relaxed">
+            La persona titular de los datos personales podrá ejercer sus derechos de acceso, rectificación, cancelación y oposición, así como los mecanismos previstos por la normatividad aplicable, ante la Unidad de Transparencia o el área que determine el sujeto obligado responsable. De manera provisional, se podrá solicitar orientación inicial mediante el correo <a href="mailto:soporte@sgplopypc.gob.mx" class="font-semibold text-primary-700 underline underline-offset-2">soporte@sgplopypc.gob.mx</a>.
+          </p>
+        </section>
+
+        <section class="bg-white border border-slate-200 rounded-2xl p-6 md:p-8 space-y-4">
+          <h2 class="text-xl font-bold">7. Uso de cookies y datos de navegación</h2>
+          <p class="text-sm text-slate-600 leading-relaxed">
+            La plataforma puede utilizar elementos técnicos de sesión, almacenamiento local y registros de navegación indispensables para autenticación, seguridad, continuidad operativa y análisis básico del funcionamiento. No se deberán utilizar mecanismos incompatibles con la finalidad institucional declarada sin actualizar previamente este aviso.
+          </p>
+        </section>
+
+        <section class="bg-white border border-slate-200 rounded-2xl p-6 md:p-8 space-y-4">
+          <h2 class="text-xl font-bold">8. Medidas de seguridad</h2>
+          <p class="text-sm text-slate-600 leading-relaxed">
+            SGPLOPyPC aplica medidas administrativas, técnicas y físicas razonables para proteger los datos personales contra daño, pérdida, alteración, destrucción, uso, acceso o tratamiento no autorizado, sin perjuicio de los riesgos inherentes a cualquier sistema digital conectado a redes públicas.
+          </p>
+        </section>
+
+        <section class="bg-white border border-slate-200 rounded-2xl p-6 md:p-8 space-y-4">
+          <h2 class="text-xl font-bold">9. Publicación de información pública</h2>
+          <p class="text-sm text-slate-600 leading-relaxed">
+            La plataforma distingue entre información pública de interés general y datos personales protegidos. La publicación de convocatorias, fallos, adjudicaciones, reportes u otros contenidos de transparencia se realizará conforme a la normatividad aplicable, evitando divulgar datos personales fuera de los supuestos legales permitidos.
+          </p>
+        </section>
+
+        <section class="bg-white border border-slate-200 rounded-2xl p-6 md:p-8 space-y-4">
+          <h2 class="text-xl font-bold">10. Cambios al aviso</h2>
+          <p class="text-sm text-slate-600 leading-relaxed">
+            El presente aviso podrá modificarse por cambios normativos, operativos o tecnológicos. Las actualizaciones serán publicadas en esta misma página con la fecha de última actualización correspondiente.
+          </p>
+        </section>
+      </article>
+
+      <aside class="space-y-6">
+        <section class="bg-white border border-slate-200 rounded-2xl p-5">
+          <p class="text-xs uppercase tracking-wide text-primary-700 font-semibold">Enlaces rápidos</p>
+          <div class="mt-4 space-y-3 text-sm">
+            <a href="/frontend/auth/login.html" class="flex items-center justify-between rounded-xl border border-slate-200 px-4 py-3 hover:bg-slate-50 transition-colors">
+              <span>Volver al acceso</span>
+              <i class="ph ph-arrow-right"></i>
+            </a>
+            <a href="/frontend/publico/terminos-de-uso.html" class="flex items-center justify-between rounded-xl border border-slate-200 px-4 py-3 hover:bg-slate-50 transition-colors">
+              <span>Términos de Uso</span>
+              <i class="ph ph-arrow-right"></i>
+            </a>
+          </div>
+        </section>
+
+        <section class="bg-slate-900 text-slate-100 rounded-2xl p-5">
+          <p class="text-xs uppercase tracking-wide text-blue-300 font-semibold">Canal inicial</p>
+          <p class="mt-3 text-sm leading-relaxed text-slate-300">
+            Para aclaraciones relacionadas con tratamiento de datos personales:
+          </p>
+          <div class="mt-4 space-y-3 text-sm text-slate-200">
+            <a href="mailto:soporte@sgplopypc.gob.mx" class="inline-flex items-center gap-2 font-semibold text-white underline underline-offset-2">
+              <i class="ph ph-envelope-simple"></i>
+              soporte@sgplopypc.gob.mx
+            </a>
+            <p class="flex items-start gap-2">
+              <i class="ph ph-phone mt-0.5"></i>
+              <span>01 800 123 4567</span>
+            </p>
+            <p class="flex items-start gap-2">
+              <i class="ph ph-map-pin mt-0.5"></i>
+              <span>Palacio Municipal S/N, Centro, 91500 Coatepec, Veracruz</span>
+            </p>
+          </div>
+        </section>
+      </aside>
+    </div>
+  </main>
+</body>
+</html>

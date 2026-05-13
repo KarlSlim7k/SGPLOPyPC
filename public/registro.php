@@ -256,7 +256,7 @@
             <div class="flex items-start gap-3">
                 <input type="checkbox" id="terms" required class="w-4 h-4 mt-0.5 text-primary-600 rounded border-slate-300 focus:ring-primary-500">
                 <label for="terms" class="text-sm text-slate-600">
-                    Acepto los <a href="#" class="text-primary-600 underline hover:no-underline">Términos de Uso</a> y el <a href="#" class="text-primary-600 underline hover:no-underline">Aviso de Privacidad</a> del sistema SGPLOPyPC. Confirmo que la información proporcionada es verídica y está completa.
+                    Acepto los <a href="/frontend/publico/terminos-de-uso.html" class="text-primary-600 underline hover:no-underline">Términos de Uso</a> y el <a href="/frontend/publico/aviso-de-privacidad.html" class="text-primary-600 underline hover:no-underline">Aviso de Privacidad</a> del sistema SGPLOPyPC. Confirmo que la información proporcionada es verídica y está completa.
                 </label>
             </div>
 
@@ -317,8 +317,8 @@
             <div class="border-t border-slate-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-slate-600">
                 <p>&copy; 2026 SGPLOPyPC. Todos los derechos reservados.</p>
                 <div class="flex gap-5">
-                    <a href="#" class="hover:text-slate-400 transition-colors">Términos de Uso</a>
-                    <a href="#" class="hover:text-slate-400 transition-colors">Aviso de Privacidad</a>
+                    <a href="/frontend/publico/terminos-de-uso.html" class="hover:text-slate-400 transition-colors">Términos de Uso</a>
+                    <a href="/frontend/publico/aviso-de-privacidad.html" class="hover:text-slate-400 transition-colors">Aviso de Privacidad</a>
                 </div>
             </div>
         </div>

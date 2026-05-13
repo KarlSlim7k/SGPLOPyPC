@@ -170,8 +170,8 @@
             <div class="border-t border-slate-800 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-xs text-slate-600">
                 <p>&copy; 2026 SGPLOPyPC. Todos los derechos reservados.</p>
                 <div class="flex gap-5">
-                    <a href="#" class="hover:text-slate-400 transition-colors">Términos de Uso</a>
-                    <a href="#" class="hover:text-slate-400 transition-colors">Aviso de Privacidad</a>
+                    <a href="/frontend/publico/terminos-de-uso.html" class="hover:text-slate-400 transition-colors">Términos de Uso</a>
+                    <a href="/frontend/publico/aviso-de-privacidad.html" class="hover:text-slate-400 transition-colors">Aviso de Privacidad</a>
                 </div>
             </div>
         </div>
