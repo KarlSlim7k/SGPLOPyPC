@@ -1,31 +1,23 @@
 import { expect, test, type APIRequestContext } from '@playwright/test';
+import { fakeIp, loginToken, rlHeaders } from './helpers';
 
 const ADMIN_EMAIL = process.env.E2E_ADMIN_EMAIL || 'admin@sgplopypc.gob.mx';
 const ADMIN_PASSWORD = process.env.E2E_ADMIN_PASSWORD || 'admin123';
 
-async function loginToken(request: APIRequestContext, email: string, password: string) {
-  for (let i = 0; i < 2; i++) {
-    const res = await request.post('/api/v1/auth/login', { data: { email, password } });
-    if (res.status() === 429 && i === 0) { await new Promise((r) => setTimeout(r, 65_000)); continue; }
-    expect(res.ok(), `login ${res.status()}`).toBeTruthy();
-    return (await res.json()).data.token as string;
-  }
-  throw new Error('loginToken failed');
-}
-
 test.describe('Bloque D: registro → validación → login + notificaciones', () => {
   const uid = Date.now();
+  const ip = fakeIp();
   const newEmail = `e2e.bloque.d.${uid}@example.com`;
   const newPassword = 'BloqueDTest1!';
   let newProveedorId = 0;
   let adminToken = '';
   let providerToken = '';
   let providerMe: Record<string, unknown> = {};
+
   test.beforeAll(async ({ request }) => {
-    adminToken = await loginToken(request, ADMIN_EMAIL, ADMIN_PASSWORD);
+    adminToken = await loginToken(request, ADMIN_EMAIL, ADMIN_PASSWORD, fakeIp());
   });
 
-  // ── 1. Registro público ──────────────────────────────────────────────────
   test('API: registro público crea proveedor en PENDIENTE', async ({ request }) => {
     const res = await request.post('/api/v1/public/proveedores/registro', {
       data: {
@@ -41,12 +33,11 @@ test.describe('Bloque D: registro → validación → login + notificaciones', (
         password: newPassword,
         accepted_terms: true,
       },
+      headers: rlHeaders(ip),
     });
     expect(res.status()).toBe(201);
     const payload = await res.json();
     expect(payload?.data?.token).toBeTruthy();
-
-    // Cachear token inicial (proveedor PENDIENTE)
     providerToken = payload.data.token;
 
     const meRes = await request.get('/api/v1/me', {
@@ -76,7 +67,6 @@ test.describe('Bloque D: registro → validación → login + notificaciones', (
     expect(msg).toContain('validado');
   });
 
-  // ── 2. Admin valida el proveedor ─────────────────────────────────────────
   test('API: admin valida el proveedor → estatus VALIDADO', async ({ request }) => {
     expect(newProveedorId, 'id_proveedor debe estar disponible del test anterior').toBeTruthy();
 
@@ -86,8 +76,7 @@ test.describe('Bloque D: registro → validación → login + notificaciones', (
     });
     expect(patch.status()).toBe(200);
 
-    // Verificar desde el lado del proveedor y cachear token
-    providerToken = await loginToken(request, newEmail, newPassword);
+    providerToken = await loginToken(request, newEmail, newPassword, fakeIp());
     const meRes = await request.get('/api/v1/me', {
       headers: { Authorization: `Bearer ${providerToken}` },
     });
@@ -95,8 +84,8 @@ test.describe('Bloque D: registro → validación → login + notificaciones', (
     expect(providerMe?.proveedor?.estatus).toBe('VALIDADO');
   });
 
-  // ── 3. Login y redirección ───────────────────────────────────────────────
   test('UI: login del proveedor recién validado redirige a centro', async ({ page }) => {
+    await page.setExtraHTTPHeaders({ 'X-Forwarded-For': fakeIp() });
     await page.goto('/frontend/auth/login.html');
     await page.locator('#email').fill(newEmail);
     await page.locator('#password').fill(newPassword);
@@ -104,17 +93,14 @@ test.describe('Bloque D: registro → validación → login + notificaciones', (
     await page.waitForURL('**/frontend/proveedor/centro.html', { timeout: 20_000 });
     await expect(page.getByRole('heading', { name: /bienvenido/i })).toBeVisible();
 
-    // Badge de estatus debe mostrar VALIDADO
     const badge = page.getByTestId('estatus-proveedor');
     await expect(badge).not.toContainText('Cargando', { timeout: 15_000 });
     await expect(badge).toHaveAttribute('data-estatus', 'VALIDADO');
   });
 
-  // ── 4. Notificaciones ────────────────────────────────────────────────────
   test('API: admin puede enviar notificación al proveedor', async ({ request }) => {
     expect(newProveedorId, 'id_proveedor debe estar disponible').toBeTruthy();
 
-    // Obtener id_usuario del proveedor
     const provRes = await request.get(`/api/v1/proveedores/${newProveedorId}`, {
       headers: { Authorization: `Bearer ${adminToken}` },
     });
@@ -135,7 +121,7 @@ test.describe('Bloque D: registro → validación → login + notificaciones', (
   });
 
   test('API: proveedor lista notificaciones y puede marcar como leída', async ({ request }) => {
-    const token = providerToken || await loginToken(request, newEmail, newPassword);
+    const token = providerToken || await loginToken(request, newEmail, newPassword, fakeIp());
 
     const listRes = await request.get('/api/v1/notificaciones/mias', {
       headers: { Authorization: `Bearer ${token}` },
@@ -162,19 +148,16 @@ test.describe('Bloque D: registro → validación → login + notificaciones', (
 
   test('UI: página de notificaciones carga y muestra bandeja', async ({ page }) => {
     expect(providerToken, 'providerToken debe estar disponible').toBeTruthy();
-    const token = providerToken;
-    const meData = providerMe;
 
     await page.addInitScript(({ t, u }: { t: string; u: unknown }) => {
       localStorage.setItem('sgplopypc_token', t);
       localStorage.setItem('sgplopypc_user', JSON.stringify(u));
-    }, { t: token, u: meData });
+    }, { t: providerToken, u: providerMe });
 
     await page.goto('/frontend/proveedor/notificaciones.html');
     await expect(page.getByRole('heading', { name: /Mis notificaciones/i })).toBeVisible();
     await expect(page.locator('#summary')).not.toContainText('Cargando', { timeout: 15_000 });
     await expect(page.locator('#rows')).not.toContainText('Cargando notificaciones');
-    // Debe haber al menos una notificación (la que envió el admin)
     await expect(page.locator('#stat-total')).not.toHaveText('0');
   });
 });

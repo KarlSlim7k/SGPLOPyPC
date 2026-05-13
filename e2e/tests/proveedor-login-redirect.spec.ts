@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { loginUI } from './helpers';
 
 const PROVIDER_EMAIL = process.env.E2E_PROVIDER_EMAIL || 'proveedor@demo.mx';
 const PROVIDER_PASSWORD = process.env.E2E_PROVIDER_PASSWORD || 'proveedor123';

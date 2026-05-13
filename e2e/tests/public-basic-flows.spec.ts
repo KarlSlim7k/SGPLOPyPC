@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { loginUI } from './helpers';
 
 const PUBLIC_EMAIL = process.env.E2E_PUBLIC_EMAIL || 'publico@demo.mx';
 const PUBLIC_PASSWORD = process.env.E2E_PUBLIC_PASSWORD || 'publico123';

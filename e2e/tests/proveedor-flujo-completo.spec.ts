@@ -1,4 +1,5 @@
 import { expect, test, type APIRequestContext } from '@playwright/test';
+import { fakeIp, loginToken as loginTokenHelper } from './helpers';
 
 /**
  * Prueba E2E completa del flujo proveedor:
@@ -31,14 +32,7 @@ async function loginToken(
   email: string,
   password: string
 ): Promise<string> {
-  const response = await request.post('/api/v1/auth/login', {
-    data: { email, password },
-  });
-  expect(response.ok(), `login falló para ${email}`).toBeTruthy();
-  const payload = (await response.json()) as ApiEnvelope<{ token?: string }>;
-  const token = payload?.data?.token;
-  expect(token, 'el backend no regresó token JWT').toBeTruthy();
-  return token as string;
+  return loginTokenHelper(request, email, password, fakeIp());
 }
 
 async function getMe(request: APIRequestContext, token: string) {

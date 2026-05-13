@@ -1,17 +1,11 @@
 import { expect, test } from '@playwright/test';
+import { fakeIp, loginUI } from './helpers';
 
 const ADMIN_EMAIL = process.env.E2E_ADMIN_EMAIL || 'admin@sgplopypc.gob.mx';
 const ADMIN_PASSWORD = process.env.E2E_ADMIN_PASSWORD || 'admin123';
 
 async function loginAsAdmin(page: import('@playwright/test').Page): Promise<void> {
-  await page.goto('/frontend/auth/login.html');
-  await expect(page).toHaveTitle(/Iniciar Sesión/i);
-
-  await page.locator('#email').fill(ADMIN_EMAIL);
-  await page.locator('#password').fill(ADMIN_PASSWORD);
-  await page.getByRole('button', { name: /iniciar sesión/i }).click();
-
-  await page.waitForURL('**/frontend/admin/dashboard.html');
+  await loginUI(page, ADMIN_EMAIL, ADMIN_PASSWORD, '**/frontend/admin/dashboard.html');
   await expect(page.getByRole('heading', { name: /panel de control/i })).toBeVisible();
 }
 

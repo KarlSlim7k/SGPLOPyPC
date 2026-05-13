@@ -1,24 +1,10 @@
 import { expect, test, type APIRequestContext } from '@playwright/test';
+import { fakeIp, loginToken } from './helpers';
 
 const ADMIN_EMAIL = process.env.E2E_ADMIN_EMAIL || 'admin@sgplopypc.gob.mx';
 const ADMIN_PASSWORD = process.env.E2E_ADMIN_PASSWORD || 'admin123';
 const PROVIDER_EMAIL = process.env.E2E_PROVIDER_EMAIL || 'proveedor@demo.mx';
 const PROVIDER_PASSWORD = process.env.E2E_PROVIDER_PASSWORD || 'proveedor123';
-
-async function loginToken(request: APIRequestContext, email: string, password: string) {
-  // Retry once after 65s if rate-limited (5 logins/60s in production)
-  for (let attempt = 0; attempt < 2; attempt++) {
-    const res = await request.post('/api/v1/auth/login', { data: { email, password } });
-    if (res.status() === 429 && attempt === 0) {
-      await new Promise((r) => setTimeout(r, 65_000));
-      continue;
-    }
-    expect(res.ok(), `login falló para ${email}: ${res.status()}`).toBeTruthy();
-    const payload = await res.json();
-    return payload.data.token as string;
-  }
-  throw new Error('loginToken: no se pudo obtener token tras reintentos');
-}
 
 test.describe('Aclaraciones proveedor', () => {
   let providerToken = '';

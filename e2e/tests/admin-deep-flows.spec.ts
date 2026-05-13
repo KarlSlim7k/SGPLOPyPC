@@ -1,4 +1,5 @@
 import { expect, test } from '@playwright/test';
+import { loginUI } from './helpers';
 
 const ADMIN_EMAIL = process.env.E2E_ADMIN_EMAIL || 'admin@sgplopypc.gob.mx';
 const ADMIN_PASSWORD = process.env.E2E_ADMIN_PASSWORD || 'admin123';
@@ -10,26 +11,7 @@ function datePlusDays(days: number): string {
 }
 
 async function loginAsAdmin(page: import('@playwright/test').Page): Promise<void> {
-  for (let attempt = 0; attempt < 3; attempt++) {
-    await page.goto('/frontend/auth/login.html');
-    await page.locator('#email').fill(ADMIN_EMAIL);
-    await page.locator('#password').fill(ADMIN_PASSWORD);
-    await page.getByRole('button', { name: /iniciar sesi(?:ó|o)n/i }).click();
-
-    try {
-      await page.waitForURL('**/frontend/admin/dashboard.html', { timeout: 12000 });
-      return;
-    } catch (_) {
-      const loginError = ((await page.locator('#error-text').textContent()) || '').toLowerCase();
-      if (loginError.includes('demasiados') || loginError.includes('intentos') || loginError.includes('espera')) {
-        await page.waitForTimeout(65000);
-        continue;
-      }
-      throw new Error(`No se pudo iniciar sesión: ${loginError || 'error desconocido'}`);
-    }
-  }
-
-  throw new Error('No se pudo iniciar sesión después de múltiples reintentos.');
+  await loginUI(page, ADMIN_EMAIL, ADMIN_PASSWORD, '**/frontend/admin/dashboard.html');
 }
 
 test.describe('Admin deep flows', () => {

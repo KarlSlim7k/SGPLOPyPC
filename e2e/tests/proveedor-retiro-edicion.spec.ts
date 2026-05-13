@@ -1,17 +1,8 @@
 import { expect, test, type APIRequestContext } from '@playwright/test';
+import { fakeIp, loginToken } from './helpers';
 
 const PROVIDER_EMAIL = process.env.E2E_PROVIDER_EMAIL || 'proveedor@demo.mx';
 const PROVIDER_PASSWORD = process.env.E2E_PROVIDER_PASSWORD || 'proveedor123';
-
-async function loginToken(request: APIRequestContext, email: string, password: string) {
-  for (let i = 0; i < 2; i++) {
-    const res = await request.post('/api/v1/auth/login', { data: { email, password } });
-    if (res.status() === 429 && i === 0) { await new Promise((r) => setTimeout(r, 65_000)); continue; }
-    expect(res.ok(), `login ${res.status()}`).toBeTruthy();
-    return (await res.json()).data.token as string;
-  }
-  throw new Error('loginToken failed');
-}
 
 test.describe('Retiro de inscripción y edición de propuesta', () => {
   let token = '';

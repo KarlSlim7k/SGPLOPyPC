@@ -1,22 +1,8 @@
 import { expect, test, type APIRequestContext } from '@playwright/test';
+import { fakeIp, loginToken, rlHeaders } from './helpers';
 
 const PUBLIC_EMAIL = process.env.E2E_PUBLIC_EMAIL || 'publico@demo.mx';
 const PUBLIC_PASSWORD = process.env.E2E_PUBLIC_PASSWORD || 'publico123';
-
-async function loginToken(request: APIRequestContext, email: string, password: string): Promise<string> {
-  for (let attempt = 0; attempt < 3; attempt += 1) {
-    const response = await request.post('/api/v1/auth/login', { data: { email, password } });
-    if (response.status() === 429 && attempt < 2) {
-      await new Promise((r) => setTimeout(r, 2_000));
-      continue;
-    }
-    expect(response.ok(), `login ${email} -> ${response.status()}`).toBeTruthy();
-    const payload = await response.json();
-    expect(payload?.data?.token).toBeTruthy();
-    return payload.data.token as string;
-  }
-  throw new Error(`No se pudo autenticar a ${email}`);
-}
 
 test.describe('Fase 5 público: registro, navegación y rate limit', () => {
   test.describe.configure({ mode: 'serial' });
@@ -42,7 +28,9 @@ test.describe('Fase 5 público: registro, navegación y rate limit', () => {
     const uid = Date.now();
     const email = `e2e.fase5.publico.${uid}@example.com`;
     const password = 'Fase5Publico1!';
+    const ip = fakeIp();
 
+    await page.setExtraHTTPHeaders({ 'X-Forwarded-For': ip });
     await page.goto('/registro.php');
     await page.locator('#razon-social').fill(`Proveedor Fase5 ${uid} SA de CV`);
     await page.locator('#rfc').fill(`F5P${uid}RFC`);
@@ -68,7 +56,7 @@ test.describe('Fase 5 público: registro, navegación y rate limit', () => {
     await expect(page.getByRole('heading', { name: /bienvenido/i })).toBeVisible();
 
     // Sanity API: token funcional para /me
-    const token = await loginToken(request, email, password);
+    const token = await loginToken(request, email, password, ip);
     const meRes = await request.get('/api/v1/me', {
       headers: { Authorization: `Bearer ${token}` },
     });

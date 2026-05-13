@@ -1,19 +1,10 @@
 import { expect, test } from '@playwright/test';
+import { fakeIp, loginToken, loginUI } from './helpers';
 
 const ADMIN_EMAIL = process.env.E2E_ADMIN_EMAIL || 'admin@sgplopypc.gob.mx';
 const ADMIN_PASSWORD = process.env.E2E_ADMIN_PASSWORD || 'admin123';
 const PROVIDER_EMAIL = process.env.E2E_PROVIDER_EMAIL || 'proveedor@demo.mx';
 const PROVIDER_PASSWORD = process.env.E2E_PROVIDER_PASSWORD || 'proveedor123';
-
-async function loginToken(request: import('@playwright/test').APIRequestContext, email: string, password: string): Promise<string> {
-  const response = await request.post('/api/v1/auth/login', {
-    data: { email, password },
-  });
-  expect(response.ok()).toBeTruthy();
-  const payload = await response.json();
-  expect(payload?.data?.token).toBeTruthy();
-  return payload.data.token as string;
-}
 
 test.describe('Proveedor participaciones', () => {
   test('provider can list own participations and admin is rejected', async ({ request }) => {
@@ -34,11 +25,7 @@ test.describe('Proveedor participaciones', () => {
   });
 
   test('provider can open participaciones module from center', async ({ page }) => {
-    await page.goto('/frontend/auth/login.html');
-    await page.locator('#email').fill(PROVIDER_EMAIL);
-    await page.locator('#password').fill(PROVIDER_PASSWORD);
-    await page.getByRole('button', { name: /iniciar sesi(?:ó|o)n/i }).click();
-
+    await loginUI(page, PROVIDER_EMAIL, PROVIDER_PASSWORD, '**/frontend/proveedor/centro.html');
     await page.waitForURL('**/frontend/proveedor/centro.html');
     await page.getByRole('link', { name: /Mis participaciones/i }).first().click();
 
