@@ -43,6 +43,9 @@
             <button id="btn-preview" class="inline-flex items-center gap-2 border border-slate-200 hover:bg-slate-50 text-slate-700 font-semibold px-3 py-2 rounded-lg text-sm cursor-pointer transition-colors">
                 <i class="ph ph-eye text-base" aria-hidden="true"></i> Vista previa
             </button>
+            <button id="btn-duplicar" class="hidden inline-flex items-center gap-2 bg-emerald-600 hover:bg-emerald-700 text-white font-semibold px-3 py-2 rounded-lg text-sm cursor-pointer transition-colors shadow-sm">
+                <i class="ph ph-copy text-base" aria-hidden="true"></i> Duplicar para editar
+            </button>
             <button id="btn-save" class="inline-flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white font-semibold px-4 py-2 rounded-lg text-sm cursor-pointer transition-colors shadow-sm">
                 <i class="ph ph-floppy-disk text-base" aria-hidden="true"></i> Guardar
             </button>
@@ -165,9 +168,14 @@
             <div class="bg-white rounded-2xl border border-slate-200 p-5 space-y-3">
                 <h3 class="text-sm font-bold text-slate-700 flex items-center gap-2">
                     <i class="ph ph-database text-base text-emerald-600" aria-hidden="true"></i> Datos a incluir
+                    <span id="b-vars-count" class="ml-auto text-xs font-normal text-slate-500">0 seleccionadas</span>
                 </h3>
                 <p class="text-xs text-slate-500">Selecciona qué variables debe inyectar el sistema en el documento. Las marcadas son obligatorias o recomendadas para el estándar elegido.</p>
-                <div id="b-variables" class="grid grid-cols-2 gap-2 text-sm"></div>
+                <div class="flex items-center gap-2">
+                    <input type="text" id="b-vars-filter" placeholder="🔍 Filtrar variables…" class="flex-1 text-sm border border-slate-200 rounded-lg px-3 py-1.5 focus:outline-none focus:ring-2 focus:ring-primary-500">
+                    <button type="button" id="b-vars-toggleall" class="text-xs px-2 py-1 border border-slate-200 rounded-lg hover:bg-slate-50 cursor-pointer whitespace-nowrap">Marcar/desmarcar todas</button>
+                </div>
+                <div id="b-variables" class="space-y-2"></div>
             </div>
 
             <!-- Secciones del cuerpo -->
@@ -228,10 +236,13 @@
         </div>
 
         <!-- Assets (siempre visible cuando se está editando) -->
-        <div id="assets-card" class="bg-white rounded-2xl border border-slate-200 p-5 space-y-3 hidden">
+        <div id="assets-card" class="bg-white rounded-2xl border border-slate-200 p-5 space-y-3">
             <h3 class="text-sm font-bold text-slate-700 flex items-center gap-2">
                 <i class="ph ph-image text-base text-indigo-600" aria-hidden="true"></i> Assets (logos, firmas, sellos)
             </h3>
+            <div id="assets-locked" class="hidden bg-amber-50 border border-amber-200 rounded-lg p-3 text-xs text-amber-800">
+                <i class="ph ph-info text-sm mr-1"></i> Para subir logos, firmas o sellos primero <strong>guarda la plantilla</strong>. Una vez guardada podrás adjuntar imágenes y referenciarlas con <code class="font-mono bg-amber-100 px-1 rounded">{{logo_url}}</code>, <code class="font-mono bg-amber-100 px-1 rounded">{{firma_url}}</code> o <code class="font-mono bg-amber-100 px-1 rounded">{{sello_url}}</code> en el HTML.
+            </div>
             <div id="assets-list" class="space-y-2 text-sm"></div>
             <form id="form-asset" class="grid grid-cols-1 md:grid-cols-3 gap-2 items-end pt-3 border-t border-slate-100">
                 <div>
@@ -247,7 +258,7 @@
                     <label class="block text-xs font-semibold text-slate-500 mb-1">Archivo (PNG/JPG/SVG, máx 5MB)</label>
                     <input type="file" id="asset-file" accept="image/png,image/jpeg,image/svg+xml" class="w-full text-xs">
                 </div>
-                <button type="submit" class="bg-slate-900 hover:bg-slate-800 text-white font-semibold px-3 py-2 rounded-lg text-sm cursor-pointer">Subir</button>
+                <button type="submit" id="btn-asset-submit" class="bg-slate-900 hover:bg-slate-800 disabled:bg-slate-300 disabled:cursor-not-allowed text-white font-semibold px-3 py-2 rounded-lg text-sm cursor-pointer">Subir</button>
             </form>
         </div>
     </section>
@@ -418,6 +429,50 @@
     id_licitacion: 'ID interno de licitación',
   };
 
+  // Grupos para mostrar variables organizadas en el modo básico
+  const VARIABLES_GRUPOS = [
+    {
+      nombre: 'Procedimiento y convocante',
+      icono: 'ph-buildings',
+      color: 'blue',
+      vars: ['convocante_nombre', 'numero_licitacion', 'tipo_procedimiento', 'descripcion_proyecto',
+             'presupuesto_estimado', 'ubicacion_proyecto', 'estado_proceso', 'dependencia_nombre',
+             'dependencia_domicilio', 'responsable_nombre', 'id_licitacion']
+    },
+    {
+      nombre: 'Fechas, lugares y asistentes',
+      icono: 'ph-calendar',
+      color: 'amber',
+      vars: ['fecha_emision', 'fecha_acto', 'lugar_acto', 'fecha_cierre', 'hora_cierre',
+             'asistentes', 'aclaraciones_contenido', 'fecha_creacion', 'fecha_actualizacion', 'hitos']
+    },
+    {
+      nombre: 'Apertura y propuestas',
+      icono: 'ph-list-checks',
+      color: 'cyan',
+      vars: ['licitantes_filas', 'observaciones']
+    },
+    {
+      nombre: 'Adjudicación y fallo',
+      icono: 'ph-trophy',
+      color: 'emerald',
+      vars: ['licitante_ganador', 'licitante_rfc', 'monto_adjudicado', 'plazo_ejecucion',
+             'motivacion', 'licitantes_desechados', 'adjudicacion_resumen', 'numero_contrato']
+    },
+    {
+      nombre: 'Evaluación (dictamen)',
+      icono: 'ph-clipboard-text',
+      color: 'violet',
+      vars: ['evaluacion_tecnica_filas', 'evaluacion_economica_filas', 'conclusion']
+    },
+    {
+      nombre: 'Firmantes',
+      icono: 'ph-pen-nib',
+      color: 'rose',
+      vars: ['cargo_firmante', 'firmante_titular', 'firmante_juridico']
+    }
+  ];
+
   const SAMPLE_VARS = {
     numero_licitacion: 'LP-DEMO-2026-001',
     descripcion_proyecto: 'Construcción de auditorio comunitario',
@@ -516,16 +571,22 @@
     bFontsize: document.getElementById('b-fontsize'),
     bFontfamily: document.getElementById('b-fontfamily'),
     bVariables: document.getElementById('b-variables'),
+    bVarsCount: document.getElementById('b-vars-count'),
+    bVarsFilter: document.getElementById('b-vars-filter'),
+    bVarsToggleAll: document.getElementById('b-vars-toggleall'),
     bSeccionesList: document.getElementById('b-secciones-list'),
     bAddSeccion: document.getElementById('b-add-seccion'),
     bFirmantesList: document.getElementById('b-firmantes-list'),
     bAddFirmante: document.getElementById('b-add-firmante'),
     bPie: document.getElementById('b-pie'),
     assetsCard: document.getElementById('assets-card'),
+    assetsLocked: document.getElementById('assets-locked'),
     assetsList: document.getElementById('assets-list'),
     formAsset: document.getElementById('form-asset'),
     assetTipo: document.getElementById('asset-tipo'),
     assetFile: document.getElementById('asset-file'),
+    btnAssetSubmit: document.getElementById('btn-asset-submit'),
+    btnDuplicar: document.getElementById('btn-duplicar'),
   };
 
   // ===== Generador y extractor del estado Básico =====
@@ -706,36 +767,103 @@
   }
 
   function renderVariables() {
-    const keys = Object.keys(VARIABLES_CATALOGO);
-    els.bVariables.innerHTML = keys.map(function (k) {
-      const checked = basicoState.variables.has(k) ? 'checked' : '';
-      return '<label class="flex items-start gap-2 p-2 border border-slate-100 rounded-lg hover:bg-slate-50 cursor-pointer">'
-        + '<input type="checkbox" data-var="' + k + '" ' + checked + ' class="mt-0.5">'
-        + '<div><span class="font-mono text-xs text-primary-700">{{' + k + '}}</span>'
-        + '<p class="text-xs text-slate-500 mt-0.5">' + VARIABLES_CATALOGO[k] + '</p></div>'
-        + '</label>';
+    const filter = (els.bVarsFilter.value || '').toLowerCase().trim();
+    const colorClasses = {
+      blue: 'text-blue-600 bg-blue-50',
+      amber: 'text-amber-600 bg-amber-50',
+      cyan: 'text-cyan-600 bg-cyan-50',
+      emerald: 'text-emerald-600 bg-emerald-50',
+      violet: 'text-violet-600 bg-violet-50',
+      rose: 'text-rose-600 bg-rose-50'
+    };
+
+    const html = VARIABLES_GRUPOS.map(function (g, gi) {
+      const visibleVars = g.vars.filter(function (k) {
+        if (!filter) return true;
+        return k.toLowerCase().includes(filter)
+          || (VARIABLES_CATALOGO[k] || '').toLowerCase().includes(filter);
+      });
+      if (!visibleVars.length) return '';
+
+      const selectedCount = g.vars.filter(function (k) { return basicoState.variables.has(k); }).length;
+      const open = !!filter || gi < 2 || selectedCount > 0;
+
+      const items = visibleVars.map(function (k) {
+        const checked = basicoState.variables.has(k) ? 'checked' : '';
+        return '<label class="flex items-start gap-2 p-2 border border-slate-100 rounded-lg hover:bg-slate-50 cursor-pointer text-sm">'
+          + '<input type="checkbox" data-var="' + k + '" ' + checked + ' class="mt-0.5">'
+          + '<div class="min-w-0"><span class="font-mono text-xs text-primary-700 break-all">{{' + k + '}}</span>'
+          + '<p class="text-xs text-slate-500 mt-0.5">' + (VARIABLES_CATALOGO[k] || '') + '</p></div>'
+          + '</label>';
+      }).join('');
+
+      return '<details ' + (open ? 'open' : '') + ' class="border border-slate-100 rounded-lg group">'
+        + '<summary class="flex items-center gap-2 px-3 py-2 cursor-pointer ' + (colorClasses[g.color] || '') + ' rounded-t-lg group-[&[open]]:rounded-b-none">'
+        + '<i class="ph ' + g.icono + ' text-base" aria-hidden="true"></i>'
+        + '<span class="text-sm font-semibold flex-1">' + g.nombre + '</span>'
+        + '<span class="text-xs font-normal opacity-70">' + selectedCount + '/' + g.vars.length + '</span>'
+        + '<i class="ph ph-caret-down text-sm opacity-60 group-[&[open]]:rotate-180 transition-transform" aria-hidden="true"></i>'
+        + '</summary>'
+        + '<div class="grid grid-cols-1 md:grid-cols-2 gap-2 p-2 bg-white rounded-b-lg">' + items + '</div>'
+        + '</details>';
     }).join('');
+
+    els.bVariables.innerHTML = html || '<p class="text-xs text-slate-400 italic text-center py-4">Sin coincidencias para "' + escapeText(filter) + '"</p>';
+
+    // Actualizar contador
+    const total = VARIABLES_GRUPOS.reduce(function (a, g) { return a + g.vars.length; }, 0);
+    els.bVarsCount.textContent = basicoState.variables.size + ' de ' + total + ' seleccionadas';
+
     els.bVariables.querySelectorAll('input[type=checkbox]').forEach(function (cb) {
       cb.addEventListener('change', function () {
         if (cb.checked) basicoState.variables.add(cb.dataset.var);
         else basicoState.variables.delete(cb.dataset.var);
         generarHtmlDesdeBasico();
         renderPreview();
+        // Actualizar contador sin re-render para no perder el estado de details abiertos
+        els.bVarsCount.textContent = basicoState.variables.size + ' de ' + total + ' seleccionadas';
       });
     });
   }
 
   function renderSecciones() {
     els.bSeccionesList.innerHTML = basicoState.secciones.map(function (s, i) {
+      // Generar opciones del select de variables (todas las del catálogo)
+      const optsVars = Object.keys(VARIABLES_CATALOGO).map(function (k) {
+        return '<option value="' + k + '">{{' + k + '}} — ' + VARIABLES_CATALOGO[k] + '</option>';
+      }).join('');
       return '<div class="border border-slate-100 rounded-lg p-3 space-y-2 bg-slate-50">'
         + '<div class="flex items-center justify-between">'
         + '<span class="text-xs font-semibold text-slate-500">Sección ' + (i + 1) + '</span>'
+        + '<div class="flex items-center gap-2">'
+        + '<button type="button" data-idx="' + i + '" data-dir="up" class="btn-mov-seccion text-xs text-slate-500 hover:text-primary-600 cursor-pointer disabled:opacity-30" ' + (i === 0 ? 'disabled' : '') + ' title="Subir">↑</button>'
+        + '<button type="button" data-idx="' + i + '" data-dir="down" class="btn-mov-seccion text-xs text-slate-500 hover:text-primary-600 cursor-pointer disabled:opacity-30" ' + (i === basicoState.secciones.length - 1 ? 'disabled' : '') + ' title="Bajar">↓</button>'
         + '<button type="button" data-idx="' + i + '" class="btn-del-seccion text-xs text-red-600 hover:underline cursor-pointer">Eliminar</button>'
-        + '</div>'
+        + '</div></div>'
         + '<input type="text" data-idx="' + i + '" data-field="titulo" value="' + escapeAttr(s.titulo) + '" placeholder="Título de la sección" class="b-sec-input w-full text-sm border border-slate-200 rounded-lg px-3 py-1.5">'
-        + '<textarea data-idx="' + i + '" data-field="contenido" rows="3" placeholder="Contenido (HTML/texto). Usa {{variable}}." class="b-sec-input w-full text-sm border border-slate-200 rounded-lg px-3 py-1.5 font-mono text-xs">' + escapeText(s.contenido) + '</textarea>'
+        + '<div class="flex items-center gap-2 flex-wrap">'
+        + '<select class="b-sec-insert-var text-xs border border-slate-200 rounded-lg px-2 py-1 bg-white" data-idx="' + i + '"><option value="">+ Insertar variable…</option>' + optsVars + '</select>'
+        + '<button type="button" data-idx="' + i + '" data-snippet="table" class="b-sec-snippet text-xs px-2 py-1 border border-slate-200 rounded-lg hover:bg-white cursor-pointer">+ Tabla</button>'
+        + '<button type="button" data-idx="' + i + '" data-snippet="callout" class="b-sec-snippet text-xs px-2 py-1 border border-slate-200 rounded-lg hover:bg-white cursor-pointer">+ Bloque destacado</button>'
+        + '<button type="button" data-idx="' + i + '" data-snippet="logo" class="b-sec-snippet text-xs px-2 py-1 border border-slate-200 rounded-lg hover:bg-white cursor-pointer">+ Logo</button>'
+        + '</div>'
+        + '<textarea data-idx="' + i + '" data-field="contenido" rows="4" placeholder="Contenido (HTML/texto). Usa {{variable}} o los botones de arriba." class="b-sec-input b-sec-textarea w-full text-sm border border-slate-200 rounded-lg px-3 py-1.5 font-mono text-xs">' + escapeText(s.contenido) + '</textarea>'
         + '</div>';
     }).join('');
+
+    function insertarEnTextarea(idx, texto) {
+      const ta = els.bSeccionesList.querySelector('textarea.b-sec-textarea[data-idx="' + idx + '"]');
+      if (!ta) return;
+      const start = ta.selectionStart || ta.value.length;
+      const end = ta.selectionEnd || ta.value.length;
+      const nuevoValor = ta.value.slice(0, start) + texto + ta.value.slice(end);
+      ta.value = nuevoValor;
+      basicoState.secciones[idx].contenido = nuevoValor;
+      ta.focus();
+      ta.setSelectionRange(start + texto.length, start + texto.length);
+      debouncedRegenerar();
+    }
+
     els.bSeccionesList.querySelectorAll('.b-sec-input').forEach(function (el) {
       el.addEventListener('input', function () {
         const idx = Number(el.dataset.idx);
@@ -755,11 +883,70 @@
         renderPreview();
       });
     });
+    els.bSeccionesList.querySelectorAll('.btn-mov-seccion').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        const idx = Number(btn.dataset.idx);
+        const dir = btn.dataset.dir;
+        const arr = basicoState.secciones;
+        if (dir === 'up' && idx > 0) {
+          [arr[idx - 1], arr[idx]] = [arr[idx], arr[idx - 1]];
+        } else if (dir === 'down' && idx < arr.length - 1) {
+          [arr[idx + 1], arr[idx]] = [arr[idx], arr[idx + 1]];
+        }
+        renderSecciones();
+        generarHtmlDesdeBasico();
+        renderPreview();
+      });
+    });
+    els.bSeccionesList.querySelectorAll('.b-sec-insert-var').forEach(function (sel) {
+      sel.addEventListener('change', function () {
+        if (!sel.value) return;
+        const idx = Number(sel.dataset.idx);
+        // Marcar la variable como seleccionada también
+        basicoState.variables.add(sel.value);
+        renderVariables();
+        insertarEnTextarea(idx, '{{' + sel.value + '}}');
+        sel.value = '';
+      });
+    });
+    els.bSeccionesList.querySelectorAll('.b-sec-snippet').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        const idx = Number(btn.dataset.idx);
+        const snippet = btn.dataset.snippet;
+        let texto = '';
+        if (snippet === 'table') {
+          texto = '\n<table style="width:100%;border-collapse:collapse;border:1px solid #ccc"><thead><tr style="background:#f1f5f9"><th style="border:1px solid #ccc;padding:6px">Col 1</th><th style="border:1px solid #ccc;padding:6px">Col 2</th></tr></thead><tbody><tr><td style="border:1px solid #ccc;padding:6px">Fila 1</td><td style="border:1px solid #ccc;padding:6px">—</td></tr></tbody></table>\n';
+        } else if (snippet === 'callout') {
+          texto = '\n<div style="background:#fef3c7;border-left:4px solid #b45309;padding:10px 14px;margin:8px 0">\n  <p><strong>Importante:</strong> Tu mensaje aquí.</p>\n</div>\n';
+        } else if (snippet === 'logo') {
+          texto = '\n<div style="text-align:center"><img src="{{logo_url}}" alt="Logo" style="max-height:80px"></div>\n';
+        }
+        insertarEnTextarea(idx, texto);
+      });
+    });
   }
 
   els.bAddSeccion.addEventListener('click', function () {
     basicoState.secciones.push({ titulo: 'Nueva sección', contenido: '' });
     renderSecciones();
+    generarHtmlDesdeBasico();
+    renderPreview();
+  });
+
+  // Listener del filtro de variables
+  els.bVarsFilter.addEventListener('input', function () {
+    renderVariables();
+  });
+
+  // Toggle-all del grupo total de variables
+  els.bVarsToggleAll.addEventListener('click', function () {
+    const total = VARIABLES_GRUPOS.reduce(function (a, g) { return a + g.vars.length; }, 0);
+    if (basicoState.variables.size === total) {
+      basicoState.variables.clear();
+    } else {
+      VARIABLES_GRUPOS.forEach(function (g) { g.vars.forEach(function (v) { basicoState.variables.add(v); }); });
+    }
+    renderVariables();
     generarHtmlDesdeBasico();
     renderPreview();
   });
@@ -884,7 +1071,7 @@
       isPredefinida = !!p.es_predefinida;
       els.title.textContent = (isPredefinida ? 'Plantilla predefinida: ' : 'Editar: ') + p.nombre;
       els.subtitle.textContent = isPredefinida
-        ? 'Esta plantilla es de sólo lectura. Duplícala para crear una versión editable.'
+        ? 'Esta plantilla es de sólo lectura. Pulsa "Duplicar para editar" para crear una versión editable.'
         : 'Modifica el contenido y guarda.';
       els.nombre.value = p.nombre || '';
       els.descripcion.value = p.descripcion || '';
@@ -894,29 +1081,45 @@
       els.variablesCsv.value = p.variables_esperadas || '';
       els.html.value = p.contenido_html || '';
 
+      // Sincronizar la descripción del panel violeta con el estándar cargado
+      const estandarKey = p.tipo || 'PERSONALIZADA';
+      const estandarMeta = ESTANDARES[estandarKey] || ESTANDARES.PERSONALIZADA;
+      els.estandarDesc.innerHTML = estandarMeta.descripcion;
+
       // Si el HTML tiene la marca de modo Básico, intentar extraer el estado
       if ((p.contenido_html || '').includes(BASICO_MARKER)) {
-        basicoState = extraerBasicoState(p.contenido_html, p.tipo || 'PERSONALIZADA');
+        basicoState = extraerBasicoState(p.contenido_html, estandarKey);
         hydrateBasicoUI();
         setModo('basico');
       } else {
         // HTML personalizado, ir a modo avanzado
+        // Pero mantener un basicoState coherente con el estándar para que si el usuario
+        // cambia a básico, parta de un estado razonable (con confirm de pérdida)
+        basicoState = crearBasicoStateDesdeEstandar(estandarKey);
+        hydrateBasicoUI();
         setModo('avanzado');
       }
 
       if (isPredefinida) {
-        document.querySelectorAll('input,select,textarea,button').forEach(function (el) {
-          if (el.id !== 'btn-preview' && !el.closest('header') && !el.closest('nav')) {
-            // Permitir botón Volver y Vista previa
-            if (el.id !== 'btn-preview' && el.id !== 'tab-basico' && el.id !== 'tab-avanzado') {
-              el.disabled = true;
-            }
-          }
+        // Deshabilitar TODOS los inputs interactivos del formulario excepto los tabs y vista previa
+        const allowedIds = new Set(['btn-preview', 'tab-basico', 'tab-avanzado', 'btn-duplicar', 'b-vars-filter']);
+        document.querySelectorAll('input, select, textarea, button').forEach(function (el) {
+          if (!allowedIds.has(el.id)) el.disabled = true;
         });
         els.btnSave.style.display = 'none';
+        // Mostrar botón Duplicar
+        els.btnDuplicar.classList.remove('hidden');
+        els.btnDuplicar.disabled = false;
+        // Bloquear assets para predefinida (sin formulario de subida)
+        els.formAsset.style.display = 'none';
+        els.assetsLocked.classList.add('hidden');
+      } else {
+        // Habilitar form de assets (plantilla guardada)
+        els.formAsset.style.display = '';
+        els.btnAssetSubmit.disabled = false;
+        els.assetsLocked.classList.add('hidden');
       }
 
-      els.assetsCard.classList.remove('hidden');
       renderAssets(p.assets || []);
       renderPreview();
     } catch (e) {
@@ -994,7 +1197,7 @@
   els.formAsset.addEventListener('submit', async function (e) {
     e.preventDefault();
     if (!isEdit) {
-      alert('Guarda primero la plantilla para poder subir assets.');
+      alert('Guarda primero la plantilla para poder subir imágenes.');
       return;
     }
     const file = els.assetFile.files[0];
@@ -1003,6 +1206,8 @@
     fd.append('tipo', els.assetTipo.value);
     fd.append('nombre', file.name);
     fd.append('archivo', file);
+    els.btnAssetSubmit.disabled = true;
+    els.btnAssetSubmit.textContent = 'Subiendo...';
     try {
       await window.SGPLAdmin.authFetch('/admin/plantillas/' + idPlantilla + '/assets', {
         method: 'POST',
@@ -1010,8 +1215,40 @@
       });
       els.assetFile.value = '';
       await loadExisting();
-    } catch (e) {
-      alert('Error al subir: ' + e.message);
+    } catch (err) {
+      alert('Error al subir: ' + err.message);
+    } finally {
+      els.btnAssetSubmit.disabled = false;
+      els.btnAssetSubmit.textContent = 'Subir';
+    }
+  });
+
+  // ===== Botón Duplicar plantilla predefinida =====
+  els.btnDuplicar.addEventListener('click', async function () {
+    if (!isEdit) return;
+    if (!confirm('Se creará una copia editable de esta plantilla. ¿Continuar?')) return;
+    els.btnDuplicar.disabled = true;
+    const labelOriginal = els.btnDuplicar.innerHTML;
+    els.btnDuplicar.textContent = 'Duplicando...';
+    try {
+      const data = await window.SGPLAdmin.authFetch('/admin/plantillas/' + idPlantilla + '?with_content=1');
+      const p = data.data;
+      const r = await window.SGPLAdmin.authFetch('/admin/plantillas', {
+        method: 'POST',
+        body: JSON.stringify({
+          nombre: 'Copia de ' + p.nombre,
+          descripcion: p.descripcion,
+          tipo: p.tipo,
+          activa: 1,
+          variables_esperadas: p.variables_esperadas,
+          contenido_html: p.contenido_html,
+        }),
+      });
+      window.location.href = '/frontend/admin/plantillas/editor.html?id=' + r.data.id_plantilla;
+    } catch (err) {
+      alert('Error al duplicar: ' + err.message);
+      els.btnDuplicar.disabled = false;
+      els.btnDuplicar.innerHTML = labelOriginal;
     }
   });
 
@@ -1023,6 +1260,11 @@
     aplicarEstandar('PERSONALIZADA', true);
     els.estandar.value = 'PERSONALIZADA';
     setModo('basico');
+    // Plantilla aún no guardada: bloquear form de assets con mensaje claro
+    els.assetsLocked.classList.remove('hidden');
+    els.btnAssetSubmit.disabled = true;
+    els.assetFile.disabled = true;
+    els.assetTipo.disabled = true;
   }
 })();
 </script>
