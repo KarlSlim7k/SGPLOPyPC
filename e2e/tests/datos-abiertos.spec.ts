@@ -152,6 +152,7 @@ test.describe('API pública de datos abiertos — OCDS 1.1', () => {
     });
     expect(res.ok()).toBeTruthy();
     expect(res.headers()['cache-control']).toContain('max-age=300');
-    expect(res.headers()['x-content-type-options']).toBe('nosniff');
+    // Apache + PHP lo emiten ambos; basta con que contenga 'nosniff'
+    expect(res.headers()['x-content-type-options']).toContain('nosniff');
   });
 });
