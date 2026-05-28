@@ -513,8 +513,70 @@
     assetFile: document.getElementById('asset-file'),
   };
 
+  // ===== Generador y extractor del estado Básico =====
+  function obtenerHtmlDesdeBasico() {
+    const s = basicoState;
+    const seccionesHtml = s.secciones.map(function (sec) {
+      return '<div class="section">'
+        + '<h3>' + escapeText(sec.titulo) + '</h3>'
+        + '<div>' + sec.contenido + '</div>'
+        + '</div>';
+    }).join('\n');
+
+    const firmasHtml = s.firmantes.length
+      ? '<div class="firmas">' + s.firmantes.map(function (f) {
+          return '<div class="firma">' + (f || '&nbsp;') + '</div>';
+        }).join('') + '</div>'
+      : '';
+
+    const orgLine = s.org ? escapeText(s.org) : '{{convocante_nombre}}';
+
+    // Guardar el estado completo en un comentario JSON dentro del HTML generado
+    const stateComment = '<!-- SGPLOPYPC_BASICO_STATE: ' + JSON.stringify({
+      titulo: s.titulo,
+      org: s.org,
+      color: s.color,
+      fontSize: s.fontSize,
+      fontFamily: s.fontFamily,
+      variables: Array.from(s.variables),
+      secciones: s.secciones,
+      firmantes: s.firmantes,
+      pie: s.pie
+    }) + ' -->';
+
+    return BASICO_MARKER + '\n' + stateComment + '\n'
+      + '<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><style>\n'
+      + 'body{font-family:' + s.fontFamily + ';font-size:' + s.fontSize + ';color:#111;margin:30px}\n'
+      + '.header{text-align:center;border-bottom:2px solid ' + s.color + ';padding-bottom:10px;margin-bottom:18px}\n'
+      + '.header h1{margin:0;font-size:16pt;color:' + s.color + '}\n'
+      + '.header h2{margin:4px 0 0;font-size:12pt;color:#444;font-weight:normal}\n'
+      + '.section{margin-top:14px}\n'
+      + '.section h3{font-size:12pt;color:' + s.color + ';border-bottom:1px solid #ccc;padding-bottom:3px;margin-bottom:6px}\n'
+      + '.firmas{margin-top:32px;display:table;width:100%}\n'
+      + '.firma{display:table-cell;text-align:center;padding-top:50px;border-top:1px solid #333;padding-left:8px;padding-right:8px}\n'
+      + '.foot{margin-top:24px;font-size:9pt;color:#666;text-align:center}\n'
+      + 'table{width:100%;border-collapse:collapse}\n'
+      + '</style></head><body>\n'
+      + '<div class="header"><h1>' + orgLine + '</h1><h2>' + escapeText(s.titulo) + '</h2></div>\n'
+      + seccionesHtml + '\n'
+      + firmasHtml + '\n'
+      + '<div class="foot">' + s.pie + '</div>\n'
+      + '</body></html>';
+  }
+
   // ===== Modo: cambiar entre Básico y Avanzado =====
   function setModo(nuevo) {
+    if (nuevo === 'basico' && modo === 'avanzado') {
+      const currentHtml = els.html.value || '';
+      const tempHtml = obtenerHtmlDesdeBasico();
+      if (currentHtml !== tempHtml) {
+        const confirmSwitch = confirm('Advertencia: Al cambiar al modo Básico, se perderán todas las modificaciones manuales de HTML que hayas realizado en el modo Avanzado. ¿Deseas continuar?');
+        if (!confirmSwitch) {
+          return;
+        }
+      }
+    }
+
     modo = nuevo;
     if (nuevo === 'basico') {
       els.tabBasico.classList.add('bg-primary-600','text-white');
@@ -694,42 +756,7 @@
 
   // ===== Generador de HTML desde modo Básico =====
   function generarHtmlDesdeBasico() {
-    const s = basicoState;
-    const seccionesHtml = s.secciones.map(function (sec) {
-      return '<div class="section">'
-        + '<h3>' + escapeText(sec.titulo) + '</h3>'
-        + '<div>' + sec.contenido + '</div>'
-        + '</div>';
-    }).join('\n');
-
-    const firmasHtml = s.firmantes.length
-      ? '<div class="firmas">' + s.firmantes.map(function (f) {
-          return '<div class="firma">' + (f || '&nbsp;') + '</div>';
-        }).join('') + '</div>'
-      : '';
-
-    const orgLine = s.org ? escapeText(s.org) : '{{convocante_nombre}}';
-
-    const html = BASICO_MARKER + '\n'
-      + '<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><style>\n'
-      + 'body{font-family:' + s.fontFamily + ';font-size:' + s.fontSize + ';color:#111;margin:30px}\n'
-      + '.header{text-align:center;border-bottom:2px solid ' + s.color + ';padding-bottom:10px;margin-bottom:18px}\n'
-      + '.header h1{margin:0;font-size:16pt;color:' + s.color + '}\n'
-      + '.header h2{margin:4px 0 0;font-size:12pt;color:#444;font-weight:normal}\n'
-      + '.section{margin-top:14px}\n'
-      + '.section h3{font-size:12pt;color:' + s.color + ';border-bottom:1px solid #ccc;padding-bottom:3px;margin-bottom:6px}\n'
-      + '.firmas{margin-top:32px;display:table;width:100%}\n'
-      + '.firma{display:table-cell;text-align:center;padding-top:50px;border-top:1px solid #333;padding-left:8px;padding-right:8px}\n'
-      + '.foot{margin-top:24px;font-size:9pt;color:#666;text-align:center}\n'
-      + 'table{width:100%;border-collapse:collapse}\n'
-      + '</style></head><body>\n'
-      + '<div class="header"><h1>' + orgLine + '</h1><h2>' + escapeText(s.titulo) + '</h2></div>\n'
-      + seccionesHtml + '\n'
-      + firmasHtml + '\n'
-      + '<div class="foot">' + s.pie + '</div>\n'
-      + '</body></html>';
-
-    els.html.value = html;
+    els.html.value = obtenerHtmlDesdeBasico();
     // Variables esperadas CSV
     els.variablesCsv.value = Array.from(basicoState.variables).join(',');
   }
@@ -810,9 +837,31 @@
 
       // Si el HTML tiene la marca de modo Básico, intentar extraer el estado
       if ((p.contenido_html || '').includes(BASICO_MARKER)) {
-        // Mantener modo Básico
-        // Inicializar el state desde el estándar y dejar que el usuario edite
-        aplicarEstandar(p.tipo || 'PERSONALIZADA', false);
+        // Intentar extraer el JSON del estado
+        const match = (p.contenido_html || '').match(/<!-- SGPLOPYPC_BASICO_STATE: (\{.*?\}) -->/);
+        if (match) {
+          try {
+            const parsed = JSON.parse(match[1]);
+            basicoState = {
+              titulo: parsed.titulo || '',
+              org: parsed.org || '',
+              color: parsed.color || '#1d4ed8',
+              fontSize: parsed.fontSize || '11pt',
+              fontFamily: parsed.fontFamily || 'Arial,sans-serif',
+              variables: new Set(parsed.variables || []),
+              secciones: parsed.secciones || [],
+              firmantes: parsed.firmantes || [],
+              pie: parsed.pie || 'Documento generado por SGPLOPyPC · {{fecha_emision}}'
+            };
+          } catch (e) {
+            console.error("Failed to parse basic state JSON", e);
+            aplicarEstandar(p.tipo || 'PERSONALIZADA', false);
+          }
+        } else {
+          aplicarEstandar(p.tipo || 'PERSONALIZADA', false);
+        }
+        hydrateBasicoUI();
+        setModo('basico');
       } else {
         // HTML personalizado, ir a modo avanzado
         setModo('avanzado');
