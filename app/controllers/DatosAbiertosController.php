@@ -94,7 +94,7 @@ class DatosAbiertosController {
         header('Access-Control-Allow-Origin: *');
         header('Access-Control-Allow-Methods: GET, OPTIONS');
         header('Access-Control-Allow-Headers: Content-Type');
-        header('X-Content-Type-Options: nosniff');
+        // X-Content-Type-Options: nosniff ya lo establece setSecurityHeaders() global
         header('Cache-Control: public, max-age=300'); // 5 min
     }
 
