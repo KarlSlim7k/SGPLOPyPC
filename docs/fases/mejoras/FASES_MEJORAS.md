@@ -33,7 +33,7 @@ Antes de codificar cualquier fase, el agente DEBE leer:
 | E2E | Playwright (`e2e/`) |
 | Despliegue | Railway (auto-deploy desde GitHub `main`) |
 | Repositorio | `KarlSlim7k/SGPLOPyPC` |
-| URL producción | https://sgplopypc-production.up.railway.app |
+| URL producción | https://sgplopypc.up.railway.app |
 
 ### 0.3 Railway — proyecto vinculado
 
@@ -98,8 +98,8 @@ Cada fase termina así, sin excepciones:
 3. **Push a GitHub** — `git push origin main`
 4. **Esperar deploy de Railway** — 60–180s. Confirmar:
    - `railway logs -s SGPLOPyPC | tail -50`
-   - `curl -fsSL https://sgplopypc-production.up.railway.app/healthz` → `ok`
-   - `curl -fsSL https://sgplopypc-production.up.railway.app/api/v1/health` → `app.status=ok`, `db.status=ok`
+   - `curl -fsSL https://sgplopypc.up.railway.app/healthz` → `ok`
+   - `curl -fsSL https://sgplopypc.up.railway.app/api/v1/health` → `app.status=ok`, `db.status=ok`
 5. **Pruebas E2E con navegador (modo incógnito / sin cache)**
    - Herramienta primaria: **Playwright** (`e2e/`).
    - Herramienta alterna autorizada: **Webwright** (https://github.com/microsoft/Webwright) cuando se requiera control conversacional del navegador.
@@ -108,7 +108,7 @@ Cada fase termina así, sin excepciones:
      ```bash
      cd e2e
      E2E_BROWSER_CHANNEL=chrome \
-     E2E_BASE_URL='https://sgplopypc-production.up.railway.app' \
+     E2E_BASE_URL='https://sgplopypc.up.railway.app' \
      npx playwright test <specs-relevantes-de-la-fase> --reporter=line
      ```
 6. **Evidencia de cierre** (al final de cada fase, en doc de la fase):
@@ -175,7 +175,7 @@ Registro inmutable y consultable de todas las acciones críticas (login, cambios
 ### Verificación
 ```bash
 # Provocar un evento auditable
-curl -X POST https://sgplopypc-production.up.railway.app/api/v1/auth/login \
+curl -X POST https://sgplopypc.up.railway.app/api/v1/auth/login \
   -H "Content-Type: application/json" \
   -d '{"email":"admin@sgplopypc.gob.mx","password":"admin123"}'
 
@@ -307,7 +307,7 @@ Endpoint público (sin auth) que expone licitaciones, adjudicaciones y contratos
 
 ### Verificación
 ```bash
-curl -fsSL https://sgplopypc-production.up.railway.app/api/v1/datos-abiertos/releases?limit=5 | jq .
+curl -fsSL https://sgplopypc.up.railway.app/api/v1/datos-abiertos/releases?limit=5 | jq .
 # Validar contra schema OCDS con jsonschema (opcional, en CI)
 ```
 
@@ -468,7 +468,7 @@ Commit + push + deploy + E2E.
 
 - **Commit:** <hash de 40 chars>
 - **Deployment Railway:** <deployment id>
-- **URL:** https://sgplopypc-production.up.railway.app
+- **URL:** https://sgplopypc.up.railway.app
 - **Healthcheck post-deploy:** `/healthz` → 200, `/api/v1/health` → app=ok, db=ok
 - **E2E:** <X passed / Y skipped / Z failed>
 - **Endpoints nuevos:** lista
@@ -485,13 +485,13 @@ Commit + push + deploy + E2E.
 find app public -name '*.php' -print0 | xargs -0 -n1 php -l
 
 # Healthcheck producción
-curl -fsSL https://sgplopypc-production.up.railway.app/healthz
-curl -fsSL https://sgplopypc-production.up.railway.app/api/v1/health | jq .
+curl -fsSL https://sgplopypc.up.railway.app/healthz
+curl -fsSL https://sgplopypc.up.railway.app/api/v1/health | jq .
 
 # E2E completo (smoke)
 cd e2e
 E2E_BROWSER_CHANNEL=chrome \
-E2E_BASE_URL='https://sgplopypc-production.up.railway.app' \
+E2E_BASE_URL='https://sgplopypc.up.railway.app' \
 npx playwright test --reporter=line
 
 # Logs Railway
