@@ -53,6 +53,7 @@ require_once __DIR__ . '/../app/controllers/AclaracionController.php';
 require_once __DIR__ . '/../app/controllers/AuditoriaController.php';
 require_once __DIR__ . '/../app/controllers/PlantillaController.php';
 require_once __DIR__ . '/../app/controllers/DatosAbiertosController.php';
+require_once __DIR__ . '/../app/controllers/MetricasController.php';
 require_once __DIR__ . '/../app/routes/PublicRouteTable.php';
 
 // Middlewares
@@ -231,6 +232,43 @@ try {
             AuthMiddleware::handle();
             RoleMiddleware::handle('ADMINISTRADOR');
             (new PlantillaController())->generar();
+            break;
+
+        // Métricas del dashboard analítico (ADMINISTRADOR)
+        case $route === '/admin/metricas/tiempo-ciclo' && $requestMethod === 'GET':
+            AuthMiddleware::handle();
+            RoleMiddleware::handle('ADMINISTRADOR');
+            (new MetricasController())->tiempoCiclo();
+            break;
+
+        case $route === '/admin/metricas/proveedores-top' && $requestMethod === 'GET':
+            AuthMiddleware::handle();
+            RoleMiddleware::handle('ADMINISTRADOR');
+            (new MetricasController())->proveedoresTop();
+            break;
+
+        case $route === '/admin/metricas/montos-mensuales' && $requestMethod === 'GET':
+            AuthMiddleware::handle();
+            RoleMiddleware::handle('ADMINISTRADOR');
+            (new MetricasController())->montosMensuales();
+            break;
+
+        case $route === '/admin/metricas/cumplimiento' && $requestMethod === 'GET':
+            AuthMiddleware::handle();
+            RoleMiddleware::handle('ADMINISTRADOR');
+            (new MetricasController())->cumplimiento();
+            break;
+
+        case $route === '/admin/metricas/dependencias' && $requestMethod === 'GET':
+            AuthMiddleware::handle();
+            RoleMiddleware::handle('ADMINISTRADOR');
+            (new MetricasController())->dependencias();
+            break;
+
+        case $route === '/admin/metricas/flush-cache' && $requestMethod === 'POST':
+            AuthMiddleware::handle();
+            RoleMiddleware::handle('ADMINISTRADOR');
+            (new MetricasController())->flushCache();
             break;
 
         case $route === '/admin/dashboard' && $requestMethod === 'GET':
