@@ -54,4 +54,27 @@ class UserRepository {
             'hash' => $hash,
         ]);
     }
+
+    public function findMfaById(int $id): ?array {
+        $stmt = $this->db->prepare(
+            'SELECT id_usuario, email, rol, mfa_secret, mfa_enabled, mfa_backup_codes
+             FROM usuario WHERE id_usuario = :id LIMIT 1'
+        );
+        $stmt->execute(['id' => $id]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $row ?: null;
+    }
+
+    public function updateMfa(int $id, ?string $secret, bool $enabled, ?string $backupCodesJson): void {
+        $stmt = $this->db->prepare(
+            'UPDATE usuario SET mfa_secret = :secret, mfa_enabled = :enabled, mfa_backup_codes = :codes
+             WHERE id_usuario = :id'
+        );
+        $stmt->execute([
+            'id' => $id,
+            'secret' => $secret,
+            'enabled' => $enabled ? 1 : 0,
+            'codes' => $backupCodesJson,
+        ]);
+    }
 }

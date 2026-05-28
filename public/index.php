@@ -173,6 +173,30 @@ try {
             (new AuthController())->logout();
             break;
 
+        case $route === '/auth/login/mfa' && $requestMethod === 'POST':
+            $rl = new RateLimiter(10, 60);
+            $ip = getClientIp();
+            if (!$rl->isAllowed('mfa-login:' . $ip)) {
+                jsonResponse(false, 'Demasiados intentos. Intente más tarde.', null, null, 429);
+            }
+            (new AuthController())->loginMfa();
+            break;
+
+        case $route === '/me/mfa/enroll' && $requestMethod === 'POST':
+            AuthMiddleware::handle();
+            (new AuthController())->mfaEnroll();
+            break;
+
+        case $route === '/me/mfa/confirm' && $requestMethod === 'POST':
+            AuthMiddleware::handle();
+            (new AuthController())->mfaConfirm();
+            break;
+
+        case $route === '/me/mfa/disable' && $requestMethod === 'POST':
+            AuthMiddleware::handle();
+            (new AuthController())->mfaDisable();
+            break;
+
         case $route === '/admin/auditoria' && $requestMethod === 'GET':
             AuthMiddleware::handle();
             RoleMiddleware::handle('ADMINISTRADOR');

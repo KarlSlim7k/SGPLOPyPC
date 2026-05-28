@@ -11,10 +11,14 @@ class JwtHelper {
     }
 
     public function encode(array $payload): string {
+        return $this->encodeWithTtl($payload, $this->ttl);
+    }
+
+    public function encodeWithTtl(array $payload, int $ttlSeconds): string {
         $header = json_encode(['typ' => 'JWT', 'alg' => 'HS256']);
         $time = time();
         $payload['iat'] = $time;
-        $payload['exp'] = $time + $this->ttl;
+        $payload['exp'] = $time + $ttlSeconds;
 
         $base64Header = str_replace(['+', '/', '='], ['-', '_', ''], base64_encode($header));
         $base64Payload = str_replace(['+', '/', '='], ['-', '_', ''], base64_encode(json_encode($payload)));
@@ -24,7 +28,6 @@ class JwtHelper {
 
         return "$base64Header.$base64Payload.$base64Signature";
     }
-
     public function decode(string $token): ?array {
         $parts = explode('.', $token);
         if (count($parts) !== 3) return null;

@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Activar MFA — SGPLOPyPC</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] },
+                    colors: { primary: { 50:'#eff6ff',100:'#dbeafe',500:'#3b82f6',600:'#2563eb',700:'#1d4ed8',800:'#1e40af',900:'#1e3a8a' } }
+                }
+            }
+        }
+    </script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+<body class="font-sans antialiased min-h-screen bg-slate-50 flex items-center justify-center p-4">
+
+<div class="w-full max-w-md">
+    <div class="text-center mb-8">
+        <a href="/" class="inline-flex items-center gap-3 cursor-pointer">
+            <div class="w-10 h-10 rounded-xl bg-blue-600 flex items-center justify-center text-white font-bold text-base" aria-hidden="true">SG</div>
+            <div class="text-left">
+                <p class="font-bold text-slate-900 text-base leading-tight">SGPLOPyPC</p>
+                <p class="text-xs text-slate-500">Contrataciones Públicas</p>
+            </div>
+        </a>
+    </div>
+
+    <!-- Paso 1: Escanear QR -->
+    <div id="step-scan" class="bg-white rounded-2xl border border-slate-200 p-8 shadow-sm space-y-6">
+        <div>
+            <h1 class="text-xl font-bold text-slate-900">Activar autenticación de dos factores</h1>
+            <p class="text-sm text-slate-500 mt-1">Escanea el código QR con tu app de autenticación (Google Authenticator, Authy, etc.).</p>
+        </div>
+
+        <div id="qr-loading" class="flex items-center justify-center h-48">
+            <div class="animate-spin w-8 h-8 border-4 border-primary-600 border-t-transparent rounded-full"></div>
+        </div>
+        <div id="qr-container" class="hidden flex-col items-center gap-4">
+            <img id="qr-img" src="" alt="Código QR para MFA" class="w-48 h-48 rounded-xl border border-slate-200">
+            <div class="w-full">
+                <p class="text-xs font-semibold text-slate-500 mb-1">O ingresa el código manualmente:</p>
+                <code id="secret-display" class="block bg-slate-100 rounded-lg px-3 py-2 text-sm font-mono text-slate-800 break-all select-all"></code>
+            </div>
+        </div>
+
+        <div id="error-scan" class="hidden bg-red-50 border border-red-200 rounded-lg px-4 py-3 text-sm text-red-700"></div>
+
+        <button id="btn-next" class="hidden w-full bg-primary-600 hover:bg-primary-700 text-white font-semibold py-3 rounded-xl text-sm cursor-pointer transition-colors">
+            Ya escaneé el código — Continuar
+        </button>
+    </div>
+
+    <!-- Paso 2: Confirmar código -->
+    <div id="step-confirm" class="hidden bg-white rounded-2xl border border-slate-200 p-8 shadow-sm space-y-6">
+        <div>
+            <h1 class="text-xl font-bold text-slate-900">Confirmar código</h1>
+            <p class="text-sm text-slate-500 mt-1">Ingresa el código de 6 dígitos que muestra tu app para confirmar la activación.</p>
+        </div>
+
+        <div>
+            <label for="code-input" class="block text-sm font-semibold text-slate-700 mb-1.5">Código de verificación</label>
+            <input type="text" id="code-input" inputmode="numeric" pattern="\d{6}" maxlength="6" autocomplete="one-time-code"
+                class="w-full border border-slate-200 rounded-xl px-4 py-3 text-center text-2xl font-mono tracking-widest focus:outline-none focus:ring-2 focus:ring-primary-500"
+                placeholder="000000">
+        </div>
+
+        <div id="error-confirm" class="hidden bg-red-50 border border-red-200 rounded-lg px-4 py-3 text-sm text-red-700"></div>
+
+        <button id="btn-confirm" class="w-full bg-primary-600 hover:bg-primary-700 text-white font-semibold py-3 rounded-xl text-sm cursor-pointer transition-colors">
+            Activar MFA
+        </button>
+    </div>
+
+    <!-- Paso 3: Backup codes -->
+    <div id="step-backup" class="hidden bg-white rounded-2xl border border-slate-200 p-8 shadow-sm space-y-6">
+        <div class="flex items-start gap-3">
+            <div class="w-10 h-10 rounded-xl bg-emerald-100 text-emerald-600 flex items-center justify-center shrink-0" aria-hidden="true">
+                <i class="ph ph-check-circle text-2xl"></i>
+            </div>
+            <div>
+                <h1 class="text-xl font-bold text-slate-900">¡MFA activado!</h1>
+                <p class="text-sm text-slate-500 mt-1">Guarda estos códigos de respaldo en un lugar seguro. Cada uno se puede usar una sola vez si pierdes acceso a tu app.</p>
+            </div>
+        </div>
+
+        <div class="bg-amber-50 border border-amber-200 rounded-xl p-4">
+            <p class="text-xs font-bold text-amber-800 mb-3 flex items-center gap-1.5"><i class="ph ph-warning text-base"></i> No se mostrarán de nuevo</p>
+            <div id="backup-codes-grid" class="grid grid-cols-2 gap-2"></div>
+        </div>
+
+        <button id="btn-copy-codes" class="w-full border border-slate-200 hover:bg-slate-50 text-slate-700 font-semibold py-3 rounded-xl text-sm cursor-pointer transition-colors flex items-center justify-center gap-2">
+            <i class="ph ph-copy text-base" aria-hidden="true"></i> Copiar todos los códigos
+        </button>
+
+        <a id="btn-done" href="#" class="block w-full bg-primary-600 hover:bg-primary-700 text-white font-semibold py-3 rounded-xl text-sm cursor-pointer transition-colors text-center">
+            Ir al panel
+        </a>
+    </div>
+</div>
+
+<script src="/frontend/shared/admin.js"></script>
+<script>
+(function () {
+  const TOKEN_KEY = 'sgplopypc_token';
+  const USER_KEY = 'sgplopypc_user';
+  const token = localStorage.getItem(TOKEN_KEY);
+  if (!token) { window.location.href = '/frontend/auth/login.html'; return; }
+
+  const user = JSON.parse(localStorage.getItem(USER_KEY) || 'null');
+  const isAdmin = user && user.rol === 'ADMINISTRADOR';
+
+  const els = {
+    stepScan: document.getElementById('step-scan'),
+    stepConfirm: document.getElementById('step-confirm'),
+    stepBackup: document.getElementById('step-backup'),
+    qrLoading: document.getElementById('qr-loading'),
+    qrContainer: document.getElementById('qr-container'),
+    qrImg: document.getElementById('qr-img'),
+    secretDisplay: document.getElementById('secret-display'),
+    errorScan: document.getElementById('error-scan'),
+    errorConfirm: document.getElementById('error-confirm'),
+    btnNext: document.getElementById('btn-next'),
+    btnConfirm: document.getElementById('btn-confirm'),
+    codeInput: document.getElementById('code-input'),
+    backupGrid: document.getElementById('backup-codes-grid'),
+    btnCopy: document.getElementById('btn-copy-codes'),
+    btnDone: document.getElementById('btn-done'),
+  };
+
+  const dashboardUrl = isAdmin ? '/frontend/admin/dashboard.html' : '/frontend/proveedor/centro.html';
+  els.btnDone.href = dashboardUrl;
+
+  async function startEnroll() {
+    try {
+      const res = await fetch('/api/v1/me/mfa/enroll', {
+        method: 'POST',
+        headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' },
+      });
+      const body = await res.json();
+      if (!res.ok) {
+        els.qrLoading.classList.add('hidden');
+        els.errorScan.textContent = (body.errors && body.errors[0]) || body.message || 'Error al iniciar enrolamiento.';
+        els.errorScan.classList.remove('hidden');
+        return;
+      }
+      els.qrImg.src = body.data.qr_url;
+      els.secretDisplay.textContent = body.data.secret;
+      els.qrLoading.classList.add('hidden');
+      els.qrContainer.classList.remove('hidden');
+      els.qrContainer.classList.add('flex');
+      els.btnNext.classList.remove('hidden');
+    } catch (e) {
+      els.qrLoading.classList.add('hidden');
+      els.errorScan.textContent = 'Error de red. Intenta de nuevo.';
+      els.errorScan.classList.remove('hidden');
+    }
+  }
+
+  els.btnNext.addEventListener('click', function () {
+    els.stepScan.classList.add('hidden');
+    els.stepConfirm.classList.remove('hidden');
+    els.codeInput.focus();
+  });
+
+  els.btnConfirm.addEventListener('click', async function () {
+    const code = els.codeInput.value.trim();
+    if (!/^\d{6}$/.test(code)) {
+      els.errorConfirm.textContent = 'Ingresa un código de 6 dígitos.';
+      els.errorConfirm.classList.remove('hidden');
+      return;
+    }
+    els.btnConfirm.disabled = true;
+    els.btnConfirm.textContent = 'Verificando...';
+    els.errorConfirm.classList.add('hidden');
+    try {
+      const res = await fetch('/api/v1/me/mfa/confirm', {
+        method: 'POST',
+        headers: { Authorization: 'Bearer ' + token, 'Content-Type': 'application/json' },
+        body: JSON.stringify({ code }),
+      });
+      const body = await res.json();
+      if (!res.ok) {
+        els.errorConfirm.textContent = (body.errors && body.errors[0]) || body.message || 'Código incorrecto.';
+        els.errorConfirm.classList.remove('hidden');
+        els.btnConfirm.disabled = false;
+        els.btnConfirm.textContent = 'Activar MFA';
+        return;
+      }
+      // Mostrar backup codes
+      const codes = body.data.backup_codes || [];
+      els.backupGrid.innerHTML = codes.map(c =>
+        '<code class="bg-white border border-amber-200 rounded-lg px-3 py-2 text-sm font-mono text-center text-amber-900">' + c + '</code>'
+      ).join('');
+      els.stepConfirm.classList.add('hidden');
+      els.stepBackup.classList.remove('hidden');
+    } catch (e) {
+      els.errorConfirm.textContent = 'Error de red.';
+      els.errorConfirm.classList.remove('hidden');
+      els.btnConfirm.disabled = false;
+      els.btnConfirm.textContent = 'Activar MFA';
+    }
+  });
+
+  els.codeInput.addEventListener('keydown', function (e) {
+    if (e.key === 'Enter') els.btnConfirm.click();
+  });
+
+  els.btnCopy.addEventListener('click', function () {
+    const codes = Array.from(els.backupGrid.querySelectorAll('code')).map(c => c.textContent).join('\n');
+    navigator.clipboard.writeText(codes).then(function () {
+      els.btnCopy.textContent = '¡Copiado!';
+      setTimeout(function () {
+        els.btnCopy.innerHTML = '<i class="ph ph-copy text-base" aria-hidden="true"></i> Copiar todos los códigos';
+      }, 2000);
+    });
+  });
+
+  startEnroll();
+})();
+</script>
+</body>
+</html>
