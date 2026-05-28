@@ -54,6 +54,7 @@ require_once __DIR__ . '/../app/controllers/AuditoriaController.php';
 require_once __DIR__ . '/../app/controllers/PlantillaController.php';
 require_once __DIR__ . '/../app/controllers/DatosAbiertosController.php';
 require_once __DIR__ . '/../app/controllers/MetricasController.php';
+require_once __DIR__ . '/../app/controllers/NotificacionStreamController.php';
 require_once __DIR__ . '/../app/routes/PublicRouteTable.php';
 
 // Middlewares
@@ -293,6 +294,22 @@ try {
             AuthMiddleware::handle();
             RoleMiddleware::handle('ADMINISTRADOR');
             (new MetricasController())->flushCache();
+            break;
+
+        // Notificaciones en tiempo real (SSE)
+        case $route === '/notificaciones/stream' && $requestMethod === 'GET':
+            // Token puede venir como query param (EventSource no soporta headers)
+            if (!empty($_GET['token'])) {
+                $_SERVER['HTTP_AUTHORIZATION'] = 'Bearer ' . $_GET['token'];
+            }
+            AuthMiddleware::handle();
+            set_time_limit(30); // Permitir hasta 30s de ejecución para SSE
+            (new NotificacionStreamController())->stream();
+            break;
+
+        case $route === '/notificaciones/count' && $requestMethod === 'GET':
+            AuthMiddleware::handle();
+            (new NotificacionStreamController())->count();
             break;
 
         case $route === '/admin/dashboard' && $requestMethod === 'GET':

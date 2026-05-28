@@ -109,6 +109,11 @@
             </div>
 
             <div class="flex items-center gap-3">
+                <!-- Badge de notificaciones -->
+                <button id="notif-badge-btn" class="relative p-2 text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer" aria-label="Notificaciones">
+                    <i class="ph ph-bell text-xl" aria-hidden="true"></i>
+                    <span id="notif-badge" class="hidden absolute -top-0.5 -right-0.5 min-w-[18px] h-[18px] bg-red-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center px-1 leading-none" aria-live="polite"></span>
+                </button>
                 <div class="flex items-center gap-3">
                     <img src="https://ui-avatars.com/api/?name=SGPLOPyPC&background=1e40af&color=ffffff&size=80" alt="Avatar del usuario" class="w-9 h-9 rounded-full border-2 border-slate-200">
                     <div class="hidden sm:block">
@@ -626,6 +631,45 @@
   });
 
   loadDependencias().then(loadMetricas);
+})();
+</script>
+<script src="/frontend/shared/notif-stream.js"></script>
+<script>
+(function () {
+  var badge = document.getElementById('notif-badge');
+  var badgeBtn = document.getElementById('notif-badge-btn');
+  var token = localStorage.getItem('sgplopypc_token');
+  if (!token || !badge) return;
+
+  function updateBadge(count) {
+    if (count > 0) {
+      badge.textContent = count > 99 ? '99+' : String(count);
+      badge.classList.remove('hidden');
+    } else {
+      badge.classList.add('hidden');
+    }
+  }
+
+  if (badgeBtn) {
+    badgeBtn.addEventListener('click', function () {
+      window.location.href = '/frontend/admin/configuracion/index.html#notificaciones';
+    });
+  }
+
+  NotifStream.start({
+    token: token,
+    onBadge: updateBadge,
+    onNotif: function (notif) {
+      // Mostrar toast de notificación
+      var toast = document.createElement('div');
+      toast.className = 'fixed bottom-4 right-4 bg-white border border-slate-200 rounded-xl shadow-lg p-4 max-w-sm z-50 flex items-start gap-3 animate-pulse';
+      toast.innerHTML = '<div class="w-8 h-8 rounded-lg bg-primary-50 text-primary-600 flex items-center justify-center shrink-0"><i class="ph ph-bell text-base"></i></div>'
+        + '<div><p class="text-sm font-semibold text-slate-800">' + (notif.titulo || '') + '</p>'
+        + '<p class="text-xs text-slate-500 mt-0.5">' + (notif.mensaje || '').slice(0, 80) + '</p></div>';
+      document.body.appendChild(toast);
+      setTimeout(function () { toast.remove(); }, 5000);
+    },
+  });
 })();
 </script>
 </body>

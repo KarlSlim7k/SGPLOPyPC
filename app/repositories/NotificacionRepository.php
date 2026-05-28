@@ -78,4 +78,34 @@ class NotificacionRepository {
         $stmt->execute(['id' => $idLicitacion]);
         return $stmt->fetchAll(PDO::FETCH_COLUMN);
     }
+
+    /**
+     * Cuenta notificaciones no leídas del usuario (para badge).
+     */
+    public function findNoLeidasCount(int $idUsuario): int {
+        $stmt = $this->db->prepare(
+            'SELECT COUNT(*) FROM notificacion WHERE id_usuario_destino = :id AND leida = 0'
+        );
+        $stmt->execute(['id' => $idUsuario]);
+        return (int) $stmt->fetchColumn();
+    }
+
+    /**
+     * Notificaciones recientes desde un timestamp dado (para SSE polling).
+     * Devuelve las últimas N notificaciones del usuario desde $since.
+     */
+    public function findRecientes(int $idUsuario, string $since, int $limit = 20): array {
+        $stmt = $this->db->prepare(
+            'SELECT id_notificacion, tipo_notificacion, titulo, mensaje, leida, fecha_envio, id_licitacion
+             FROM notificacion
+             WHERE id_usuario_destino = :id AND fecha_envio > :since
+             ORDER BY fecha_envio DESC
+             LIMIT :limit'
+        );
+        $stmt->bindValue(':id', $idUsuario, PDO::PARAM_INT);
+        $stmt->bindValue(':since', $since);
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->execute();
+        return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
+    }
 }
