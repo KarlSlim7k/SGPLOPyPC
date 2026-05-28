@@ -474,6 +474,21 @@
   // Marca para detectar HTML generado por modo Básico
   const BASICO_MARKER = '<!-- SGPLOPYPC_BASICO_GENERATED -->';
 
+  function crearBasicoStateDesdeEstandar(key) {
+    const e = ESTANDARES[key] || ESTANDARES.PERSONALIZADA;
+    return {
+      titulo: e.titulo,
+      org: '',
+      color: e.colorBorde,
+      fontSize: '11pt',
+      fontFamily: 'Arial,sans-serif',
+      variables: new Set(e.variablesObligatorias),
+      secciones: e.secciones.map(function (s) { return { titulo: s.titulo, contenido: s.contenido }; }),
+      firmantes: e.firmantes.slice(),
+      pie: 'Documento generado por SGPLOPyPC · {{fecha_emision}}'
+    };
+  }
+
   const els = {
     title: document.getElementById('page-title'),
     subtitle: document.getElementById('page-subtitle'),
@@ -514,6 +529,65 @@
   };
 
   // ===== Generador y extractor del estado Básico =====
+  function serializarBasicoState() {
+    return {
+      titulo: basicoState.titulo,
+      org: basicoState.org,
+      color: basicoState.color,
+      fontSize: basicoState.fontSize,
+      fontFamily: basicoState.fontFamily,
+      variables: Array.from(basicoState.variables),
+      secciones: basicoState.secciones,
+      firmantes: basicoState.firmantes,
+      pie: basicoState.pie
+    };
+  }
+
+  function normalizarBasicoState(parsed, fallbackKey) {
+    const fallback = crearBasicoStateDesdeEstandar(fallbackKey || 'PERSONALIZADA');
+    const data = parsed && typeof parsed === 'object' ? parsed : {};
+    return {
+      titulo: typeof data.titulo === 'string' ? data.titulo : fallback.titulo,
+      org: typeof data.org === 'string' ? data.org : fallback.org,
+      color: typeof data.color === 'string' ? data.color : fallback.color,
+      fontSize: typeof data.fontSize === 'string' ? data.fontSize : fallback.fontSize,
+      fontFamily: typeof data.fontFamily === 'string' ? data.fontFamily : fallback.fontFamily,
+      variables: new Set(Array.isArray(data.variables) ? data.variables : Array.from(fallback.variables)),
+      secciones: Array.isArray(data.secciones)
+        ? data.secciones.map(function (s) {
+            return {
+              titulo: s && typeof s.titulo === 'string' ? s.titulo : '',
+              contenido: s && typeof s.contenido === 'string' ? s.contenido : ''
+            };
+          })
+        : fallback.secciones,
+      firmantes: Array.isArray(data.firmantes)
+        ? data.firmantes.map(function (f) { return String(f || ''); })
+        : fallback.firmantes,
+      pie: typeof data.pie === 'string' ? data.pie : fallback.pie
+    };
+  }
+
+  function extraerBasicoState(html, fallbackKey) {
+    const match = String(html || '').match(/<!--\s*SGPLOPYPC_BASICO_STATE:\s*([\s\S]*?)\s*-->/);
+    if (!match) return normalizarBasicoState(null, fallbackKey);
+    try {
+      return normalizarBasicoState(JSON.parse(match[1]), fallbackKey);
+    } catch (e) {
+      console.error('Failed to parse basic state JSON', e);
+      return normalizarBasicoState(null, fallbackKey);
+    }
+  }
+
+  function htmlCoincideConBasico() {
+    return (els.html.value || '') === obtenerHtmlDesdeBasico();
+  }
+
+  function updateAdvancedWarning() {
+    const hasHtml = !!(els.html.value || '').trim();
+    els.advWarning.classList.toggle('hidden', !hasHtml || htmlCoincideConBasico());
+  }
+
   function obtenerHtmlDesdeBasico() {
     const s = basicoState;
     const seccionesHtml = s.secciones.map(function (sec) {
@@ -532,17 +606,8 @@
     const orgLine = s.org ? escapeText(s.org) : '{{convocante_nombre}}';
 
     // Guardar el estado completo en un comentario JSON dentro del HTML generado
-    const stateComment = '<!-- SGPLOPYPC_BASICO_STATE: ' + JSON.stringify({
-      titulo: s.titulo,
-      org: s.org,
-      color: s.color,
-      fontSize: s.fontSize,
-      fontFamily: s.fontFamily,
-      variables: Array.from(s.variables),
-      secciones: s.secciones,
-      firmantes: s.firmantes,
-      pie: s.pie
-    }) + ' -->';
+    const stateJson = JSON.stringify(serializarBasicoState()).replace(/--/g, '\\u002d\\u002d');
+    const stateComment = '<!-- SGPLOPYPC_BASICO_STATE: ' + stateJson + ' -->';
 
     return BASICO_MARKER + '\n' + stateComment + '\n'
       + '<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><style>\n'
@@ -567,9 +632,7 @@
   // ===== Modo: cambiar entre Básico y Avanzado =====
   function setModo(nuevo) {
     if (nuevo === 'basico' && modo === 'avanzado') {
-      const currentHtml = els.html.value || '';
-      const tempHtml = obtenerHtmlDesdeBasico();
-      if (currentHtml !== tempHtml) {
+      if (!htmlCoincideConBasico()) {
         const confirmSwitch = confirm('Advertencia: Al cambiar al modo Básico, se perderán todas las modificaciones manuales de HTML que hayas realizado en el modo Avanzado. ¿Deseas continuar?');
         if (!confirmSwitch) {
           return;
@@ -599,9 +662,7 @@
       els.tabAvanzado.setAttribute('aria-selected','true');
       els.modoBasico.classList.add('hidden');
       els.modoAvanzado.classList.remove('hidden');
-      // Mostrar warning si HTML no fue generado por básico
-      const ok = (els.html.value || '').includes(BASICO_MARKER);
-      els.advWarning.classList.toggle('hidden', ok || !els.html.value);
+      updateAdvancedWarning();
       renderPreview();
     }
   }
@@ -616,13 +677,7 @@
     els.tipo.value = e.tipoCategoria;
 
     if (hardReset) {
-      basicoState.titulo = e.titulo;
-      basicoState.org = '';
-      basicoState.color = e.colorBorde;
-      basicoState.variables = new Set(e.variablesObligatorias);
-      basicoState.secciones = e.secciones.map(function (s) { return { titulo: s.titulo, contenido: s.contenido }; });
-      basicoState.firmantes = e.firmantes.slice();
-      basicoState.pie = 'Documento generado por SGPLOPyPC · {{fecha_emision}}';
+      basicoState = crearBasicoStateDesdeEstandar(key);
       hydrateBasicoUI();
     } else {
       // Solo marcar variables obligatorias del nuevo estándar
@@ -759,6 +814,7 @@
     els.html.value = obtenerHtmlDesdeBasico();
     // Variables esperadas CSV
     els.variablesCsv.value = Array.from(basicoState.variables).join(',');
+    updateAdvancedWarning();
   }
 
   // ===== Vista previa =====
@@ -785,6 +841,7 @@
 
   // ===== Modo avanzado: textarea cambios =====
   els.html.addEventListener('input', function () {
+    updateAdvancedWarning();
     clearTimeout(__debTimer);
     __debTimer = setTimeout(renderPreview, 700);
   });
@@ -799,13 +856,15 @@
       + '<p><strong>Objeto:</strong> {{descripcion_proyecto}}</p>'
       + '<p><strong>Fecha de emisión:</strong> {{fecha_emision}}</p>'
       + '</body></html>';
+    els.variablesCsv.value = 'convocante_nombre,tipo_procedimiento,numero_licitacion,descripcion_proyecto,fecha_emision';
+    updateAdvancedWarning();
     renderPreview();
   });
 
   els.btnFromBasico.addEventListener('click', function () {
     generarHtmlDesdeBasico();
     renderPreview();
-    els.advWarning.classList.add('hidden');
+    updateAdvancedWarning();
   });
 
   els.btnPreview.addEventListener('click', function () {
@@ -837,29 +896,7 @@
 
       // Si el HTML tiene la marca de modo Básico, intentar extraer el estado
       if ((p.contenido_html || '').includes(BASICO_MARKER)) {
-        // Intentar extraer el JSON del estado
-        const match = (p.contenido_html || '').match(/<!-- SGPLOPYPC_BASICO_STATE: (\{.*?\}) -->/);
-        if (match) {
-          try {
-            const parsed = JSON.parse(match[1]);
-            basicoState = {
-              titulo: parsed.titulo || '',
-              org: parsed.org || '',
-              color: parsed.color || '#1d4ed8',
-              fontSize: parsed.fontSize || '11pt',
-              fontFamily: parsed.fontFamily || 'Arial,sans-serif',
-              variables: new Set(parsed.variables || []),
-              secciones: parsed.secciones || [],
-              firmantes: parsed.firmantes || [],
-              pie: parsed.pie || 'Documento generado por SGPLOPyPC · {{fecha_emision}}'
-            };
-          } catch (e) {
-            console.error("Failed to parse basic state JSON", e);
-            aplicarEstandar(p.tipo || 'PERSONALIZADA', false);
-          }
-        } else {
-          aplicarEstandar(p.tipo || 'PERSONALIZADA', false);
-        }
+        basicoState = extraerBasicoState(p.contenido_html, p.tipo || 'PERSONALIZADA');
         hydrateBasicoUI();
         setModo('basico');
       } else {
