@@ -52,6 +52,7 @@ require_once __DIR__ . '/../app/controllers/SupportTicketController.php';
 require_once __DIR__ . '/../app/controllers/AclaracionController.php';
 require_once __DIR__ . '/../app/controllers/AuditoriaController.php';
 require_once __DIR__ . '/../app/controllers/PlantillaController.php';
+require_once __DIR__ . '/../app/controllers/DatosAbiertosController.php';
 require_once __DIR__ . '/../app/routes/PublicRouteTable.php';
 
 // Middlewares
@@ -87,12 +88,58 @@ function enforcePublicReadRateLimit(Logger $logger, string $routeKey): void {
     }
 }
 
+/**
+ * Rate limit de la API pública de datos abiertos (OCDS): 60 req/min por IP.
+ * Configurable via RATE_LIMIT_OCDS_MAX y RATE_LIMIT_OCDS_WINDOW.
+ */
+function enforceOcdsRateLimit(Logger $logger, string $routeKey): void {
+    $rl = new RateLimiter(
+        (int) env('RATE_LIMIT_OCDS_MAX', '60'),
+        (int) env('RATE_LIMIT_OCDS_WINDOW', '60')
+    );
+    $ip = getClientIp();
+    $key = 'ocds:' . $routeKey . ':' . $ip;
+    if (!$rl->isAllowed($key)) {
+        $logger->security('Rate limit exceeded on OCDS endpoint', ['ip' => $ip, 'route' => $routeKey]);
+        // Cabeceras CORS para que el cliente JS pueda leer el error
+        header('Access-Control-Allow-Origin: *');
+        jsonResponse(false, 'Demasiadas solicitudes. Intente más tarde.', null, null, 429);
+    }
+}
+
 try {
     $handledByRouteTable = dispatchPublicRouteTable($route, $requestMethod, $logger);
     if (!$handledByRouteTable) {
         switch (true) {
         case $route === '/health' && $requestMethod === 'GET':
             (new HealthController())->index();
+            break;
+
+        // ===== Datos abiertos (OCDS 1.1) — endpoints públicos sin autenticación =====
+        case $route === '/datos-abiertos/releases' && $requestMethod === 'OPTIONS':
+        case $route === '/datos-abiertos/release-package' && $requestMethod === 'OPTIONS':
+        case (preg_match('#^/datos-abiertos/releases/[^/]+$#', $route) && $requestMethod === 'OPTIONS'):
+            // Pre-flight CORS
+            header('Access-Control-Allow-Origin: *');
+            header('Access-Control-Allow-Methods: GET, OPTIONS');
+            header('Access-Control-Allow-Headers: Content-Type');
+            header('Access-Control-Max-Age: 86400');
+            http_response_code(204);
+            exit;
+
+        case $route === '/datos-abiertos/releases' && $requestMethod === 'GET':
+            enforceOcdsRateLimit($logger, 'releases');
+            (new DatosAbiertosController())->listReleases();
+            break;
+
+        case preg_match('#^/datos-abiertos/releases/([^/]+)$#', $route, $m) && $requestMethod === 'GET':
+            enforceOcdsRateLimit($logger, 'release-by-ocid');
+            (new DatosAbiertosController())->getReleaseByOcid($m[1]);
+            break;
+
+        case $route === '/datos-abiertos/release-package' && $requestMethod === 'GET':
+            enforceOcdsRateLimit($logger, 'release-package');
+            (new DatosAbiertosController())->getReleasePackage();
             break;
 
         case $route === '/auth/login' && $requestMethod === 'POST':
