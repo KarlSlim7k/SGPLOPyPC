@@ -167,4 +167,29 @@ class ContratoRepository {
         );
         $stmt->execute(['id' => $id, 'firmado_por' => $idUsuario]);
     }
+
+    public function updateEfirma(int $id, array $data): void {
+        $stmt = $this->db->prepare(
+            'UPDATE contrato SET
+                efirma_rfc = :rfc,
+                efirma_titular = :titular,
+                efirma_serial = :serial,
+                efirma_fecha = :fecha,
+                efirma_hash_documento = :hash_doc,
+                efirma_firma_b64 = :firma_b64,
+                fecha_firma_proveedor = :fecha,
+                firmado_por = :firmado_por
+             WHERE id_contrato = :id'
+        );
+        $stmt->execute([
+            'id' => $id,
+            'rfc' => $data['rfc'],
+            'titular' => $data['titular'],
+            'serial' => $data['serial'],
+            'fecha' => $data['fecha'],
+            'hash_doc' => $data['hash_documento'],
+            'firma_b64' => $data['firma_b64'],
+            'firmado_por' => $data['firmado_por'],
+        ]);
+    }
 }

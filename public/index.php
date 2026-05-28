@@ -55,6 +55,7 @@ require_once __DIR__ . '/../app/controllers/PlantillaController.php';
 require_once __DIR__ . '/../app/controllers/DatosAbiertosController.php';
 require_once __DIR__ . '/../app/controllers/MetricasController.php';
 require_once __DIR__ . '/../app/controllers/NotificacionStreamController.php';
+require_once __DIR__ . '/../app/controllers/EfirmaController.php';
 require_once __DIR__ . '/../app/routes/PublicRouteTable.php';
 
 // Middlewares
@@ -310,6 +311,13 @@ try {
         case $route === '/notificaciones/count' && $requestMethod === 'GET':
             AuthMiddleware::handle();
             (new NotificacionStreamController())->count();
+            break;
+
+        // Firma electrónica avanzada (e.firma/FIEL)
+        case preg_match('#^/contratos/(\d+)/firma-efirma$#', $route, $m) && $requestMethod === 'POST':
+            AuthMiddleware::handle();
+            RoleMiddleware::handle('PROVEEDOR');
+            (new EfirmaController())->firmar((int) $m[1]);
             break;
 
         case $route === '/admin/dashboard' && $requestMethod === 'GET':

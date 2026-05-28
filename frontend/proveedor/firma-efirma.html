@@ -1,0 +1,229 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Firma e.firma — SGPLOPyPC</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] },
+          colors: { primary: { 500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8' } }
+        }
+      }
+    }
+  </script>
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+<body class="bg-slate-50 text-slate-900 font-sans antialiased">
+
+  <nav class="bg-white border-b border-slate-200 sticky top-0 z-40">
+    <div class="max-w-2xl mx-auto px-4 py-3 flex items-center justify-between">
+      <a href="/frontend/proveedor/centro.html" class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-lg bg-primary-700 text-white flex items-center justify-center font-bold text-sm">SG</div>
+        <div>
+          <p class="font-bold text-sm">SGPLOPyPC</p>
+          <p class="text-xs text-slate-500">Firma electrónica avanzada</p>
+        </div>
+      </a>
+      <a href="/frontend/proveedor/contratos.html" class="inline-flex items-center gap-2 text-sm font-semibold px-3 py-2 rounded-lg border border-slate-200 hover:bg-slate-50">
+        <i class="ph ph-arrow-left"></i> Mis contratos
+      </a>
+    </div>
+  </nav>
+
+  <main class="max-w-2xl mx-auto px-4 py-8 space-y-6">
+
+    <!-- Encabezado -->
+    <div class="bg-white rounded-2xl border border-slate-200 p-6">
+      <div class="flex items-start gap-4">
+        <div class="w-12 h-12 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0" aria-hidden="true">
+          <i class="ph ph-seal text-2xl"></i>
+        </div>
+        <div>
+          <h1 class="text-xl font-bold text-slate-900">Firma electrónica avanzada (e.firma)</h1>
+          <p class="text-sm text-slate-500 mt-1">Firma tu contrato con tu e.firma del SAT. Los archivos se procesan en el servidor y <strong>nunca se almacenan</strong>.</p>
+          <p id="contrato-info" class="text-sm font-semibold text-slate-700 mt-2">Cargando contrato...</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Aviso de seguridad -->
+    <div class="bg-amber-50 border border-amber-200 rounded-xl p-4 flex items-start gap-3">
+      <i class="ph ph-shield-warning text-xl text-amber-600 shrink-0 mt-0.5" aria-hidden="true"></i>
+      <div class="text-sm text-amber-800">
+        <p class="font-semibold">Información de seguridad</p>
+        <ul class="mt-1 space-y-0.5 list-disc list-inside text-amber-700">
+          <li>Tu archivo <code>.key</code> y contraseña se usan únicamente en memoria.</li>
+          <li>Nunca se almacenan en el servidor.</li>
+          <li>Solo se guardan los metadatos del certificado y la firma digital.</li>
+          <li>Usa únicamente tu e.firma personal del SAT.</li>
+        </ul>
+      </div>
+    </div>
+
+    <!-- Formulario -->
+    <form id="form-efirma" class="bg-white rounded-2xl border border-slate-200 p-6 space-y-5" novalidate>
+      <div>
+        <label for="cer-file" class="block text-sm font-semibold text-slate-700 mb-1.5">
+          Certificado <code>.cer</code> <span class="text-red-500">*</span>
+        </label>
+        <input type="file" id="cer-file" name="cer" accept=".cer" required
+          class="w-full text-sm border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-500 file:mr-3 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100 cursor-pointer">
+        <p class="text-xs text-slate-400 mt-1">Archivo .cer de tu e.firma del SAT (máx. 100 KB)</p>
+      </div>
+
+      <div>
+        <label for="key-file" class="block text-sm font-semibold text-slate-700 mb-1.5">
+          Clave privada <code>.key</code> <span class="text-red-500">*</span>
+        </label>
+        <input type="file" id="key-file" name="key" accept=".key" required
+          class="w-full text-sm border border-slate-200 rounded-xl px-4 py-3 focus:outline-none focus:ring-2 focus:ring-primary-500 file:mr-3 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-primary-50 file:text-primary-700 hover:file:bg-primary-100 cursor-pointer">
+        <p class="text-xs text-slate-400 mt-1">Archivo .key de tu e.firma del SAT (máx. 100 KB)</p>
+      </div>
+
+      <div>
+        <label for="password-input" class="block text-sm font-semibold text-slate-700 mb-1.5">
+          Contraseña de la clave privada <span class="text-red-500">*</span>
+        </label>
+        <input type="password" id="password-input" name="password" required autocomplete="off"
+          class="w-full border border-slate-200 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-primary-500"
+          placeholder="Contraseña de tu e.firma">
+        <p class="text-xs text-slate-400 mt-1">No se almacena. Se usa únicamente para descifrar la clave privada.</p>
+      </div>
+
+      <div id="error-msg" class="hidden bg-red-50 border border-red-200 rounded-xl px-4 py-3 text-sm text-red-700"></div>
+
+      <button type="submit" id="btn-firmar"
+        class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-semibold py-3 rounded-xl text-sm cursor-pointer transition-colors flex items-center justify-center gap-2">
+        <i class="ph ph-seal-check text-base" aria-hidden="true"></i>
+        Firmar contrato con e.firma
+      </button>
+    </form>
+
+    <!-- Resultado exitoso -->
+    <div id="result-ok" class="hidden bg-white rounded-2xl border border-emerald-200 p-6 space-y-4">
+      <div class="flex items-start gap-4">
+        <div class="w-12 h-12 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center shrink-0" aria-hidden="true">
+          <i class="ph ph-check-circle text-2xl"></i>
+        </div>
+        <div>
+          <h2 class="text-lg font-bold text-slate-900">¡Contrato firmado exitosamente!</h2>
+          <p class="text-sm text-slate-500 mt-1">La firma electrónica avanzada ha sido registrada.</p>
+        </div>
+      </div>
+      <div id="result-details" class="bg-slate-50 rounded-xl p-4 text-sm space-y-2"></div>
+      <a href="/frontend/proveedor/contratos.html" class="block w-full text-center bg-primary-600 hover:bg-primary-700 text-white font-semibold py-3 rounded-xl text-sm cursor-pointer transition-colors">
+        Volver a mis contratos
+      </a>
+    </div>
+
+  </main>
+
+<script src="/frontend/shared/public.js"></script>
+<script>
+(function () {
+  var TOKEN_KEY = 'sgplopypc_token';
+  var token = localStorage.getItem(TOKEN_KEY);
+  if (!token) { window.location.href = '/frontend/auth/login.html'; return; }
+
+  // Obtener id_contrato de la URL: ?id=N
+  var params = new URLSearchParams(window.location.search);
+  var idContrato = params.get('id');
+  if (!idContrato || isNaN(Number(idContrato))) {
+    document.getElementById('contrato-info').textContent = 'ID de contrato no especificado.';
+    return;
+  }
+
+  // Cargar info del contrato
+  fetch('/api/v1/contratos/' + idContrato, {
+    headers: { Authorization: 'Bearer ' + token },
+  })
+    .then(function (r) { return r.ok ? r.json() : null; })
+    .then(function (body) {
+      if (!body || !body.data) return;
+      var c = body.data;
+      document.getElementById('contrato-info').textContent =
+        'Contrato: ' + (c.numero_contrato || '') + ' — ' + (c.nombre_empresa || '');
+      // Si ya está firmado con e.firma, mostrar aviso
+      if (c.efirma_firma_b64) {
+        document.getElementById('form-efirma').innerHTML =
+          '<div class="bg-emerald-50 border border-emerald-200 rounded-xl p-4 text-sm text-emerald-800">'
+          + '<i class="ph ph-seal-check text-base mr-2"></i>'
+          + 'Este contrato ya fue firmado con e.firma el ' + (c.efirma_fecha || '') + '.'
+          + '</div>';
+      }
+    })
+    .catch(function () {});
+
+  var form = document.getElementById('form-efirma');
+  var btnFirmar = document.getElementById('btn-firmar');
+  var errorMsg = document.getElementById('error-msg');
+  var resultOk = document.getElementById('result-ok');
+  var resultDetails = document.getElementById('result-details');
+
+  form.addEventListener('submit', async function (e) {
+    e.preventDefault();
+    errorMsg.classList.add('hidden');
+
+    var cerFile = document.getElementById('cer-file').files[0];
+    var keyFile = document.getElementById('key-file').files[0];
+    var password = document.getElementById('password-input').value;
+
+    if (!cerFile || !keyFile || !password) {
+      errorMsg.textContent = 'Todos los campos son obligatorios.';
+      errorMsg.classList.remove('hidden');
+      return;
+    }
+
+    btnFirmar.disabled = true;
+    btnFirmar.innerHTML = '<i class="ph ph-spinner animate-spin text-base" aria-hidden="true"></i> Firmando...';
+
+    var fd = new FormData();
+    fd.append('cer', cerFile);
+    fd.append('key', keyFile);
+    fd.append('password', password);
+
+    try {
+      var res = await fetch('/api/v1/contratos/' + idContrato + '/firma-efirma', {
+        method: 'POST',
+        headers: { Authorization: 'Bearer ' + token },
+        body: fd,
+      });
+      var body = await res.json();
+
+      if (!res.ok) {
+        errorMsg.textContent = (body.errors && body.errors[0]) || body.message || 'Error al firmar.';
+        errorMsg.classList.remove('hidden');
+        btnFirmar.disabled = false;
+        btnFirmar.innerHTML = '<i class="ph ph-seal-check text-base" aria-hidden="true"></i> Firmar contrato con e.firma';
+        return;
+      }
+
+      // Éxito
+      var d = body.data;
+      resultDetails.innerHTML = [
+        '<div class="flex justify-between"><span class="text-slate-500">RFC firmante</span><span class="font-semibold">' + (d.efirma_rfc || '—') + '</span></div>',
+        '<div class="flex justify-between"><span class="text-slate-500">Titular</span><span class="font-semibold">' + (d.efirma_titular || '—') + '</span></div>',
+        '<div class="flex justify-between"><span class="text-slate-500">N° serie certificado</span><span class="font-mono text-xs">' + (d.efirma_serial || '—') + '</span></div>',
+        '<div class="flex justify-between"><span class="text-slate-500">Fecha de firma</span><span class="font-semibold">' + (d.efirma_fecha || '—') + '</span></div>',
+        '<div class="flex justify-between"><span class="text-slate-500">Certificado válido hasta</span><span class="font-semibold">' + (d.certificado_vigente_hasta || '—') + '</span></div>',
+      ].join('');
+
+      form.classList.add('hidden');
+      resultOk.classList.remove('hidden');
+    } catch (err) {
+      errorMsg.textContent = 'Error de red. Intenta de nuevo.';
+      errorMsg.classList.remove('hidden');
+      btnFirmar.disabled = false;
+      btnFirmar.innerHTML = '<i class="ph ph-seal-check text-base" aria-hidden="true"></i> Firmar contrato con e.firma';
+    }
+  });
+})();
+</script>
+</body>
+</html>
