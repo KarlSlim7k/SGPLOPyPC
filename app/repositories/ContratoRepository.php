@@ -174,10 +174,10 @@ class ContratoRepository {
                 efirma_rfc = :rfc,
                 efirma_titular = :titular,
                 efirma_serial = :serial,
-                efirma_fecha = :fecha,
+                efirma_fecha = :efirma_fecha,
                 efirma_hash_documento = :hash_doc,
                 efirma_firma_b64 = :firma_b64,
-                fecha_firma_proveedor = :fecha,
+                fecha_firma_proveedor = :fecha_firma,
                 firmado_por = :firmado_por
              WHERE id_contrato = :id'
         );
@@ -186,9 +186,10 @@ class ContratoRepository {
             'rfc' => $data['rfc'],
             'titular' => $data['titular'],
             'serial' => $data['serial'],
-            'fecha' => $data['fecha'],
+            'efirma_fecha' => $data['fecha'],
             'hash_doc' => $data['hash_documento'],
             'firma_b64' => $data['firma_b64'],
+            'fecha_firma' => $data['fecha'],
             'firmado_por' => $data['firmado_por'],
         ]);
     }

@@ -23,7 +23,7 @@ PREPARE s FROM @sql; EXECUTE s; DEALLOCATE PREPARE s;
 SET @col = (SELECT COUNT(*) FROM information_schema.COLUMNS
             WHERE TABLE_SCHEMA = DATABASE() AND TABLE_NAME = 'contrato' AND COLUMN_NAME = 'efirma_serial');
 SET @sql = IF(@col = 0,
-    'ALTER TABLE contrato ADD COLUMN efirma_serial VARCHAR(40) NULL AFTER efirma_titular',
+    'ALTER TABLE contrato ADD COLUMN efirma_serial VARCHAR(64) NULL AFTER efirma_titular',
     'SELECT "efirma_serial ya existe"');
 PREPARE s FROM @sql; EXECUTE s; DEALLOCATE PREPARE s;
 

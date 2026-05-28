@@ -46,7 +46,7 @@ test.describe('Firma electrónica avanzada (e.firma/FIEL)', () => {
     testCert = generateTestCert();
 
     // Buscar un contrato del proveedor demo (o crear uno si no existe)
-    const contratos = await request.get('/api/v1/contratos/mis-contratos?limit=1', {
+    const contratos = await request.get('/api/v1/contratos/mios?limit=1', {
       headers: { Authorization: `Bearer ${proveedorToken}` },
     });
     const body = await contratos.json();
