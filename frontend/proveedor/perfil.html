@@ -62,6 +62,10 @@
           <i class="ph ph-spinner animate-spin"></i>
           <span>Cargando...</span>
         </div>
+        <div id="score-reputacion-badge" class="hidden inline-flex w-fit items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border" title="Score de reputación">
+          <i class="ph ph-star text-sm"></i>
+          <span id="score-reputacion-valor">—</span>
+        </div>
       </div>
     </section>
 
@@ -275,6 +279,33 @@
       document.getElementById('res-id').textContent = currentProvider.id_proveedor || 'N/A';
       document.getElementById('res-fecha').textContent = SGPLAdmin.formatDate(currentProvider.fecha_registro);
       document.getElementById('res-participaciones').textContent = String(currentProvider.total_licitaciones || 0);
+
+      // Cargar score de reputación
+      var idProv = currentProvider.id_proveedor;
+      if (idProv) {
+        SGPLAdmin.authFetch('/proveedores/' + idProv + '/reputacion')
+          .then(function (r) {
+            var badge = document.getElementById('score-reputacion-badge');
+            var valor = document.getElementById('score-reputacion-valor');
+            if (!badge || !valor) return;
+            var score = r && r.data && r.data.score_reputacion;
+            var total = r && r.data && r.data.total_evaluaciones;
+            if (score === null || score === undefined || total === 0) {
+              badge.classList.add('hidden');
+              return;
+            }
+            var s = parseFloat(score);
+            var cls = s >= 4.5 ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+                    : s >= 3.5 ? 'bg-blue-50 text-blue-700 border-blue-200'
+                    : s >= 2.5 ? 'bg-amber-50 text-amber-700 border-amber-200'
+                    : 'bg-red-50 text-red-700 border-red-200';
+            badge.className = 'inline-flex w-fit items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border ' + cls;
+            badge.title = 'Score de reputación (' + total + ' evaluaciones)';
+            valor.textContent = s.toFixed(2) + ' / 5.00';
+            badge.classList.remove('hidden');
+          })
+          .catch(function () {});
+      }
     }
 
     async function loadProfile() {

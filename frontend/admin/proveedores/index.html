@@ -165,12 +165,13 @@
                                     <th class="px-6 py-3.5 font-semibold text-slate-500 text-xs uppercase tracking-wide">Licitaciones</th>
                                     <th class="px-6 py-3.5 font-semibold text-slate-500 text-xs uppercase tracking-wide">Registro</th>
                                     <th class="px-6 py-3.5 font-semibold text-slate-500 text-xs uppercase tracking-wide">Estatus</th>
+                                    <th class="px-6 py-3.5 font-semibold text-slate-500 text-xs uppercase tracking-wide">Score</th>
                                     <th class="px-6 py-3.5 font-semibold text-slate-500 text-xs uppercase tracking-wide text-right">Acciones</th>
                                 </tr>
                             </thead>
                             <tbody class="divide-y divide-slate-100">
                                 <tr>
-                                    <td colspan="7" class="px-6 py-8 text-center text-slate-500">Cargando proveedores...</td>
+                                    <td colspan="8" class="px-6 py-8 text-center text-slate-500">Cargando proveedores...</td>
                                 </tr>
                             </tbody>
                         </table>
@@ -212,6 +213,20 @@
     return status.charAt(0) + status.slice(1).toLowerCase();
   }
 
+  function scoreBadge(score, total) {
+    if (score === null || score === undefined || total === 0) {
+      return '<span class="text-xs text-slate-400">Sin eval.</span>';
+    }
+    var s = parseFloat(score);
+    var cls = s >= 4.5 ? 'bg-emerald-50 text-emerald-700 border-emerald-200'
+            : s >= 3.5 ? 'bg-blue-50 text-blue-700 border-blue-200'
+            : s >= 2.5 ? 'bg-amber-50 text-amber-700 border-amber-200'
+            : 'bg-red-50 text-red-700 border-red-200';
+    var icon = s >= 4.5 ? '★★★★★' : s >= 3.5 ? '★★★★☆' : s >= 2.5 ? '★★★☆☆' : '★★☆☆☆';
+    return '<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold border ' + cls + '" title="' + total + ' evaluaciones">'
+      + s.toFixed(2) + ' ' + icon + '</span>';
+  }
+
   function countByStatus(items, status) {
     return items.filter(function (p) { return p.estatus === status; }).length;
   }
@@ -239,6 +254,7 @@
             + '<td class="px-6 py-4 text-slate-800 font-bold text-sm">' + (p.total_licitaciones || 0) + '</td>'
             + '<td class="px-6 py-4 text-slate-500 text-xs whitespace-nowrap">' + window.SGPLAdmin.formatDate(p.fecha_registro) + '</td>'
             + '<td class="px-6 py-4 whitespace-nowrap"><span class="px-2.5 py-1 rounded-full text-xs font-semibold border ' + badge(p.estatus) + '">' + formatStatusLabel(p.estatus) + '</span></td>'
+            + '<td class="px-6 py-4 whitespace-nowrap">' + scoreBadge(p.score_reputacion, p.total_evaluaciones) + '</td>'
             + '<td class="px-6 py-4 text-right"><select data-id="' + p.id_proveedor + '" class="change-status px-2 py-1 text-xs border rounded-lg bg-white">'
             + '<option value="PENDIENTE"' + (p.estatus === 'PENDIENTE' ? ' selected' : '') + '>PENDIENTE</option>'
             + '<option value="VALIDADO"' + (p.estatus === 'VALIDADO' ? ' selected' : '') + '>VALIDADO</option>'
@@ -246,7 +262,7 @@
             + '<option value="SUSPENDIDO"' + (p.estatus === 'SUSPENDIDO' ? ' selected' : '') + '>SUSPENDIDO</option>'
             + '</select></td></tr>';
         }).join('')
-      : '<tr><td colspan="7" class="px-6 py-8 text-center text-slate-500">Sin proveedores para los filtros actuales.</td></tr>';
+      : '<tr><td colspan="8" class="px-6 py-8 text-center text-slate-500">Sin proveedores para los filtros actuales.</td></tr>';
 
     summary.textContent = 'Mostrando ' + filtered.length + ' de ' + items.length + ' proveedores';
 

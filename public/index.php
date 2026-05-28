@@ -56,6 +56,7 @@ require_once __DIR__ . '/../app/controllers/DatosAbiertosController.php';
 require_once __DIR__ . '/../app/controllers/MetricasController.php';
 require_once __DIR__ . '/../app/controllers/NotificacionStreamController.php';
 require_once __DIR__ . '/../app/controllers/EfirmaController.php';
+require_once __DIR__ . '/../app/controllers/ReputacionController.php';
 require_once __DIR__ . '/../app/routes/PublicRouteTable.php';
 
 // Middlewares
@@ -318,6 +319,18 @@ try {
             AuthMiddleware::handle();
             RoleMiddleware::handle('PROVEEDOR');
             (new EfirmaController())->firmar((int) $m[1]);
+            break;
+
+        // Reputación de proveedores
+        case preg_match('#^/contratos/(\d+)/evaluacion-postcontrato$#', $route, $m) && $requestMethod === 'POST':
+            AuthMiddleware::handle();
+            RoleMiddleware::handle('ADMINISTRADOR');
+            (new ReputacionController())->crearEvaluacion((int) $m[1]);
+            break;
+
+        case preg_match('#^/proveedores/(\d+)/reputacion$#', $route, $m) && $requestMethod === 'GET':
+            AuthMiddleware::handle();
+            (new ReputacionController())->getReputacion((int) $m[1]);
             break;
 
         case $route === '/admin/dashboard' && $requestMethod === 'GET':
