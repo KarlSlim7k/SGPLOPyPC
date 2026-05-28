@@ -50,11 +50,16 @@ require_once __DIR__ . '/../app/controllers/PublicController.php';
 require_once __DIR__ . '/../app/controllers/NotificacionController.php';
 require_once __DIR__ . '/../app/controllers/SupportTicketController.php';
 require_once __DIR__ . '/../app/controllers/AclaracionController.php';
+require_once __DIR__ . '/../app/controllers/AuditoriaController.php';
 require_once __DIR__ . '/../app/routes/PublicRouteTable.php';
 
 // Middlewares
 require_once __DIR__ . '/../app/middlewares/AuthMiddleware.php';
 require_once __DIR__ . '/../app/middlewares/RoleMiddleware.php';
+require_once __DIR__ . '/../app/middlewares/RequestIdMiddleware.php';
+
+// Inicializar request ID temprano para que esté disponible en logs y auditoría
+RequestIdMiddleware::handle();
 
 $logger = new Logger();
 $metrics = new Metrics();
@@ -112,6 +117,23 @@ try {
         case $route === '/me/password' && $requestMethod === 'POST':
             AuthMiddleware::handle();
             (new UserController())->changePassword();
+            break;
+
+        case $route === '/auth/logout' && $requestMethod === 'POST':
+            AuthMiddleware::handle();
+            (new AuthController())->logout();
+            break;
+
+        case $route === '/admin/auditoria' && $requestMethod === 'GET':
+            AuthMiddleware::handle();
+            RoleMiddleware::handle('ADMINISTRADOR');
+            (new AuditoriaController())->list();
+            break;
+
+        case $route === '/admin/auditoria/export.csv' && $requestMethod === 'GET':
+            AuthMiddleware::handle();
+            RoleMiddleware::handle('ADMINISTRADOR');
+            (new AuditoriaController())->exportCsv();
             break;
 
         case $route === '/admin/dashboard' && $requestMethod === 'GET':

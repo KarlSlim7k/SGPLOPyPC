@@ -99,7 +99,7 @@ class UserService {
 
         $hash = password_hash($nueva, PASSWORD_BCRYPT);
         $this->repo->updatePassword($idUsuario, $hash);
-        auditLog($idUsuario, 'usuario', $idUsuario, 'ACTUALIZAR', null, ['contrasena_actualizada' => true]);
+        auditLog($idUsuario, 'usuario', $idUsuario, 'PASSWORD_CHANGE', null, ['contrasena_actualizada' => true]);
 
         return ['ok' => true];
     }

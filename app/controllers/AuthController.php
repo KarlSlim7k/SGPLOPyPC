@@ -3,6 +3,8 @@ declare(strict_types=1);
 
 require_once __DIR__ . '/../services/AuthService.php';
 require_once __DIR__ . '/../services/PasswordResetService.php';
+require_once __DIR__ . '/../helpers/audit.php';
+require_once __DIR__ . '/../middlewares/AuthMiddleware.php';
 
 class AuthController {
     private AuthService $authService;
@@ -33,11 +35,56 @@ class AuthController {
 
         $result = $this->authService->authenticate($email, $password);
 
-        if ($result === null) {
+        if (!$result['ok']) {
+            // Auditar login fallido sin exponer la razón al cliente (seguridad)
+            auditLog(
+                $result['attempted_user_id'],
+                'usuario',
+                $result['attempted_user_id'] ?? 0,
+                'LOGIN_FALLIDO',
+                null,
+                [
+                    'email_intentado' => $email,
+                    'razon' => $result['reason'],
+                ]
+            );
             jsonResponse(false, 'Credenciales inválidas', null, null, 401);
         }
 
-        jsonResponse(true, 'Inicio de sesión exitoso', $result, null, 200);
+        // Auditar login exitoso
+        auditLog(
+            $result['user']['id_usuario'],
+            'usuario',
+            $result['user']['id_usuario'],
+            'LOGIN_OK',
+            null,
+            [
+                'rol' => $result['user']['rol'],
+                'email' => $result['user']['email'],
+            ]
+        );
+
+        jsonResponse(true, 'Inicio de sesión exitoso', [
+            'token' => $result['token'],
+            'usuario' => $result['user'],
+        ], null, 200);
+    }
+
+    /**
+     * Logout. Como los JWT son stateless, no invalidamos en backend (a menos que se implemente
+     * blacklist). Se registra el evento para fines de auditoría/trazabilidad.
+     */
+    public function logout(): never {
+        $user = AuthMiddleware::getAuthenticatedUser();
+        auditLog(
+            (int) $user['id_usuario'],
+            'usuario',
+            (int) $user['id_usuario'],
+            'LOGOUT',
+            null,
+            ['email' => $user['email']]
+        );
+        jsonResponse(true, 'Sesión cerrada', null, null, 200);
     }
 
     public function forgotPassword(): never {

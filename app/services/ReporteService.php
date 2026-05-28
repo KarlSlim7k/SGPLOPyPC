@@ -110,7 +110,7 @@ class ReporteService {
         $csv = stream_get_contents($output);
         fclose($output);
 
-        auditLog($idUsuario, 'reporte_exportacion', 0, 'CREAR', null, [
+        auditLog($idUsuario, 'reporte_exportacion', 0, 'EXPORT', null, [
             'tipo' => 'csv',
             'filtros' => $filters,
             'registros' => count($rows),
@@ -171,7 +171,7 @@ class ReporteService {
         $csv = stream_get_contents($output);
         fclose($output);
 
-        auditLog($idUsuario, 'reporte_exportacion', 0, 'CREAR', null, [
+        auditLog($idUsuario, 'reporte_exportacion', 0, 'EXPORT', null, [
             'tipo' => 'csv_contratos',
             'filtros' => $filters,
             'registros' => count($rows),

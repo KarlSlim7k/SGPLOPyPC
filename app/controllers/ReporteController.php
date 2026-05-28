@@ -87,7 +87,7 @@ class ReporteController {
     public function historialLicitacion(int $id): never {
         $user = AuthMiddleware::getAuthenticatedUser();
         $data = $this->service->historialLicitacion($id);
-        auditLog((int) $user['id_usuario'], 'licitacion_historial', $id, 'CREAR', null, [
+        auditLog((int) $user['id_usuario'], 'licitacion_historial', $id, 'CONSULTA', null, [
             'eventos_consultados' => count($data),
         ]);
         jsonResponse(true, 'Historial de la licitación', $data, null, 200);

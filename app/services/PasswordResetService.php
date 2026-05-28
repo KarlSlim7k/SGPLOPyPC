@@ -70,7 +70,7 @@ class PasswordResetService {
         $this->userRepo->updatePassword((int) $user['id_usuario'], $hash);
         $this->tokenRepo->markUsed((int) $tokenRow['id_password_reset_token']);
 
-        auditLog((int) $user['id_usuario'], 'usuario', (int) $user['id_usuario'], 'ACTUALIZAR', null, ['contrasena_reseteada' => true]);
+        auditLog((int) $user['id_usuario'], 'usuario', (int) $user['id_usuario'], 'PASSWORD_RESET', null, ['contrasena_reseteada' => true]);
 
         return ['ok' => true];
     }
