@@ -27,10 +27,19 @@
             <a href="/frontend/admin/plantillas/index.html" class="text-slate-500 hover:text-slate-700" aria-label="Volver"><i class="ph ph-arrow-left text-xl"></i></a>
             <div>
                 <h1 id="page-title" class="text-base font-bold text-slate-800">Nueva plantilla</h1>
-                <p class="text-xs text-slate-500" id="page-subtitle">Define el contenido HTML, las variables esperadas y los assets.</p>
+                <p class="text-xs text-slate-500" id="page-subtitle">Define el estándar, completa los datos y genera la plantilla.</p>
             </div>
         </div>
         <div class="flex items-center gap-2 flex-wrap">
+            <!-- Selector de modo -->
+            <div class="inline-flex border border-slate-200 rounded-lg overflow-hidden text-sm" role="tablist" aria-label="Modo de edición">
+                <button id="tab-basico" role="tab" aria-selected="true" class="px-3 py-2 font-semibold bg-primary-600 text-white cursor-pointer">
+                    <i class="ph ph-magic-wand text-base mr-1" aria-hidden="true"></i> Básico
+                </button>
+                <button id="tab-avanzado" role="tab" aria-selected="false" class="px-3 py-2 font-semibold bg-white text-slate-600 hover:bg-slate-50 cursor-pointer">
+                    <i class="ph ph-code text-base mr-1" aria-hidden="true"></i> Avanzado
+                </button>
+            </div>
             <button id="btn-preview" class="inline-flex items-center gap-2 border border-slate-200 hover:bg-slate-50 text-slate-700 font-semibold px-3 py-2 rounded-lg text-sm cursor-pointer transition-colors">
                 <i class="ph ph-eye text-base" aria-hidden="true"></i> Vista previa
             </button>
@@ -43,21 +52,34 @@
 
 <main class="max-w-7xl mx-auto p-6 grid lg:grid-cols-2 gap-6">
 
-    <!-- Columna izquierda: campos editables -->
+    <!-- Columna izquierda: editor -->
     <section class="space-y-4">
-        <div class="bg-white rounded-2xl border border-slate-200 p-5 space-y-4">
+
+        <!-- Selector de estándar -->
+        <div class="bg-white rounded-2xl border border-slate-200 p-5 space-y-3">
             <div>
-                <label class="block text-xs font-semibold text-slate-500 mb-1">Nombre <span class="text-red-500">*</span></label>
-                <input id="f-nombre" type="text" maxlength="150" class="w-full text-sm border border-slate-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500" placeholder="Ej: Acta de Fallo Personalizada">
+                <label for="f-estandar" class="block text-sm font-bold text-slate-700 mb-1.5">
+                    <i class="ph ph-stamp text-base mr-1 text-violet-600" aria-hidden="true"></i>
+                    Estándar / formato del documento <span class="text-red-500">*</span>
+                </label>
+                <select id="f-estandar" class="w-full text-sm border border-slate-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500">
+                    <option value="ACTA_ACLARACIONES">Acta de Junta de Aclaraciones (LAASSP art. 33 Bis)</option>
+                    <option value="ACTA_APERTURA">Acta de Apertura de Proposiciones (LAASSP art. 35)</option>
+                    <option value="ACTA_FALLO">Acta de Fallo (LAASSP art. 37)</option>
+                    <option value="DICTAMEN">Dictamen Técnico-Económico (LAASSP art. 36)</option>
+                    <option value="RESUMEN_LICITACION">Resumen de Licitación (OCDS / Datos Abiertos)</option>
+                    <option value="CONTRATO">Contrato</option>
+                    <option value="PERSONALIZADA" selected>Personalizada (sin estándar)</option>
+                </select>
+                <p id="estandar-descripcion" class="mt-2 text-xs text-slate-600 bg-violet-50 border border-violet-200 rounded-lg p-3 leading-relaxed">
+                    <strong class="text-violet-800">Personalizada:</strong> Plantilla libre sin estándar predefinido. Tú defines secciones, variables y diseño.
+                </p>
             </div>
-            <div>
-                <label class="block text-xs font-semibold text-slate-500 mb-1">Descripción</label>
-                <textarea id="f-descripcion" rows="2" maxlength="500" class="w-full text-sm border border-slate-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500" placeholder="Para qué procedimiento o caso de uso aplica."></textarea>
-            </div>
-            <div class="grid grid-cols-2 gap-3">
+
+            <div class="grid grid-cols-2 gap-3 pt-2 border-t border-slate-100">
                 <div>
-                    <label class="block text-xs font-semibold text-slate-500 mb-1">Tipo <span class="text-red-500">*</span></label>
-                    <select id="f-tipo" class="w-full text-sm border border-slate-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500">
+                    <label class="block text-xs font-semibold text-slate-500 mb-1">Tipo (categoría interna)</label>
+                    <select id="f-tipo" class="w-full text-sm border border-slate-200 rounded-lg px-3 py-2 bg-slate-50">
                         <option value="ACTA_ACLARACIONES">Acta Aclaraciones</option>
                         <option value="ACTA_APERTURA">Acta Apertura</option>
                         <option value="ACTA_FALLO">Acta Fallo</option>
@@ -69,30 +91,147 @@
                 </div>
                 <div>
                     <label class="block text-xs font-semibold text-slate-500 mb-1">Activa</label>
-                    <select id="f-activa" class="w-full text-sm border border-slate-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500">
+                    <select id="f-activa" class="w-full text-sm border border-slate-200 rounded-lg px-3 py-2">
                         <option value="1" selected>Sí</option>
                         <option value="0">No</option>
                     </select>
                 </div>
             </div>
-            <div>
-                <label class="block text-xs font-semibold text-slate-500 mb-1">Variables esperadas (CSV)</label>
-                <input id="f-variables" type="text" class="w-full text-sm border border-slate-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500 font-mono" placeholder="numero_licitacion,descripcion_proyecto,fecha_emision">
-                <p class="text-xs text-slate-400 mt-1">Documenta qué placeholders consume la plantilla. Separadas por coma.</p>
-            </div>
         </div>
 
+        <!-- Datos básicos -->
         <div class="bg-white rounded-2xl border border-slate-200 p-5 space-y-3">
-            <div class="flex items-center justify-between">
-                <h3 class="text-sm font-bold text-slate-700">Contenido HTML</h3>
-                <button id="btn-fill-default" type="button" class="text-xs text-primary-600 hover:underline cursor-pointer">Cargar plantilla mínima</button>
+            <h3 class="text-sm font-bold text-slate-700">Datos básicos</h3>
+            <div>
+                <label class="block text-xs font-semibold text-slate-500 mb-1">Nombre de la plantilla <span class="text-red-500">*</span></label>
+                <input id="f-nombre" type="text" maxlength="150" class="w-full text-sm border border-slate-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500" placeholder="Ej: Acta de Fallo Personalizada">
             </div>
-            <textarea id="f-html" rows="20" class="w-full text-xs border border-slate-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500 font-mono" placeholder="<html><body><h1>{{numero_licitacion}}</h1>...</body></html>"></textarea>
-            <p class="text-xs text-slate-500">Usa <code class="bg-slate-100 px-1 rounded font-mono">{{variable}}</code> donde quieras inyectar datos. CSS inline recomendado para PDF.</p>
+            <div>
+                <label class="block text-xs font-semibold text-slate-500 mb-1">Descripción</label>
+                <textarea id="f-descripcion" rows="2" maxlength="500" class="w-full text-sm border border-slate-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500" placeholder="Para qué procedimiento o caso de uso aplica."></textarea>
+            </div>
         </div>
 
+        <!-- ============= MODO BÁSICO ============= -->
+        <div id="modo-basico" class="space-y-4">
+
+            <!-- Encabezado del documento -->
+            <div class="bg-white rounded-2xl border border-slate-200 p-5 space-y-3">
+                <h3 class="text-sm font-bold text-slate-700 flex items-center gap-2">
+                    <i class="ph ph-flag text-base text-blue-600" aria-hidden="true"></i> Encabezado del documento
+                </h3>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 mb-1">Título principal</label>
+                    <input id="b-titulo" type="text" class="w-full text-sm border border-slate-200 rounded-lg px-3 py-2" placeholder="Ej: Acta de Fallo">
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 mb-1">Organización (línea superior)</label>
+                    <input id="b-org" type="text" class="w-full text-sm border border-slate-200 rounded-lg px-3 py-2" placeholder="Se llenará con {{convocante_nombre}} si lo dejas vacío">
+                </div>
+                <div class="grid grid-cols-3 gap-3">
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-500 mb-1">Color del borde</label>
+                        <select id="b-color" class="w-full text-sm border border-slate-200 rounded-lg px-3 py-2">
+                            <option value="#1d4ed8">Azul</option>
+                            <option value="#047857">Verde</option>
+                            <option value="#b45309">Ámbar</option>
+                            <option value="#6d28d9">Violeta</option>
+                            <option value="#0e7490">Cian</option>
+                            <option value="#be123c">Rojo</option>
+                            <option value="#1f2937">Negro</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-500 mb-1">Tamaño fuente</label>
+                        <select id="b-fontsize" class="w-full text-sm border border-slate-200 rounded-lg px-3 py-2">
+                            <option value="10pt">10 pt</option>
+                            <option value="11pt" selected>11 pt</option>
+                            <option value="12pt">12 pt</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-xs font-semibold text-slate-500 mb-1">Familia tipográfica</label>
+                        <select id="b-fontfamily" class="w-full text-sm border border-slate-200 rounded-lg px-3 py-2">
+                            <option value="Arial,sans-serif" selected>Arial</option>
+                            <option value="Helvetica,sans-serif">Helvetica</option>
+                            <option value="Georgia,serif">Georgia</option>
+                            <option value="'Times New Roman',serif">Times New Roman</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Datos a incluir (variables del estándar) -->
+            <div class="bg-white rounded-2xl border border-slate-200 p-5 space-y-3">
+                <h3 class="text-sm font-bold text-slate-700 flex items-center gap-2">
+                    <i class="ph ph-database text-base text-emerald-600" aria-hidden="true"></i> Datos a incluir
+                </h3>
+                <p class="text-xs text-slate-500">Selecciona qué variables debe inyectar el sistema en el documento. Las marcadas son obligatorias o recomendadas para el estándar elegido.</p>
+                <div id="b-variables" class="grid grid-cols-2 gap-2 text-sm"></div>
+            </div>
+
+            <!-- Secciones del cuerpo -->
+            <div class="bg-white rounded-2xl border border-slate-200 p-5 space-y-3">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-sm font-bold text-slate-700 flex items-center gap-2">
+                        <i class="ph ph-list-bullets text-base text-amber-600" aria-hidden="true"></i> Secciones del cuerpo
+                    </h3>
+                    <button type="button" id="b-add-seccion" class="text-xs text-primary-600 hover:underline cursor-pointer">+ Agregar sección</button>
+                </div>
+                <p class="text-xs text-slate-500">Cada sección se renderiza con su título y contenido. Puedes usar variables <code class="bg-slate-100 px-1 rounded font-mono">{{variable}}</code> dentro del contenido.</p>
+                <div id="b-secciones-list" class="space-y-2"></div>
+            </div>
+
+            <!-- Firmantes -->
+            <div class="bg-white rounded-2xl border border-slate-200 p-5 space-y-3">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-sm font-bold text-slate-700 flex items-center gap-2">
+                        <i class="ph ph-pen-nib text-base text-rose-600" aria-hidden="true"></i> Firmantes
+                    </h3>
+                    <button type="button" id="b-add-firmante" class="text-xs text-primary-600 hover:underline cursor-pointer">+ Agregar firmante</button>
+                </div>
+                <div id="b-firmantes-list" class="space-y-2"></div>
+            </div>
+
+            <!-- Pie -->
+            <div class="bg-white rounded-2xl border border-slate-200 p-5 space-y-3">
+                <h3 class="text-sm font-bold text-slate-700 flex items-center gap-2">
+                    <i class="ph ph-anchor text-base text-slate-600" aria-hidden="true"></i> Pie del documento
+                </h3>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 mb-1">Texto del pie</label>
+                    <input id="b-pie" type="text" class="w-full text-sm border border-slate-200 rounded-lg px-3 py-2" value="Documento generado por SGPLOPyPC · {{fecha_emision}}">
+                </div>
+            </div>
+        </div>
+
+        <!-- ============= MODO AVANZADO ============= -->
+        <div id="modo-avanzado" class="space-y-4 hidden">
+            <div class="bg-white rounded-2xl border border-slate-200 p-5 space-y-3">
+                <div class="flex items-center justify-between">
+                    <h3 class="text-sm font-bold text-slate-700">Contenido HTML</h3>
+                    <div class="flex items-center gap-2">
+                        <button id="btn-fill-default" type="button" class="text-xs text-primary-600 hover:underline cursor-pointer">Cargar plantilla mínima</button>
+                        <button id="btn-from-basico" type="button" class="text-xs text-primary-600 hover:underline cursor-pointer">↻ Generar desde modo Básico</button>
+                    </div>
+                </div>
+                <div id="adv-warning" class="hidden bg-amber-50 border border-amber-200 rounded-lg px-3 py-2 text-xs text-amber-800">
+                    <i class="ph ph-warning text-sm mr-1"></i> El HTML actual no fue generado en modo Básico. Si cambias a Básico se sobrescribirá lo escrito aquí.
+                </div>
+                <textarea id="f-html" rows="22" class="w-full text-xs border border-slate-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500 font-mono" placeholder="<html><body><h1>{{numero_licitacion}}</h1>...</body></html>"></textarea>
+                <p class="text-xs text-slate-500">Usa <code class="bg-slate-100 px-1 rounded font-mono">{{variable}}</code> donde quieras inyectar datos. CSS inline recomendado para PDF.</p>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 mb-1">Variables esperadas (CSV)</label>
+                    <input id="f-variables-csv" type="text" class="w-full text-sm border border-slate-200 rounded-lg px-3 py-2 font-mono" placeholder="numero_licitacion,descripcion_proyecto">
+                </div>
+            </div>
+        </div>
+
+        <!-- Assets (siempre visible cuando se está editando) -->
         <div id="assets-card" class="bg-white rounded-2xl border border-slate-200 p-5 space-y-3 hidden">
-            <h3 class="text-sm font-bold text-slate-700">Assets (logos, firmas, sellos)</h3>
+            <h3 class="text-sm font-bold text-slate-700 flex items-center gap-2">
+                <i class="ph ph-image text-base text-indigo-600" aria-hidden="true"></i> Assets (logos, firmas, sellos)
+            </h3>
             <div id="assets-list" class="space-y-2 text-sm"></div>
             <form id="form-asset" class="grid grid-cols-1 md:grid-cols-3 gap-2 items-end pt-3 border-t border-slate-100">
                 <div>
@@ -114,10 +253,10 @@
     </section>
 
     <!-- Columna derecha: vista previa -->
-    <section class="bg-white rounded-2xl border border-slate-200 overflow-hidden flex flex-col">
+    <section class="bg-white rounded-2xl border border-slate-200 overflow-hidden flex flex-col lg:sticky lg:top-20 lg:max-h-[calc(100vh-6rem)]">
         <div class="px-5 py-3 border-b border-slate-200 flex items-center justify-between bg-slate-50">
             <h3 class="text-sm font-bold text-slate-700"><i class="ph ph-eye text-base mr-1"></i>Vista previa</h3>
-            <span class="text-xs text-slate-500">Renderizado con datos de ejemplo en sandbox</span>
+            <span class="text-xs text-slate-500">Renderizado con datos de ejemplo</span>
         </div>
         <iframe id="preview-frame" sandbox="allow-same-origin" class="w-full flex-1 min-h-[600px] bg-white" title="Vista previa"></iframe>
     </section>
@@ -134,25 +273,149 @@
   const idPlantilla = params.get('id') ? Number(params.get('id')) : null;
   const isEdit = idPlantilla !== null && idPlantilla > 0;
   let isPredefinida = false;
+  let modo = 'basico'; // 'basico' | 'avanzado'
 
-  const els = {
-    title: document.getElementById('page-title'),
-    subtitle: document.getElementById('page-subtitle'),
-    nombre: document.getElementById('f-nombre'),
-    descripcion: document.getElementById('f-descripcion'),
-    tipo: document.getElementById('f-tipo'),
-    activa: document.getElementById('f-activa'),
-    variables: document.getElementById('f-variables'),
-    html: document.getElementById('f-html'),
-    btnSave: document.getElementById('btn-save'),
-    btnPreview: document.getElementById('btn-preview'),
-    btnFillDefault: document.getElementById('btn-fill-default'),
-    preview: document.getElementById('preview-frame'),
-    assetsCard: document.getElementById('assets-card'),
-    assetsList: document.getElementById('assets-list'),
-    formAsset: document.getElementById('form-asset'),
-    assetTipo: document.getElementById('asset-tipo'),
-    assetFile: document.getElementById('asset-file'),
+  // ===== Catálogo de estándares =====
+  const ESTANDARES = {
+    ACTA_ACLARACIONES: {
+      label: 'Acta de Junta de Aclaraciones',
+      descripcion: '<strong class="text-violet-800">LAASSP art. 33 Bis:</strong> Acta del acto público donde se aclaran dudas sobre la convocatoria. Incluye datos de la convocante, asistentes y resolución de preguntas.',
+      tipoCategoria: 'ACTA_ACLARACIONES',
+      colorBorde: '#1d4ed8',
+      titulo: 'Acta de Junta de Aclaraciones',
+      variablesObligatorias: ['convocante_nombre','tipo_procedimiento','numero_licitacion','descripcion_proyecto','fecha_acto','lugar_acto','dependencia_nombre','responsable_nombre','asistentes','aclaraciones_contenido','hora_cierre','fecha_cierre','fecha_emision'],
+      secciones: [
+        { titulo: 'Convocante', contenido: '{{dependencia_nombre}}, con domicilio en {{dependencia_domicilio}}, representada por {{responsable_nombre}}.' },
+        { titulo: 'Asistentes', contenido: '{{asistentes}}' },
+        { titulo: 'Aclaraciones y respuestas', contenido: '{{aclaraciones_contenido}}' },
+        { titulo: 'Cierre del acto', contenido: 'No habiendo más asuntos que tratar, se cierra la presente junta de aclaraciones siendo las {{hora_cierre}} del día {{fecha_cierre}}.<br><em>Fundamento: art. 33 Bis de la LAASSP.</em>' }
+      ],
+      firmantes: ['Convocante', 'Área requirente', 'Testigo']
+    },
+    ACTA_APERTURA: {
+      label: 'Acta de Apertura de Proposiciones',
+      descripcion: '<strong class="text-emerald-800">LAASSP art. 35:</strong> Acta del acto público de presentación y apertura de propuestas. Lista licitantes, montos y observaciones.',
+      tipoCategoria: 'ACTA_APERTURA',
+      colorBorde: '#047857',
+      titulo: 'Acta de Presentación y Apertura de Proposiciones',
+      variablesObligatorias: ['convocante_nombre','tipo_procedimiento','numero_licitacion','descripcion_proyecto','presupuesto_estimado','fecha_acto','licitantes_filas','observaciones','hora_cierre','fecha_cierre','fecha_emision'],
+      secciones: [
+        { titulo: 'Licitantes que presentaron proposición', contenido: '<table style="width:100%;border-collapse:collapse;border:1px solid #ccc"><thead><tr style="background:#ecfdf5"><th style="border:1px solid #ccc;padding:6px">#</th><th style="border:1px solid #ccc;padding:6px">Licitante / RFC</th><th style="border:1px solid #ccc;padding:6px">Monto</th><th style="border:1px solid #ccc;padding:6px">Doc.</th></tr></thead><tbody>{{licitantes_filas}}</tbody></table>' },
+        { titulo: 'Observaciones', contenido: '{{observaciones}}' },
+        { titulo: 'Cierre', contenido: 'El acto concluyó siendo las {{hora_cierre}} del día {{fecha_cierre}}.<br><em>Fundamento: art. 35 de la LAASSP.</em>' }
+      ],
+      firmantes: ['Por la convocante', 'Testigo de honor']
+    },
+    ACTA_FALLO: {
+      label: 'Acta de Fallo',
+      descripcion: '<strong class="text-amber-800">LAASSP art. 37:</strong> Acta de notificación del fallo. Identifica al licitante adjudicado, monto del contrato y motivación del fallo.',
+      tipoCategoria: 'ACTA_FALLO',
+      colorBorde: '#b45309',
+      titulo: 'Acta de Fallo',
+      variablesObligatorias: ['convocante_nombre','tipo_procedimiento','numero_licitacion','descripcion_proyecto','fecha_emision','licitante_ganador','licitante_rfc','monto_adjudicado','plazo_ejecucion','motivacion','licitantes_desechados','firmante_titular','cargo_firmante','firmante_juridico'],
+      secciones: [
+        { titulo: 'Resultado', contenido: '<div style="background:#fef3c7;border-left:4px solid #b45309;padding:10px 14px"><p><strong>Licitante adjudicado:</strong> {{licitante_ganador}}</p><p><strong>RFC:</strong> {{licitante_rfc}}</p><p><strong>Monto:</strong> ${{monto_adjudicado}} MXN</p><p><strong>Plazo:</strong> {{plazo_ejecucion}}</p></div>' },
+        { titulo: 'Motivación del fallo', contenido: '{{motivacion}}' },
+        { titulo: 'Licitantes desechados', contenido: '{{licitantes_desechados}}' },
+        { titulo: 'Notificación', contenido: 'El presente fallo se notifica a los licitantes en términos del artículo 37 de la LAASSP.<br><em>Fundamento: arts. 36, 36 Bis y 37 de la LAASSP.</em>' }
+      ],
+      firmantes: ['{{cargo_firmante}}', 'Área jurídica']
+    },
+    DICTAMEN: {
+      label: 'Dictamen Técnico-Económico',
+      descripcion: '<strong class="text-violet-800">LAASSP art. 36:</strong> Dictamen que sirve de base al fallo, con análisis técnico y comparativa económica.',
+      tipoCategoria: 'DICTAMEN',
+      colorBorde: '#6d28d9',
+      titulo: 'Dictamen Técnico-Económico',
+      variablesObligatorias: ['convocante_nombre','tipo_procedimiento','numero_licitacion','descripcion_proyecto','fecha_emision','evaluacion_tecnica_filas','evaluacion_economica_filas','conclusion'],
+      secciones: [
+        { titulo: 'Evaluación técnica', contenido: '<table style="width:100%;border-collapse:collapse;border:1px solid #ccc"><thead><tr style="background:#f5f3ff"><th style="border:1px solid #ccc;padding:6px">Licitante</th><th style="border:1px solid #ccc;padding:6px">Cumple</th><th style="border:1px solid #ccc;padding:6px">Calificación</th><th style="border:1px solid #ccc;padding:6px">Obs.</th></tr></thead><tbody>{{evaluacion_tecnica_filas}}</tbody></table>' },
+        { titulo: 'Evaluación económica', contenido: '<table style="width:100%;border-collapse:collapse;border:1px solid #ccc"><thead><tr style="background:#f5f3ff"><th style="border:1px solid #ccc;padding:6px">Licitante</th><th style="border:1px solid #ccc;padding:6px">Monto</th><th style="border:1px solid #ccc;padding:6px">% sobre presupuesto</th><th style="border:1px solid #ccc;padding:6px">Obs.</th></tr></thead><tbody>{{evaluacion_economica_filas}}</tbody></table>' },
+        { titulo: 'Conclusión y recomendación', contenido: '{{conclusion}}<br><em>Fundamento: art. 36 de la LAASSP.</em>' }
+      ],
+      firmantes: ['Comité técnico', 'Comité económico']
+    },
+    RESUMEN_LICITACION: {
+      label: 'Resumen de Licitación (OCDS)',
+      descripcion: '<strong class="text-cyan-800">OCDS 1.1 / LGTAIP:</strong> Ficha resumen para publicación en transparencia. Compatible con Open Contracting Data Standard.',
+      tipoCategoria: 'RESUMEN_LICITACION',
+      colorBorde: '#0e7490',
+      titulo: 'Resumen de Licitación · Datos Abiertos',
+      variablesObligatorias: ['convocante_nombre','numero_licitacion','tipo_procedimiento','estado_proceso','dependencia_nombre','descripcion_proyecto','presupuesto_estimado','ubicacion_proyecto','fecha_creacion','fecha_actualizacion','responsable_nombre','hitos','adjudicacion_resumen','fecha_emision'],
+      secciones: [
+        { titulo: 'Datos del procedimiento', contenido: '<p><strong>OCID:</strong> {{numero_licitacion}}</p><p><strong>Tipo:</strong> {{tipo_procedimiento}}</p><p><strong>Estado:</strong> {{estado_proceso}}</p><p><strong>Dependencia:</strong> {{dependencia_nombre}}</p><p><strong>Objeto:</strong> {{descripcion_proyecto}}</p><p><strong>Presupuesto:</strong> ${{presupuesto_estimado}} MXN</p><p><strong>Ubicación:</strong> {{ubicacion_proyecto}}</p>' },
+        { titulo: 'Hitos del proceso', contenido: '{{hitos}}' },
+        { titulo: 'Adjudicación', contenido: '{{adjudicacion_resumen}}' }
+      ],
+      firmantes: []
+    },
+    CONTRATO: {
+      label: 'Contrato',
+      descripcion: '<strong class="text-slate-800">Contrato:</strong> Documento contractual entre la convocante y el proveedor adjudicado.',
+      tipoCategoria: 'CONTRATO',
+      colorBorde: '#1f2937',
+      titulo: 'Contrato',
+      variablesObligatorias: ['numero_contrato','convocante_nombre','licitante_ganador','licitante_rfc','monto_adjudicado','plazo_ejecucion','descripcion_proyecto','fecha_emision'],
+      secciones: [
+        { titulo: 'Partes', contenido: 'La <strong>{{convocante_nombre}}</strong> y <strong>{{licitante_ganador}}</strong> (RFC {{licitante_rfc}}) celebran el presente contrato.' },
+        { titulo: 'Objeto', contenido: '{{descripcion_proyecto}}' },
+        { titulo: 'Monto y plazo', contenido: 'Monto: ${{monto_adjudicado}} MXN. Plazo: {{plazo_ejecucion}}.' }
+      ],
+      firmantes: ['Por la convocante', 'Por el proveedor']
+    },
+    PERSONALIZADA: {
+      label: 'Personalizada',
+      descripcion: '<strong class="text-violet-800">Personalizada:</strong> Plantilla libre sin estándar predefinido. Tú defines secciones, variables y diseño.',
+      tipoCategoria: 'PERSONALIZADA',
+      colorBorde: '#3b82f6',
+      titulo: 'Documento',
+      variablesObligatorias: ['fecha_emision'],
+      secciones: [
+        { titulo: 'Sección 1', contenido: 'Contenido de la sección...' }
+      ],
+      firmantes: []
+    }
+  };
+
+  // Catálogo de variables disponibles con descripciones
+  const VARIABLES_CATALOGO = {
+    convocante_nombre: 'Nombre de la entidad convocante',
+    numero_licitacion: 'Número de licitación',
+    tipo_procedimiento: 'Tipo de procedimiento (Licitación Pública, etc.)',
+    descripcion_proyecto: 'Objeto / descripción del proyecto',
+    presupuesto_estimado: 'Presupuesto estimado en MXN',
+    ubicacion_proyecto: 'Ubicación del proyecto',
+    estado_proceso: 'Estado actual del proceso',
+    dependencia_nombre: 'Nombre de la dependencia',
+    dependencia_domicilio: 'Domicilio de la dependencia',
+    responsable_nombre: 'Servidor público responsable',
+    fecha_emision: 'Fecha de emisión del documento',
+    fecha_acto: 'Fecha del acto',
+    lugar_acto: 'Lugar del acto',
+    fecha_cierre: 'Fecha de cierre del acto',
+    hora_cierre: 'Hora de cierre',
+    asistentes: 'Lista de asistentes al acto',
+    aclaraciones_contenido: 'Contenido de aclaraciones',
+    licitantes_filas: 'Tabla de licitantes (auto-generada)',
+    observaciones: 'Observaciones del acto',
+    licitante_ganador: 'Licitante adjudicado',
+    licitante_rfc: 'RFC del licitante',
+    monto_adjudicado: 'Monto del contrato adjudicado',
+    plazo_ejecucion: 'Plazo de ejecución',
+    motivacion: 'Motivación del fallo',
+    licitantes_desechados: 'Licitantes desechados',
+    cargo_firmante: 'Cargo del firmante titular',
+    firmante_titular: 'Nombre del firmante titular',
+    firmante_juridico: 'Firmante del área jurídica',
+    evaluacion_tecnica_filas: 'Tabla evaluación técnica (auto)',
+    evaluacion_economica_filas: 'Tabla evaluación económica (auto)',
+    conclusion: 'Conclusión del dictamen',
+    fecha_creacion: 'Fecha de creación',
+    fecha_actualizacion: 'Última actualización',
+    hitos: 'Hitos del proceso',
+    adjudicacion_resumen: 'Resumen de adjudicación',
+    numero_contrato: 'Número de contrato',
+    id_licitacion: 'ID interno de licitación',
   };
 
   const SAMPLE_VARS = {
@@ -172,10 +435,7 @@
     aclaraciones_contenido: '<p>Pregunta 1: ¿Cuál es el plazo? — Respuesta: 90 días naturales.</p>',
     hora_cierre: '11:30',
     fecha_cierre: '2026-06-15',
-    firmante_convocante: 'Mtra. Demo Convocante',
-    firmante_area_requirente: 'Ing. Demo Requirente',
-    firmante_testigo: 'Lic. Demo Testigo',
-    licitantes_filas: '<tr><td>1</td><td>Constructora Demo SA<br><small>RFC ABC123456789</small></td><td>$1,400,000.00</td><td>Recibida</td></tr>',
+    licitantes_filas: '<tr><td style="border:1px solid #ccc;padding:6px">1</td><td style="border:1px solid #ccc;padding:6px">Constructora Demo SA<br><small>RFC ABC123456789</small></td><td style="border:1px solid #ccc;padding:6px">$1,400,000.00</td><td style="border:1px solid #ccc;padding:6px">Recibida</td></tr>',
     observaciones: 'Sin observaciones relevantes.',
     licitante_ganador: 'Constructora Demo SA',
     licitante_rfc: 'ABC123456789',
@@ -186,17 +446,295 @@
     cargo_firmante: 'Titular del área',
     firmante_titular: 'Dra. Demo Titular',
     firmante_juridico: 'Lic. Demo Jurídico',
-    evaluacion_tecnica_filas: '<tr><td>Constructora Demo SA</td><td>Sí</td><td>95/100</td><td>Cumple plenamente</td></tr>',
-    evaluacion_economica_filas: '<tr><td>Constructora Demo SA</td><td>$1,400,000.00</td><td>93%</td><td>Económicamente viable</td></tr>',
+    evaluacion_tecnica_filas: '<tr><td style="border:1px solid #ccc;padding:6px">Constructora Demo SA</td><td style="border:1px solid #ccc;padding:6px">Sí</td><td style="border:1px solid #ccc;padding:6px">95/100</td><td style="border:1px solid #ccc;padding:6px">Cumple plenamente</td></tr>',
+    evaluacion_economica_filas: '<tr><td style="border:1px solid #ccc;padding:6px">Constructora Demo SA</td><td style="border:1px solid #ccc;padding:6px">$1,400,000.00</td><td style="border:1px solid #ccc;padding:6px">93%</td><td style="border:1px solid #ccc;padding:6px">Económicamente viable</td></tr>',
     conclusion: 'Se recomienda adjudicar a Constructora Demo SA.',
     ubicacion_proyecto: 'Ciudad de México',
     fecha_creacion: '2026-05-01',
     fecha_actualizacion: '2026-05-15',
     hitos: 'Publicación: 2026-05-01 · Junta: 2026-05-15 · Apertura: 2026-06-01',
     adjudicacion_resumen: 'Adjudicada (contrato #42)',
-    id_licitacion: '99',
+    numero_contrato: 'CONT-2026-001',
+    id_licitacion: '99'
   };
 
+  // ===== Estado del modo Básico =====
+  let basicoState = {
+    titulo: '',
+    org: '',
+    color: '#1d4ed8',
+    fontSize: '11pt',
+    fontFamily: 'Arial,sans-serif',
+    variables: new Set(),
+    secciones: [],
+    firmantes: [],
+    pie: 'Documento generado por SGPLOPyPC · {{fecha_emision}}'
+  };
+
+  // Marca para detectar HTML generado por modo Básico
+  const BASICO_MARKER = '<!-- SGPLOPYPC_BASICO_GENERATED -->';
+
+  const els = {
+    title: document.getElementById('page-title'),
+    subtitle: document.getElementById('page-subtitle'),
+    nombre: document.getElementById('f-nombre'),
+    descripcion: document.getElementById('f-descripcion'),
+    tipo: document.getElementById('f-tipo'),
+    activa: document.getElementById('f-activa'),
+    estandar: document.getElementById('f-estandar'),
+    estandarDesc: document.getElementById('estandar-descripcion'),
+    variablesCsv: document.getElementById('f-variables-csv'),
+    html: document.getElementById('f-html'),
+    btnSave: document.getElementById('btn-save'),
+    btnPreview: document.getElementById('btn-preview'),
+    btnFillDefault: document.getElementById('btn-fill-default'),
+    btnFromBasico: document.getElementById('btn-from-basico'),
+    preview: document.getElementById('preview-frame'),
+    advWarning: document.getElementById('adv-warning'),
+    tabBasico: document.getElementById('tab-basico'),
+    tabAvanzado: document.getElementById('tab-avanzado'),
+    modoBasico: document.getElementById('modo-basico'),
+    modoAvanzado: document.getElementById('modo-avanzado'),
+    bTitulo: document.getElementById('b-titulo'),
+    bOrg: document.getElementById('b-org'),
+    bColor: document.getElementById('b-color'),
+    bFontsize: document.getElementById('b-fontsize'),
+    bFontfamily: document.getElementById('b-fontfamily'),
+    bVariables: document.getElementById('b-variables'),
+    bSeccionesList: document.getElementById('b-secciones-list'),
+    bAddSeccion: document.getElementById('b-add-seccion'),
+    bFirmantesList: document.getElementById('b-firmantes-list'),
+    bAddFirmante: document.getElementById('b-add-firmante'),
+    bPie: document.getElementById('b-pie'),
+    assetsCard: document.getElementById('assets-card'),
+    assetsList: document.getElementById('assets-list'),
+    formAsset: document.getElementById('form-asset'),
+    assetTipo: document.getElementById('asset-tipo'),
+    assetFile: document.getElementById('asset-file'),
+  };
+
+  // ===== Modo: cambiar entre Básico y Avanzado =====
+  function setModo(nuevo) {
+    modo = nuevo;
+    if (nuevo === 'basico') {
+      els.tabBasico.classList.add('bg-primary-600','text-white');
+      els.tabBasico.classList.remove('bg-white','text-slate-600');
+      els.tabAvanzado.classList.add('bg-white','text-slate-600');
+      els.tabAvanzado.classList.remove('bg-primary-600','text-white');
+      els.tabBasico.setAttribute('aria-selected','true');
+      els.tabAvanzado.setAttribute('aria-selected','false');
+      els.modoBasico.classList.remove('hidden');
+      els.modoAvanzado.classList.add('hidden');
+      // Generar HTML desde básico para preview
+      generarHtmlDesdeBasico();
+      renderPreview();
+    } else {
+      els.tabAvanzado.classList.add('bg-primary-600','text-white');
+      els.tabAvanzado.classList.remove('bg-white','text-slate-600');
+      els.tabBasico.classList.add('bg-white','text-slate-600');
+      els.tabBasico.classList.remove('bg-primary-600','text-white');
+      els.tabBasico.setAttribute('aria-selected','false');
+      els.tabAvanzado.setAttribute('aria-selected','true');
+      els.modoBasico.classList.add('hidden');
+      els.modoAvanzado.classList.remove('hidden');
+      // Mostrar warning si HTML no fue generado por básico
+      const ok = (els.html.value || '').includes(BASICO_MARKER);
+      els.advWarning.classList.toggle('hidden', ok || !els.html.value);
+      renderPreview();
+    }
+  }
+
+  els.tabBasico.addEventListener('click', function () { setModo('basico'); });
+  els.tabAvanzado.addEventListener('click', function () { setModo('avanzado'); });
+
+  // ===== Selector de estándar =====
+  function aplicarEstandar(key, hardReset) {
+    const e = ESTANDARES[key] || ESTANDARES.PERSONALIZADA;
+    els.estandarDesc.innerHTML = e.descripcion;
+    els.tipo.value = e.tipoCategoria;
+
+    if (hardReset) {
+      basicoState.titulo = e.titulo;
+      basicoState.org = '';
+      basicoState.color = e.colorBorde;
+      basicoState.variables = new Set(e.variablesObligatorias);
+      basicoState.secciones = e.secciones.map(function (s) { return { titulo: s.titulo, contenido: s.contenido }; });
+      basicoState.firmantes = e.firmantes.slice();
+      basicoState.pie = 'Documento generado por SGPLOPyPC · {{fecha_emision}}';
+      hydrateBasicoUI();
+    } else {
+      // Solo marcar variables obligatorias del nuevo estándar
+      e.variablesObligatorias.forEach(function (v) { basicoState.variables.add(v); });
+      renderVariables();
+    }
+    generarHtmlDesdeBasico();
+    renderPreview();
+  }
+
+  els.estandar.addEventListener('change', function () {
+    aplicarEstandar(els.estandar.value, true);
+  });
+
+  // ===== Render de UI del modo Básico desde basicoState =====
+  function hydrateBasicoUI() {
+    els.bTitulo.value = basicoState.titulo;
+    els.bOrg.value = basicoState.org;
+    els.bColor.value = basicoState.color;
+    els.bFontsize.value = basicoState.fontSize;
+    els.bFontfamily.value = basicoState.fontFamily;
+    els.bPie.value = basicoState.pie;
+    renderVariables();
+    renderSecciones();
+    renderFirmantes();
+  }
+
+  function renderVariables() {
+    const keys = Object.keys(VARIABLES_CATALOGO);
+    els.bVariables.innerHTML = keys.map(function (k) {
+      const checked = basicoState.variables.has(k) ? 'checked' : '';
+      return '<label class="flex items-start gap-2 p-2 border border-slate-100 rounded-lg hover:bg-slate-50 cursor-pointer">'
+        + '<input type="checkbox" data-var="' + k + '" ' + checked + ' class="mt-0.5">'
+        + '<div><span class="font-mono text-xs text-primary-700">{{' + k + '}}</span>'
+        + '<p class="text-xs text-slate-500 mt-0.5">' + VARIABLES_CATALOGO[k] + '</p></div>'
+        + '</label>';
+    }).join('');
+    els.bVariables.querySelectorAll('input[type=checkbox]').forEach(function (cb) {
+      cb.addEventListener('change', function () {
+        if (cb.checked) basicoState.variables.add(cb.dataset.var);
+        else basicoState.variables.delete(cb.dataset.var);
+        generarHtmlDesdeBasico();
+        renderPreview();
+      });
+    });
+  }
+
+  function renderSecciones() {
+    els.bSeccionesList.innerHTML = basicoState.secciones.map(function (s, i) {
+      return '<div class="border border-slate-100 rounded-lg p-3 space-y-2 bg-slate-50">'
+        + '<div class="flex items-center justify-between">'
+        + '<span class="text-xs font-semibold text-slate-500">Sección ' + (i + 1) + '</span>'
+        + '<button type="button" data-idx="' + i + '" class="btn-del-seccion text-xs text-red-600 hover:underline cursor-pointer">Eliminar</button>'
+        + '</div>'
+        + '<input type="text" data-idx="' + i + '" data-field="titulo" value="' + escapeAttr(s.titulo) + '" placeholder="Título de la sección" class="b-sec-input w-full text-sm border border-slate-200 rounded-lg px-3 py-1.5">'
+        + '<textarea data-idx="' + i + '" data-field="contenido" rows="3" placeholder="Contenido (HTML/texto). Usa {{variable}}." class="b-sec-input w-full text-sm border border-slate-200 rounded-lg px-3 py-1.5 font-mono text-xs">' + escapeText(s.contenido) + '</textarea>'
+        + '</div>';
+    }).join('');
+    els.bSeccionesList.querySelectorAll('.b-sec-input').forEach(function (el) {
+      el.addEventListener('input', function () {
+        const idx = Number(el.dataset.idx);
+        const field = el.dataset.field;
+        if (basicoState.secciones[idx]) {
+          basicoState.secciones[idx][field] = el.value;
+          debouncedRegenerar();
+        }
+      });
+    });
+    els.bSeccionesList.querySelectorAll('.btn-del-seccion').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        const idx = Number(btn.dataset.idx);
+        basicoState.secciones.splice(idx, 1);
+        renderSecciones();
+        generarHtmlDesdeBasico();
+        renderPreview();
+      });
+    });
+  }
+
+  els.bAddSeccion.addEventListener('click', function () {
+    basicoState.secciones.push({ titulo: 'Nueva sección', contenido: '' });
+    renderSecciones();
+    generarHtmlDesdeBasico();
+    renderPreview();
+  });
+
+  function renderFirmantes() {
+    els.bFirmantesList.innerHTML = basicoState.firmantes.length
+      ? basicoState.firmantes.map(function (f, i) {
+          return '<div class="flex items-center gap-2">'
+            + '<input type="text" data-idx="' + i + '" value="' + escapeAttr(f) + '" placeholder="Cargo/función" class="b-firm-input flex-1 text-sm border border-slate-200 rounded-lg px-3 py-1.5">'
+            + '<button type="button" data-idx="' + i + '" class="btn-del-firm text-xs text-red-600 hover:underline cursor-pointer">×</button>'
+            + '</div>';
+        }).join('')
+      : '<p class="text-xs text-slate-400 italic">Sin firmantes (no se renderizará la sección).</p>';
+    els.bFirmantesList.querySelectorAll('.b-firm-input').forEach(function (el) {
+      el.addEventListener('input', function () {
+        basicoState.firmantes[Number(el.dataset.idx)] = el.value;
+        debouncedRegenerar();
+      });
+    });
+    els.bFirmantesList.querySelectorAll('.btn-del-firm').forEach(function (btn) {
+      btn.addEventListener('click', function () {
+        basicoState.firmantes.splice(Number(btn.dataset.idx), 1);
+        renderFirmantes();
+        generarHtmlDesdeBasico();
+        renderPreview();
+      });
+    });
+  }
+
+  els.bAddFirmante.addEventListener('click', function () {
+    basicoState.firmantes.push('');
+    renderFirmantes();
+    generarHtmlDesdeBasico();
+    renderPreview();
+  });
+
+  // ===== Listeners de los campos del encabezado básico =====
+  ['bTitulo','bOrg','bColor','bFontsize','bFontfamily','bPie'].forEach(function (k) {
+    const map = { bTitulo:'titulo', bOrg:'org', bColor:'color', bFontsize:'fontSize', bFontfamily:'fontFamily', bPie:'pie' };
+    els[k].addEventListener('input', function () {
+      basicoState[map[k]] = els[k].value;
+      debouncedRegenerar();
+    });
+    els[k].addEventListener('change', function () {
+      basicoState[map[k]] = els[k].value;
+      debouncedRegenerar();
+    });
+  });
+
+  // ===== Generador de HTML desde modo Básico =====
+  function generarHtmlDesdeBasico() {
+    const s = basicoState;
+    const seccionesHtml = s.secciones.map(function (sec) {
+      return '<div class="section">'
+        + '<h3>' + escapeText(sec.titulo) + '</h3>'
+        + '<div>' + sec.contenido + '</div>'
+        + '</div>';
+    }).join('\n');
+
+    const firmasHtml = s.firmantes.length
+      ? '<div class="firmas">' + s.firmantes.map(function (f) {
+          return '<div class="firma">' + (f || '&nbsp;') + '</div>';
+        }).join('') + '</div>'
+      : '';
+
+    const orgLine = s.org ? escapeText(s.org) : '{{convocante_nombre}}';
+
+    const html = BASICO_MARKER + '\n'
+      + '<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><style>\n'
+      + 'body{font-family:' + s.fontFamily + ';font-size:' + s.fontSize + ';color:#111;margin:30px}\n'
+      + '.header{text-align:center;border-bottom:2px solid ' + s.color + ';padding-bottom:10px;margin-bottom:18px}\n'
+      + '.header h1{margin:0;font-size:16pt;color:' + s.color + '}\n'
+      + '.header h2{margin:4px 0 0;font-size:12pt;color:#444;font-weight:normal}\n'
+      + '.section{margin-top:14px}\n'
+      + '.section h3{font-size:12pt;color:' + s.color + ';border-bottom:1px solid #ccc;padding-bottom:3px;margin-bottom:6px}\n'
+      + '.firmas{margin-top:32px;display:table;width:100%}\n'
+      + '.firma{display:table-cell;text-align:center;padding-top:50px;border-top:1px solid #333;padding-left:8px;padding-right:8px}\n'
+      + '.foot{margin-top:24px;font-size:9pt;color:#666;text-align:center}\n'
+      + 'table{width:100%;border-collapse:collapse}\n'
+      + '</style></head><body>\n'
+      + '<div class="header"><h1>' + orgLine + '</h1><h2>' + escapeText(s.titulo) + '</h2></div>\n'
+      + seccionesHtml + '\n'
+      + firmasHtml + '\n'
+      + '<div class="foot">' + s.pie + '</div>\n'
+      + '</body></html>';
+
+    els.html.value = html;
+    // Variables esperadas CSV
+    els.variablesCsv.value = Array.from(basicoState.variables).join(',');
+  }
+
+  // ===== Vista previa =====
   function fillSample(html) {
     return html.replace(/\{\{\s*([a-zA-Z_][a-zA-Z0-9_]*)\s*\}\}/g, function (_, k) {
       const v = SAMPLE_VARS[k];
@@ -204,25 +742,55 @@
       return v;
     });
   }
-
   function renderPreview() {
     const html = els.html.value || '<html><body><p style="color:#888;text-align:center;padding:50px">Vista previa vacía</p></body></html>';
-    const filled = fillSample(html);
-    els.preview.srcdoc = filled;
+    els.preview.srcdoc = fillSample(html);
   }
 
-  function defaultTemplate() {
-    return '<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><style>\n'
-      + 'body{font-family:Arial,sans-serif;font-size:11pt;color:#111;margin:30px}\n'
-      + '.header{text-align:center;border-bottom:2px solid #1d4ed8;padding-bottom:10px;margin-bottom:18px}\n'
-      + '.header h1{margin:0;font-size:16pt;color:#1d4ed8}\n'
-      + '</style></head><body>\n'
-      + '<div class="header"><h1>{{convocante_nombre}}</h1><p>{{tipo_procedimiento}} {{numero_licitacion}}</p></div>\n'
-      + '<p><strong>Objeto:</strong> {{descripcion_proyecto}}</p>\n'
-      + '<p><strong>Fecha de emisión:</strong> {{fecha_emision}}</p>\n'
+  let __debTimer = null;
+  function debouncedRegenerar() {
+    clearTimeout(__debTimer);
+    __debTimer = setTimeout(function () {
+      generarHtmlDesdeBasico();
+      renderPreview();
+    }, 400);
+  }
+
+  // ===== Modo avanzado: textarea cambios =====
+  els.html.addEventListener('input', function () {
+    clearTimeout(__debTimer);
+    __debTimer = setTimeout(renderPreview, 700);
+  });
+
+  els.btnFillDefault.addEventListener('click', function () {
+    els.html.value = '<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><style>'
+      + 'body{font-family:Arial,sans-serif;font-size:11pt;margin:30px}'
+      + '.header{text-align:center;border-bottom:2px solid #1d4ed8;padding-bottom:10px}'
+      + '.header h1{margin:0;color:#1d4ed8;font-size:16pt}'
+      + '</style></head><body>'
+      + '<div class="header"><h1>{{convocante_nombre}}</h1><p>{{tipo_procedimiento}} {{numero_licitacion}}</p></div>'
+      + '<p><strong>Objeto:</strong> {{descripcion_proyecto}}</p>'
+      + '<p><strong>Fecha de emisión:</strong> {{fecha_emision}}</p>'
       + '</body></html>';
-  }
+    renderPreview();
+  });
 
+  els.btnFromBasico.addEventListener('click', function () {
+    generarHtmlDesdeBasico();
+    renderPreview();
+    els.advWarning.classList.add('hidden');
+  });
+
+  els.btnPreview.addEventListener('click', function () {
+    if (modo === 'basico') generarHtmlDesdeBasico();
+    renderPreview();
+  });
+
+  // ===== Helpers =====
+  function escapeAttr(s) { return String(s || '').replace(/&/g,'&amp;').replace(/"/g,'&quot;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+  function escapeText(s) { return String(s || '').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;'); }
+
+  // ===== Cargar plantilla existente =====
   async function loadExisting() {
     try {
       const data = await window.SGPLAdmin.authFetch('/admin/plantillas/' + idPlantilla + '?with_content=1');
@@ -235,16 +803,33 @@
       els.nombre.value = p.nombre || '';
       els.descripcion.value = p.descripcion || '';
       els.tipo.value = p.tipo || 'PERSONALIZADA';
+      els.estandar.value = p.tipo || 'PERSONALIZADA';
       els.activa.value = p.activa ? '1' : '0';
-      els.variables.value = p.variables_esperadas || '';
+      els.variablesCsv.value = p.variables_esperadas || '';
       els.html.value = p.contenido_html || '';
 
+      // Si el HTML tiene la marca de modo Básico, intentar extraer el estado
+      if ((p.contenido_html || '').includes(BASICO_MARKER)) {
+        // Mantener modo Básico
+        // Inicializar el state desde el estándar y dejar que el usuario edite
+        aplicarEstandar(p.tipo || 'PERSONALIZADA', false);
+      } else {
+        // HTML personalizado, ir a modo avanzado
+        setModo('avanzado');
+      }
+
       if (isPredefinida) {
-        [els.nombre, els.descripcion, els.tipo, els.activa, els.variables, els.html].forEach(function (el) { el.disabled = true; });
+        document.querySelectorAll('input,select,textarea,button').forEach(function (el) {
+          if (el.id !== 'btn-preview' && !el.closest('header') && !el.closest('nav')) {
+            // Permitir botón Volver y Vista previa
+            if (el.id !== 'btn-preview' && el.id !== 'tab-basico' && el.id !== 'tab-avanzado') {
+              el.disabled = true;
+            }
+          }
+        });
         els.btnSave.style.display = 'none';
       }
 
-      // Mostrar assets
       els.assetsCard.classList.remove('hidden');
       renderAssets(p.assets || []);
       renderPreview();
@@ -261,8 +846,8 @@
     els.assetsList.innerHTML = assets.map(function (a) {
       return '<div class="flex items-center justify-between border border-slate-100 rounded-lg px-3 py-2">'
         + '<div><span class="text-xs font-semibold text-slate-500">' + a.tipo + '</span> · '
-        + '<span class="text-sm">' + window.SGPLAdmin.escapeHtml(a.nombre) + '</span>'
-        + '<div class="text-xs text-slate-400 font-mono">' + window.SGPLAdmin.escapeHtml(a.ruta_relativa) + '</div></div>'
+        + '<span class="text-sm">' + escapeText(a.nombre) + '</span>'
+        + '<div class="text-xs text-slate-400 font-mono">' + escapeText(a.ruta_relativa) + '</div></div>'
         + (isPredefinida ? '' : '<button data-id="' + a.id_asset + '" class="btn-asset-del text-red-600 hover:text-red-700 text-xs font-semibold cursor-pointer">Eliminar</button>')
         + '</div>';
     }).join('');
@@ -277,14 +862,16 @@
     });
   }
 
+  // ===== Guardar =====
   async function save() {
     if (isPredefinida) return;
+    if (modo === 'basico') generarHtmlDesdeBasico();
     const body = {
       nombre: els.nombre.value.trim(),
       descripcion: els.descripcion.value.trim() || null,
       tipo: els.tipo.value,
       activa: els.activa.value === '1' ? 1 : 0,
-      variables_esperadas: els.variables.value.trim() || null,
+      variables_esperadas: els.variablesCsv.value.trim() || null,
       contenido_html: els.html.value,
     };
     if (!body.nombre || !body.contenido_html) {
@@ -315,18 +902,9 @@
       els.btnSave.innerHTML = '<i class="ph ph-floppy-disk text-base" aria-hidden="true"></i> Guardar';
     }
   }
-
   els.btnSave.addEventListener('click', save);
-  els.btnPreview.addEventListener('click', renderPreview);
-  els.btnFillDefault.addEventListener('click', function () {
-    els.html.value = defaultTemplate();
-    renderPreview();
-  });
-  els.html.addEventListener('input', function () {
-    clearTimeout(window.__previewTimeout);
-    window.__previewTimeout = setTimeout(renderPreview, 700);
-  });
 
+  // ===== Assets upload =====
   els.formAsset.addEventListener('submit', async function (e) {
     e.preventDefault();
     if (!isEdit) {
@@ -334,10 +912,7 @@
       return;
     }
     const file = els.assetFile.files[0];
-    if (!file) {
-      alert('Selecciona un archivo.');
-      return;
-    }
+    if (!file) { alert('Selecciona un archivo.'); return; }
     const fd = new FormData();
     fd.append('tipo', els.assetTipo.value);
     fd.append('nombre', file.name);
@@ -354,11 +929,14 @@
     }
   });
 
+  // ===== Inicialización =====
   if (isEdit) {
     loadExisting();
   } else {
-    els.html.value = defaultTemplate();
-    renderPreview();
+    // Plantilla nueva: aplicar estándar PERSONALIZADA por defecto en modo Básico
+    aplicarEstandar('PERSONALIZADA', true);
+    els.estandar.value = 'PERSONALIZADA';
+    setModo('basico');
   }
 })();
 </script>
