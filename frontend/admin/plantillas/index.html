@@ -1,0 +1,217 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plantillas — SGPLOPyPC</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] },
+                    colors: { primary: { 50:'#eff6ff',100:'#dbeafe',500:'#3b82f6',600:'#2563eb',700:'#1d4ed8',800:'#1e40af',900:'#1e3a8a' } }
+                }
+            }
+        }
+    </script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+<body class="bg-slate-100 text-slate-900 font-sans antialiased flex h-screen overflow-hidden">
+
+    <aside class="w-64 bg-slate-900 flex flex-col hidden md:flex h-full shrink-0">
+        <div class="p-5 border-b border-slate-800">
+            <a href="/" class="flex items-center gap-3 cursor-pointer">
+                <div class="w-9 h-9 rounded-lg bg-blue-600 flex items-center justify-center text-white font-bold text-sm shrink-0" aria-hidden="true">SG</div>
+                <div>
+                    <p class="font-bold text-white text-sm leading-tight">SGPLOPyPC</p>
+                    <p class="text-xs text-slate-500">Panel Administrativo</p>
+                </div>
+            </a>
+        </div>
+        <nav class="flex-1 overflow-y-auto py-5 px-3 flex flex-col gap-5">
+            <div>
+                <p class="px-3 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Principal</p>
+                <a href="/frontend/admin/dashboard.html" class="flex items-center gap-3 px-3 py-2 text-slate-400 hover:bg-slate-800 hover:text-white rounded-lg font-medium transition-all duration-200 text-sm cursor-pointer"><i class="ph ph-squares-four text-lg shrink-0" aria-hidden="true"></i> Dashboard</a>
+            </div>
+            <div>
+                <p class="px-3 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Módulos</p>
+                <div class="space-y-0.5">
+                    <a href="/frontend/admin/convocatorias/index.html" class="flex items-center gap-3 px-3 py-2 text-slate-400 hover:bg-slate-800 hover:text-white rounded-lg font-medium transition-all duration-200 text-sm cursor-pointer"><i class="ph ph-megaphone text-lg shrink-0" aria-hidden="true"></i> Convocatorias</a>
+                    <a href="/frontend/admin/proveedores/index.html" class="flex items-center gap-3 px-3 py-2 text-slate-400 hover:bg-slate-800 hover:text-white rounded-lg font-medium transition-all duration-200 text-sm cursor-pointer"><i class="ph ph-users text-lg shrink-0" aria-hidden="true"></i> Proveedores</a>
+                    <a href="/frontend/admin/propuestas/index.html" class="flex items-center gap-3 px-3 py-2 text-slate-400 hover:bg-slate-800 hover:text-white rounded-lg font-medium transition-all duration-200 text-sm cursor-pointer"><i class="ph ph-file-text text-lg shrink-0" aria-hidden="true"></i> Propuestas</a>
+                    <a href="/frontend/admin/evaluacion/index.html" class="flex items-center gap-3 px-3 py-2 text-slate-400 hover:bg-slate-800 hover:text-white rounded-lg font-medium transition-all duration-200 text-sm cursor-pointer"><i class="ph ph-check-square text-lg shrink-0" aria-hidden="true"></i> Evaluación</a>
+                    <a href="/frontend/admin/adjudicaciones/index.html" class="flex items-center gap-3 px-3 py-2 text-slate-400 hover:bg-slate-800 hover:text-white rounded-lg font-medium transition-all duration-200 text-sm cursor-pointer"><i class="ph ph-handshake text-lg shrink-0" aria-hidden="true"></i> Adjudicaciones</a>
+                </div>
+            </div>
+            <div>
+                <p class="px-3 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Sistema</p>
+                <div class="space-y-0.5">
+                    <a href="/frontend/admin/reportes/index.html" class="flex items-center gap-3 px-3 py-2 text-slate-400 hover:bg-slate-800 hover:text-white rounded-lg font-medium transition-all duration-200 text-sm cursor-pointer"><i class="ph ph-chart-bar text-lg shrink-0" aria-hidden="true"></i> Reportes</a>
+                    <a href="/frontend/admin/plantillas/index.html" class="flex items-center gap-3 px-3 py-2 bg-slate-800 text-white rounded-lg font-semibold transition-all duration-200 text-sm cursor-pointer"><i class="ph ph-file-doc text-lg shrink-0" aria-hidden="true"></i> Plantillas</a>
+                    <a href="/frontend/admin/auditoria/index.html" class="flex items-center gap-3 px-3 py-2 text-slate-400 hover:bg-slate-800 hover:text-white rounded-lg font-medium transition-all duration-200 text-sm cursor-pointer"><i class="ph ph-shield-check text-lg shrink-0" aria-hidden="true"></i> Auditoría</a>
+                    <a href="/frontend/admin/configuracion/index.html" class="flex items-center gap-3 px-3 py-2 text-slate-400 hover:bg-slate-800 hover:text-white rounded-lg font-medium transition-all duration-200 text-sm cursor-pointer"><i class="ph ph-gear text-lg shrink-0" aria-hidden="true"></i> Configuración</a>
+                </div>
+            </div>
+        </nav>
+        <div class="p-4 border-t border-slate-800 space-y-0.5">
+            <button data-action="logout" class="flex items-center gap-3 w-full px-3 py-2 text-slate-400 hover:bg-red-950 hover:text-red-400 rounded-lg font-medium transition-all text-sm cursor-pointer"><i class="ph ph-sign-out text-lg shrink-0" aria-hidden="true"></i> Cerrar Sesión</button>
+        </div>
+    </aside>
+
+    <div class="flex-1 flex flex-col h-full overflow-hidden">
+        <header class="h-16 bg-white border-b border-slate-200 flex items-center justify-between px-6 z-10 shrink-0">
+            <div class="flex items-center gap-4">
+                <button class="md:hidden p-2 text-slate-500 hover:text-slate-700 hover:bg-slate-100 rounded-lg transition-colors cursor-pointer" aria-label="Abrir menú">
+                    <i class="ph ph-list text-xl" aria-hidden="true"></i>
+                </button>
+                <div>
+                    <h1 class="text-base font-bold text-slate-800">Plantillas de Reporte</h1>
+                    <p class="text-xs text-slate-500">Plantillas oficiales conforme a LAASSP y datos abiertos (OCDS)</p>
+                </div>
+            </div>
+            <div class="flex items-center gap-3">
+                <a href="/frontend/admin/plantillas/editor.html" class="inline-flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white font-semibold px-4 py-2 rounded-lg text-sm cursor-pointer transition-colors shadow-sm">
+                    <i class="ph ph-plus text-base" aria-hidden="true"></i> Nueva plantilla
+                </a>
+            </div>
+        </header>
+
+        <main class="flex-1 overflow-x-hidden overflow-y-auto p-6">
+            <div class="max-w-7xl mx-auto space-y-6">
+
+                <section class="bg-white rounded-2xl border border-slate-200 p-5">
+                    <form id="filter-form" class="flex flex-col md:flex-row gap-3">
+                        <div class="flex-1">
+                            <label for="f-tipo" class="block text-xs font-semibold text-slate-500 mb-1">Tipo</label>
+                            <select id="f-tipo" name="tipo" class="w-full text-sm border border-slate-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500">
+                                <option value="">— Todos —</option>
+                                <option value="ACTA_ACLARACIONES">Acta de Aclaraciones</option>
+                                <option value="ACTA_APERTURA">Acta de Apertura</option>
+                                <option value="ACTA_FALLO">Acta de Fallo</option>
+                                <option value="DICTAMEN">Dictamen</option>
+                                <option value="CONTRATO">Contrato</option>
+                                <option value="RESUMEN_LICITACION">Resumen de Licitación</option>
+                                <option value="PERSONALIZADA">Personalizada</option>
+                            </select>
+                        </div>
+                        <div class="flex items-end gap-2">
+                            <button type="submit" class="inline-flex items-center gap-2 bg-slate-900 hover:bg-slate-800 text-white font-semibold px-4 py-2 rounded-lg text-sm cursor-pointer transition-colors">
+                                <i class="ph ph-funnel text-base" aria-hidden="true"></i> Filtrar
+                            </button>
+                            <button type="button" id="btn-clear" class="inline-flex items-center gap-2 border border-slate-200 hover:bg-slate-50 text-slate-700 font-semibold px-3 py-2 rounded-lg text-sm cursor-pointer transition-colors" aria-label="Limpiar filtros">
+                                <i class="ph ph-x text-base" aria-hidden="true"></i>
+                            </button>
+                        </div>
+                    </form>
+                </section>
+
+                <section class="bg-white rounded-2xl border border-slate-200 overflow-hidden">
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full text-sm" id="plantilla-table">
+                            <thead class="bg-slate-50 border-b border-slate-200">
+                                <tr class="text-left">
+                                    <th class="px-4 py-3 font-semibold text-slate-600 text-xs uppercase tracking-wider">Nombre</th>
+                                    <th class="px-4 py-3 font-semibold text-slate-600 text-xs uppercase tracking-wider">Tipo</th>
+                                    <th class="px-4 py-3 font-semibold text-slate-600 text-xs uppercase tracking-wider">Estado</th>
+                                    <th class="px-4 py-3 font-semibold text-slate-600 text-xs uppercase tracking-wider">Origen</th>
+                                    <th class="px-4 py-3 font-semibold text-slate-600 text-xs uppercase tracking-wider">Actualizada</th>
+                                    <th class="px-4 py-3 font-semibold text-slate-600 text-xs uppercase tracking-wider text-right">Acciones</th>
+                                </tr>
+                            </thead>
+                            <tbody id="plantilla-tbody" class="divide-y divide-slate-100">
+                                <tr><td colspan="6" class="px-4 py-8 text-center text-sm text-slate-500">Cargando plantillas...</td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+
+            </div>
+        </main>
+    </div>
+
+<script src="/frontend/shared/format.js"></script>
+<script src="/frontend/shared/admin.js"></script>
+<script>
+(function () {
+  if (!window.SGPLAdmin.protectRoute()) return;
+  window.SGPLAdmin.attachLogoutHandlers();
+
+  const tbody = document.getElementById('plantilla-tbody');
+  const form = document.getElementById('filter-form');
+  const tipoSelect = document.getElementById('f-tipo');
+  const btnClear = document.getElementById('btn-clear');
+
+  const tipoLabels = {
+    ACTA_ACLARACIONES: 'Acta Aclaraciones',
+    ACTA_APERTURA: 'Acta Apertura',
+    ACTA_FALLO: 'Acta Fallo',
+    DICTAMEN: 'Dictamen',
+    CONTRATO: 'Contrato',
+    RESUMEN_LICITACION: 'Resumen Licitación',
+    PERSONALIZADA: 'Personalizada',
+  };
+
+  async function load() {
+    tbody.innerHTML = '<tr><td colspan="6" class="px-4 py-8 text-center text-sm text-slate-500">Cargando...</td></tr>';
+    const params = new URLSearchParams();
+    if (tipoSelect.value) params.set('tipo', tipoSelect.value);
+    try {
+      const data = await window.SGPLAdmin.authFetch('/admin/plantillas?' + params.toString());
+      render(data.data.items || []);
+    } catch (e) {
+      tbody.innerHTML = '<tr><td colspan="6" class="px-4 py-8 text-center text-sm text-red-600">' + window.SGPLAdmin.escapeHtml(e.message) + '</td></tr>';
+    }
+  }
+
+  function render(items) {
+    if (!items.length) {
+      tbody.innerHTML = '<tr><td colspan="6" class="px-4 py-8 text-center text-sm text-slate-500">No hay plantillas con los filtros actuales.</td></tr>';
+      return;
+    }
+    tbody.innerHTML = items.map(function (p) {
+      const tipoBadge = '<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-violet-50 text-violet-700 border border-violet-200">' + window.SGPLAdmin.escapeHtml(tipoLabels[p.tipo] || p.tipo) + '</span>';
+      const activaBadge = p.activa
+        ? '<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">Activa</span>'
+        : '<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-slate-100 text-slate-700 border border-slate-200">Inactiva</span>';
+      const origenBadge = p.es_predefinida
+        ? '<span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-xs font-semibold bg-amber-50 text-amber-700 border border-amber-200"><i class="ph ph-shield-check"></i> Predefinida</span>'
+        : '<span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold bg-slate-50 text-slate-600 border border-slate-200">Personalizada</span>';
+      const accionesEditar = '<a href="/frontend/admin/plantillas/editor.html?id=' + p.id_plantilla + '" class="text-primary-600 hover:text-primary-700 text-xs font-semibold cursor-pointer">' + (p.es_predefinida ? 'Ver' : 'Editar') + '</a>';
+      const accionesEliminar = p.es_predefinida
+        ? ''
+        : ' &nbsp; <button data-id="' + p.id_plantilla + '" data-name="' + window.SGPLAdmin.escapeHtml(p.nombre) + '" class="btn-delete text-red-600 hover:text-red-700 text-xs font-semibold cursor-pointer">Eliminar</button>';
+      return '<tr class="hover:bg-slate-50 transition-colors">'
+        + '<td class="px-4 py-3"><div class="font-medium text-slate-800">' + window.SGPLAdmin.escapeHtml(p.nombre) + '</div>'
+        + (p.descripcion ? '<div class="text-xs text-slate-500 mt-0.5">' + window.SGPLAdmin.escapeHtml(p.descripcion).slice(0, 120) + (p.descripcion.length > 120 ? '...' : '') + '</div>' : '') + '</td>'
+        + '<td class="px-4 py-3">' + tipoBadge + '</td>'
+        + '<td class="px-4 py-3">' + activaBadge + '</td>'
+        + '<td class="px-4 py-3">' + origenBadge + '</td>'
+        + '<td class="px-4 py-3 text-xs text-slate-500">' + window.SGPLAdmin.escapeHtml(p.fecha_actualizacion || '') + '</td>'
+        + '<td class="px-4 py-3 text-right">' + accionesEditar + accionesEliminar + '</td>'
+        + '</tr>';
+    }).join('');
+
+    tbody.querySelectorAll('.btn-delete').forEach(function (btn) {
+      btn.addEventListener('click', async function () {
+        if (!confirm('¿Eliminar la plantilla "' + btn.dataset.name + '"? Esta acción no se puede deshacer.')) return;
+        try {
+          await window.SGPLAdmin.authFetch('/admin/plantillas/' + btn.dataset.id, { method: 'DELETE' });
+          await load();
+        } catch (e) {
+          alert(e.message || 'Error al eliminar.');
+        }
+      });
+    });
+  }
+
+  form.addEventListener('submit', function (e) { e.preventDefault(); load(); });
+  btnClear.addEventListener('click', function () { tipoSelect.value = ''; load(); });
+
+  load();
+})();
+</script>
+</body>
+</html>

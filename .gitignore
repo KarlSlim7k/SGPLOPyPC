@@ -43,7 +43,6 @@ public/uploads/
 # Dependencies (if added later)
 vendor/
 node_modules/
-composer.lock
 package-lock.json
 yarn.lock
 

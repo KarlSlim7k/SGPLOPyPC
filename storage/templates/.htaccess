@@ -1,0 +1,10 @@
+# Bloquear acceso público directo a archivos de plantillas (logos, firmas).
+# Si en el futuro se requiere servir imágenes públicamente, se hará vía endpoint
+# autenticado en PHP, no por acceso directo a Apache.
+Order allow,deny
+Deny from all
+
+# Bloquear ejecución de scripts en este directorio
+<FilesMatch "\.(php|phtml|php3|php4|php5|php7|phps|cgi|pl|py|sh)$">
+    Require all denied
+</FilesMatch>

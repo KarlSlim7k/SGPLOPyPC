@@ -51,6 +51,7 @@ require_once __DIR__ . '/../app/controllers/NotificacionController.php';
 require_once __DIR__ . '/../app/controllers/SupportTicketController.php';
 require_once __DIR__ . '/../app/controllers/AclaracionController.php';
 require_once __DIR__ . '/../app/controllers/AuditoriaController.php';
+require_once __DIR__ . '/../app/controllers/PlantillaController.php';
 require_once __DIR__ . '/../app/routes/PublicRouteTable.php';
 
 // Middlewares
@@ -134,6 +135,55 @@ try {
             AuthMiddleware::handle();
             RoleMiddleware::handle('ADMINISTRADOR');
             (new AuditoriaController())->exportCsv();
+            break;
+
+        // Plantillas de reportes (ADMINISTRADOR)
+        case $route === '/admin/plantillas' && $requestMethod === 'GET':
+            AuthMiddleware::handle();
+            RoleMiddleware::handle('ADMINISTRADOR');
+            (new PlantillaController())->list();
+            break;
+
+        case $route === '/admin/plantillas' && $requestMethod === 'POST':
+            AuthMiddleware::handle();
+            RoleMiddleware::handle('ADMINISTRADOR');
+            (new PlantillaController())->create();
+            break;
+
+        case preg_match('#^/admin/plantillas/(\d+)$#', $route, $m) && $requestMethod === 'GET':
+            AuthMiddleware::handle();
+            RoleMiddleware::handle('ADMINISTRADOR');
+            (new PlantillaController())->get((int) $m[1]);
+            break;
+
+        case preg_match('#^/admin/plantillas/(\d+)$#', $route, $m) && $requestMethod === 'PUT':
+            AuthMiddleware::handle();
+            RoleMiddleware::handle('ADMINISTRADOR');
+            (new PlantillaController())->update((int) $m[1]);
+            break;
+
+        case preg_match('#^/admin/plantillas/(\d+)$#', $route, $m) && $requestMethod === 'DELETE':
+            AuthMiddleware::handle();
+            RoleMiddleware::handle('ADMINISTRADOR');
+            (new PlantillaController())->delete((int) $m[1]);
+            break;
+
+        case preg_match('#^/admin/plantillas/(\d+)/assets$#', $route, $m) && $requestMethod === 'POST':
+            AuthMiddleware::handle();
+            RoleMiddleware::handle('ADMINISTRADOR');
+            (new PlantillaController())->uploadAsset((int) $m[1]);
+            break;
+
+        case preg_match('#^/admin/plantillas/assets/(\d+)$#', $route, $m) && $requestMethod === 'DELETE':
+            AuthMiddleware::handle();
+            RoleMiddleware::handle('ADMINISTRADOR');
+            (new PlantillaController())->deleteAsset((int) $m[1]);
+            break;
+
+        case $route === '/reportes/generar' && $requestMethod === 'POST':
+            AuthMiddleware::handle();
+            RoleMiddleware::handle('ADMINISTRADOR');
+            (new PlantillaController())->generar();
             break;
 
         case $route === '/admin/dashboard' && $requestMethod === 'GET':

@@ -1,0 +1,24 @@
+{
+    "name": "sgplopypc/sgplopypc",
+    "description": "Sistema de Gestión de Procedimiento de Licitación de Obra Pública y Contratación",
+    "type": "project",
+    "license": "proprietary",
+    "require": {
+        "php": ">=8.1",
+        "dompdf/dompdf": "^3.0",
+        "phpoffice/phpword": "^1.3"
+    },
+    "config": {
+        "optimize-autoloader": true,
+        "preferred-install": "dist",
+        "sort-packages": true,
+        "allow-plugins": {
+            "phpoffice/phpword-extensions": false
+        }
+    },
+    "autoload": {
+        "files": []
+    },
+    "minimum-stability": "stable",
+    "prefer-stable": true
+}

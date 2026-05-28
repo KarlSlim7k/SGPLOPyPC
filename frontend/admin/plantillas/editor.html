@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editor de Plantilla — SGPLOPyPC</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'], mono: ['ui-monospace', 'SFMono-Regular', 'monospace'] },
+                    colors: { primary: { 50:'#eff6ff',100:'#dbeafe',500:'#3b82f6',600:'#2563eb',700:'#1d4ed8',800:'#1e40af',900:'#1e3a8a' } }
+                }
+            }
+        }
+    </script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+</head>
+<body class="bg-slate-100 text-slate-900 font-sans antialiased min-h-screen">
+
+<div class="bg-white border-b border-slate-200 sticky top-0 z-10">
+    <div class="max-w-7xl mx-auto px-6 py-3 flex flex-wrap items-center justify-between gap-3">
+        <div class="flex items-center gap-3">
+            <a href="/frontend/admin/plantillas/index.html" class="text-slate-500 hover:text-slate-700" aria-label="Volver"><i class="ph ph-arrow-left text-xl"></i></a>
+            <div>
+                <h1 id="page-title" class="text-base font-bold text-slate-800">Nueva plantilla</h1>
+                <p class="text-xs text-slate-500" id="page-subtitle">Define el contenido HTML, las variables esperadas y los assets.</p>
+            </div>
+        </div>
+        <div class="flex items-center gap-2 flex-wrap">
+            <button id="btn-preview" class="inline-flex items-center gap-2 border border-slate-200 hover:bg-slate-50 text-slate-700 font-semibold px-3 py-2 rounded-lg text-sm cursor-pointer transition-colors">
+                <i class="ph ph-eye text-base" aria-hidden="true"></i> Vista previa
+            </button>
+            <button id="btn-save" class="inline-flex items-center gap-2 bg-primary-600 hover:bg-primary-700 text-white font-semibold px-4 py-2 rounded-lg text-sm cursor-pointer transition-colors shadow-sm">
+                <i class="ph ph-floppy-disk text-base" aria-hidden="true"></i> Guardar
+            </button>
+        </div>
+    </div>
+</div>
+
+<main class="max-w-7xl mx-auto p-6 grid lg:grid-cols-2 gap-6">
+
+    <!-- Columna izquierda: campos editables -->
+    <section class="space-y-4">
+        <div class="bg-white rounded-2xl border border-slate-200 p-5 space-y-4">
+            <div>
+                <label class="block text-xs font-semibold text-slate-500 mb-1">Nombre <span class="text-red-500">*</span></label>
+                <input id="f-nombre" type="text" maxlength="150" class="w-full text-sm border border-slate-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500" placeholder="Ej: Acta de Fallo Personalizada">
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-slate-500 mb-1">Descripción</label>
+                <textarea id="f-descripcion" rows="2" maxlength="500" class="w-full text-sm border border-slate-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500" placeholder="Para qué procedimiento o caso de uso aplica."></textarea>
+            </div>
+            <div class="grid grid-cols-2 gap-3">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 mb-1">Tipo <span class="text-red-500">*</span></label>
+                    <select id="f-tipo" class="w-full text-sm border border-slate-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500">
+                        <option value="ACTA_ACLARACIONES">Acta Aclaraciones</option>
+                        <option value="ACTA_APERTURA">Acta Apertura</option>
+                        <option value="ACTA_FALLO">Acta Fallo</option>
+                        <option value="DICTAMEN">Dictamen</option>
+                        <option value="CONTRATO">Contrato</option>
+                        <option value="RESUMEN_LICITACION">Resumen Licitación</option>
+                        <option value="PERSONALIZADA" selected>Personalizada</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 mb-1">Activa</label>
+                    <select id="f-activa" class="w-full text-sm border border-slate-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500">
+                        <option value="1" selected>Sí</option>
+                        <option value="0">No</option>
+                    </select>
+                </div>
+            </div>
+            <div>
+                <label class="block text-xs font-semibold text-slate-500 mb-1">Variables esperadas (CSV)</label>
+                <input id="f-variables" type="text" class="w-full text-sm border border-slate-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500 font-mono" placeholder="numero_licitacion,descripcion_proyecto,fecha_emision">
+                <p class="text-xs text-slate-400 mt-1">Documenta qué placeholders consume la plantilla. Separadas por coma.</p>
+            </div>
+        </div>
+
+        <div class="bg-white rounded-2xl border border-slate-200 p-5 space-y-3">
+            <div class="flex items-center justify-between">
+                <h3 class="text-sm font-bold text-slate-700">Contenido HTML</h3>
+                <button id="btn-fill-default" type="button" class="text-xs text-primary-600 hover:underline cursor-pointer">Cargar plantilla mínima</button>
+            </div>
+            <textarea id="f-html" rows="20" class="w-full text-xs border border-slate-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500 font-mono" placeholder="<html><body><h1>{{numero_licitacion}}</h1>...</body></html>"></textarea>
+            <p class="text-xs text-slate-500">Usa <code class="bg-slate-100 px-1 rounded font-mono">{{variable}}</code> donde quieras inyectar datos. CSS inline recomendado para PDF.</p>
+        </div>
+
+        <div id="assets-card" class="bg-white rounded-2xl border border-slate-200 p-5 space-y-3 hidden">
+            <h3 class="text-sm font-bold text-slate-700">Assets (logos, firmas, sellos)</h3>
+            <div id="assets-list" class="space-y-2 text-sm"></div>
+            <form id="form-asset" class="grid grid-cols-1 md:grid-cols-3 gap-2 items-end pt-3 border-t border-slate-100">
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 mb-1">Tipo</label>
+                    <select id="asset-tipo" class="w-full text-sm border border-slate-200 rounded-lg px-3 py-2">
+                        <option value="LOGO">Logo</option>
+                        <option value="FIRMA">Firma</option>
+                        <option value="SELLO">Sello</option>
+                        <option value="OTRO">Otro</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-xs font-semibold text-slate-500 mb-1">Archivo (PNG/JPG/SVG, máx 5MB)</label>
+                    <input type="file" id="asset-file" accept="image/png,image/jpeg,image/svg+xml" class="w-full text-xs">
+                </div>
+                <button type="submit" class="bg-slate-900 hover:bg-slate-800 text-white font-semibold px-3 py-2 rounded-lg text-sm cursor-pointer">Subir</button>
+            </form>
+        </div>
+    </section>
+
+    <!-- Columna derecha: vista previa -->
+    <section class="bg-white rounded-2xl border border-slate-200 overflow-hidden flex flex-col">
+        <div class="px-5 py-3 border-b border-slate-200 flex items-center justify-between bg-slate-50">
+            <h3 class="text-sm font-bold text-slate-700"><i class="ph ph-eye text-base mr-1"></i>Vista previa</h3>
+            <span class="text-xs text-slate-500">Renderizado con datos de ejemplo en sandbox</span>
+        </div>
+        <iframe id="preview-frame" sandbox="allow-same-origin" class="w-full flex-1 min-h-[600px] bg-white" title="Vista previa"></iframe>
+    </section>
+</main>
+
+<script src="/frontend/shared/format.js"></script>
+<script src="/frontend/shared/admin.js"></script>
+<script>
+(function () {
+  if (!window.SGPLAdmin.protectRoute()) return;
+  window.SGPLAdmin.attachLogoutHandlers();
+
+  const params = new URLSearchParams(window.location.search);
+  const idPlantilla = params.get('id') ? Number(params.get('id')) : null;
+  const isEdit = idPlantilla !== null && idPlantilla > 0;
+  let isPredefinida = false;
+
+  const els = {
+    title: document.getElementById('page-title'),
+    subtitle: document.getElementById('page-subtitle'),
+    nombre: document.getElementById('f-nombre'),
+    descripcion: document.getElementById('f-descripcion'),
+    tipo: document.getElementById('f-tipo'),
+    activa: document.getElementById('f-activa'),
+    variables: document.getElementById('f-variables'),
+    html: document.getElementById('f-html'),
+    btnSave: document.getElementById('btn-save'),
+    btnPreview: document.getElementById('btn-preview'),
+    btnFillDefault: document.getElementById('btn-fill-default'),
+    preview: document.getElementById('preview-frame'),
+    assetsCard: document.getElementById('assets-card'),
+    assetsList: document.getElementById('assets-list'),
+    formAsset: document.getElementById('form-asset'),
+    assetTipo: document.getElementById('asset-tipo'),
+    assetFile: document.getElementById('asset-file'),
+  };
+
+  const SAMPLE_VARS = {
+    numero_licitacion: 'LP-DEMO-2026-001',
+    descripcion_proyecto: 'Construcción de auditorio comunitario',
+    presupuesto_estimado: '1,500,000.00',
+    fecha_emision: new Date().toISOString().slice(0, 16).replace('T', ' '),
+    fecha_acto: '2026-06-15 10:00',
+    lugar_acto: 'Sala de juntas, oficinas centrales',
+    convocante_nombre: 'Secretaría Demo',
+    dependencia_nombre: 'Secretaría Demo',
+    dependencia_domicilio: 'Av. Principal #100, Centro',
+    responsable_nombre: 'Lic. Demo Responsable',
+    tipo_procedimiento: 'Licitación Pública',
+    estado_proceso: 'EN_ACLARACIONES',
+    asistentes: '3 servidores públicos y 2 representantes de licitantes',
+    aclaraciones_contenido: '<p>Pregunta 1: ¿Cuál es el plazo? — Respuesta: 90 días naturales.</p>',
+    hora_cierre: '11:30',
+    fecha_cierre: '2026-06-15',
+    firmante_convocante: 'Mtra. Demo Convocante',
+    firmante_area_requirente: 'Ing. Demo Requirente',
+    firmante_testigo: 'Lic. Demo Testigo',
+    licitantes_filas: '<tr><td>1</td><td>Constructora Demo SA<br><small>RFC ABC123456789</small></td><td>$1,400,000.00</td><td>Recibida</td></tr>',
+    observaciones: 'Sin observaciones relevantes.',
+    licitante_ganador: 'Constructora Demo SA',
+    licitante_rfc: 'ABC123456789',
+    monto_adjudicado: '1,400,000.00',
+    plazo_ejecucion: '2026-07-01 a 2026-09-29',
+    motivacion: 'Cumple técnica y económicamente al ofertar el monto más bajo solvente.',
+    licitantes_desechados: 'Ninguno.',
+    cargo_firmante: 'Titular del área',
+    firmante_titular: 'Dra. Demo Titular',
+    firmante_juridico: 'Lic. Demo Jurídico',
+    evaluacion_tecnica_filas: '<tr><td>Constructora Demo SA</td><td>Sí</td><td>95/100</td><td>Cumple plenamente</td></tr>',
+    evaluacion_economica_filas: '<tr><td>Constructora Demo SA</td><td>$1,400,000.00</td><td>93%</td><td>Económicamente viable</td></tr>',
+    conclusion: 'Se recomienda adjudicar a Constructora Demo SA.',
+    ubicacion_proyecto: 'Ciudad de México',
+    fecha_creacion: '2026-05-01',
+    fecha_actualizacion: '2026-05-15',
+    hitos: 'Publicación: 2026-05-01 · Junta: 2026-05-15 · Apertura: 2026-06-01',
+    adjudicacion_resumen: 'Adjudicada (contrato #42)',
+    id_licitacion: '99',
+  };
+
+  function fillSample(html) {
+    return html.replace(/\{\{\s*([a-zA-Z_][a-zA-Z0-9_]*)\s*\}\}/g, function (_, k) {
+      const v = SAMPLE_VARS[k];
+      if (v === undefined) return '<span style="background:#fef3c7;color:#92400e;padding:0 2px">{{' + k + '}}</span>';
+      return v;
+    });
+  }
+
+  function renderPreview() {
+    const html = els.html.value || '<html><body><p style="color:#888;text-align:center;padding:50px">Vista previa vacía</p></body></html>';
+    const filled = fillSample(html);
+    els.preview.srcdoc = filled;
+  }
+
+  function defaultTemplate() {
+    return '<!DOCTYPE html><html lang="es"><head><meta charset="UTF-8"><style>\n'
+      + 'body{font-family:Arial,sans-serif;font-size:11pt;color:#111;margin:30px}\n'
+      + '.header{text-align:center;border-bottom:2px solid #1d4ed8;padding-bottom:10px;margin-bottom:18px}\n'
+      + '.header h1{margin:0;font-size:16pt;color:#1d4ed8}\n'
+      + '</style></head><body>\n'
+      + '<div class="header"><h1>{{convocante_nombre}}</h1><p>{{tipo_procedimiento}} {{numero_licitacion}}</p></div>\n'
+      + '<p><strong>Objeto:</strong> {{descripcion_proyecto}}</p>\n'
+      + '<p><strong>Fecha de emisión:</strong> {{fecha_emision}}</p>\n'
+      + '</body></html>';
+  }
+
+  async function loadExisting() {
+    try {
+      const data = await window.SGPLAdmin.authFetch('/admin/plantillas/' + idPlantilla + '?with_content=1');
+      const p = data.data;
+      isPredefinida = !!p.es_predefinida;
+      els.title.textContent = (isPredefinida ? 'Plantilla predefinida: ' : 'Editar: ') + p.nombre;
+      els.subtitle.textContent = isPredefinida
+        ? 'Esta plantilla es de sólo lectura. Duplícala para crear una versión editable.'
+        : 'Modifica el contenido y guarda.';
+      els.nombre.value = p.nombre || '';
+      els.descripcion.value = p.descripcion || '';
+      els.tipo.value = p.tipo || 'PERSONALIZADA';
+      els.activa.value = p.activa ? '1' : '0';
+      els.variables.value = p.variables_esperadas || '';
+      els.html.value = p.contenido_html || '';
+
+      if (isPredefinida) {
+        [els.nombre, els.descripcion, els.tipo, els.activa, els.variables, els.html].forEach(function (el) { el.disabled = true; });
+        els.btnSave.style.display = 'none';
+      }
+
+      // Mostrar assets
+      els.assetsCard.classList.remove('hidden');
+      renderAssets(p.assets || []);
+      renderPreview();
+    } catch (e) {
+      alert('No se pudo cargar la plantilla: ' + e.message);
+    }
+  }
+
+  function renderAssets(assets) {
+    if (!assets.length) {
+      els.assetsList.innerHTML = '<p class="text-xs text-slate-400">— Sin assets registrados —</p>';
+      return;
+    }
+    els.assetsList.innerHTML = assets.map(function (a) {
+      return '<div class="flex items-center justify-between border border-slate-100 rounded-lg px-3 py-2">'
+        + '<div><span class="text-xs font-semibold text-slate-500">' + a.tipo + '</span> · '
+        + '<span class="text-sm">' + window.SGPLAdmin.escapeHtml(a.nombre) + '</span>'
+        + '<div class="text-xs text-slate-400 font-mono">' + window.SGPLAdmin.escapeHtml(a.ruta_relativa) + '</div></div>'
+        + (isPredefinida ? '' : '<button data-id="' + a.id_asset + '" class="btn-asset-del text-red-600 hover:text-red-700 text-xs font-semibold cursor-pointer">Eliminar</button>')
+        + '</div>';
+    }).join('');
+    els.assetsList.querySelectorAll('.btn-asset-del').forEach(function (btn) {
+      btn.addEventListener('click', async function () {
+        if (!confirm('¿Eliminar este asset?')) return;
+        try {
+          await window.SGPLAdmin.authFetch('/admin/plantillas/assets/' + btn.dataset.id, { method: 'DELETE' });
+          await loadExisting();
+        } catch (e) { alert(e.message); }
+      });
+    });
+  }
+
+  async function save() {
+    if (isPredefinida) return;
+    const body = {
+      nombre: els.nombre.value.trim(),
+      descripcion: els.descripcion.value.trim() || null,
+      tipo: els.tipo.value,
+      activa: els.activa.value === '1' ? 1 : 0,
+      variables_esperadas: els.variables.value.trim() || null,
+      contenido_html: els.html.value,
+    };
+    if (!body.nombre || !body.contenido_html) {
+      alert('Nombre y contenido HTML son obligatorios.');
+      return;
+    }
+    els.btnSave.disabled = true;
+    els.btnSave.textContent = 'Guardando...';
+    try {
+      if (isEdit) {
+        await window.SGPLAdmin.authFetch('/admin/plantillas/' + idPlantilla, {
+          method: 'PUT',
+          body: JSON.stringify(body),
+        });
+        alert('Plantilla actualizada.');
+      } else {
+        const r = await window.SGPLAdmin.authFetch('/admin/plantillas', {
+          method: 'POST',
+          body: JSON.stringify(body),
+        });
+        alert('Plantilla creada.');
+        window.location.href = '/frontend/admin/plantillas/editor.html?id=' + r.data.id_plantilla;
+      }
+    } catch (e) {
+      alert('Error al guardar: ' + e.message);
+    } finally {
+      els.btnSave.disabled = false;
+      els.btnSave.innerHTML = '<i class="ph ph-floppy-disk text-base" aria-hidden="true"></i> Guardar';
+    }
+  }
+
+  els.btnSave.addEventListener('click', save);
+  els.btnPreview.addEventListener('click', renderPreview);
+  els.btnFillDefault.addEventListener('click', function () {
+    els.html.value = defaultTemplate();
+    renderPreview();
+  });
+  els.html.addEventListener('input', function () {
+    clearTimeout(window.__previewTimeout);
+    window.__previewTimeout = setTimeout(renderPreview, 700);
+  });
+
+  els.formAsset.addEventListener('submit', async function (e) {
+    e.preventDefault();
+    if (!isEdit) {
+      alert('Guarda primero la plantilla para poder subir assets.');
+      return;
+    }
+    const file = els.assetFile.files[0];
+    if (!file) {
+      alert('Selecciona un archivo.');
+      return;
+    }
+    const fd = new FormData();
+    fd.append('tipo', els.assetTipo.value);
+    fd.append('nombre', file.name);
+    fd.append('archivo', file);
+    try {
+      await window.SGPLAdmin.authFetch('/admin/plantillas/' + idPlantilla + '/assets', {
+        method: 'POST',
+        body: fd,
+      });
+      els.assetFile.value = '';
+      await loadExisting();
+    } catch (e) {
+      alert('Error al subir: ' + e.message);
+    }
+  });
+
+  if (isEdit) {
+    loadExisting();
+  } else {
+    els.html.value = defaultTemplate();
+    renderPreview();
+  }
+})();
+</script>
+</body>
+</html>

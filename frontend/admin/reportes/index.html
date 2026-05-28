@@ -51,6 +51,7 @@
                 <p class="px-3 text-xs font-semibold text-slate-500 uppercase tracking-wider mb-2">Sistema</p>
                 <div class="space-y-0.5">
                     <a href="/frontend/admin/reportes/index.html" class="flex items-center gap-3 px-3 py-2 bg-slate-800 text-white rounded-lg font-semibold transition-all duration-200 text-sm cursor-pointer"><i class="ph ph-chart-bar text-lg shrink-0" aria-hidden="true"></i> Reportes</a>
+                    <a href="/frontend/admin/plantillas/index.html" class="flex items-center gap-3 px-3 py-2 text-slate-400 hover:bg-slate-800 hover:text-white rounded-lg font-medium transition-all duration-200 text-sm cursor-pointer"><i class="ph ph-file-doc text-lg shrink-0" aria-hidden="true"></i> Plantillas</a>
                     <a href="/frontend/admin/auditoria/index.html" class="flex items-center gap-3 px-3 py-2 text-slate-400 hover:bg-slate-800 hover:text-white rounded-lg font-medium transition-all duration-200 text-sm cursor-pointer"><i class="ph ph-shield-check text-lg shrink-0" aria-hidden="true"></i> Auditoría</a>
                     <a href="/frontend/admin/configuracion/index.html" class="flex items-center gap-3 px-3 py-2 text-slate-400 hover:bg-slate-800 hover:text-white rounded-lg font-medium transition-all duration-200 text-sm cursor-pointer"><i class="ph ph-gear text-lg shrink-0" aria-hidden="true"></i> Configuración</a>
                 </div>
@@ -170,6 +171,48 @@
                     </div>
                 </div>
 
+                <!-- Generación de reportes con plantilla -->
+                <div class="bg-white rounded-2xl border border-slate-200 p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <div>
+                            <h3 class="font-bold text-slate-800">Generar reporte desde plantilla</h3>
+                            <p class="text-xs text-slate-500 mt-0.5">Plantillas oficiales (LAASSP) y personalizadas — exporta a PDF, DOCX o Markdown.</p>
+                        </div>
+                        <a href="/frontend/admin/plantillas/index.html" class="text-sm text-primary-600 hover:underline cursor-pointer"><i class="ph ph-gear-six text-base mr-1"></i>Gestionar plantillas</a>
+                    </div>
+                    <form id="form-generar" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-3">
+                        <div>
+                            <label for="g-plantilla" class="block text-xs font-semibold text-slate-500 mb-1">Plantilla</label>
+                            <select id="g-plantilla" class="w-full text-sm border border-slate-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500">
+                                <option value="">— Cargando —</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="g-entidad" class="block text-xs font-semibold text-slate-500 mb-1">Entidad</label>
+                            <select id="g-entidad" class="w-full text-sm border border-slate-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500">
+                                <option value="licitacion">Licitación</option>
+                                <option value="contrato">Contrato</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="g-id" class="block text-xs font-semibold text-slate-500 mb-1">ID</label>
+                            <input type="number" id="g-id" min="1" class="w-full text-sm border border-slate-200 rounded-lg px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary-500" placeholder="Ej: 1">
+                        </div>
+                        <div class="flex items-end gap-2">
+                            <button type="button" data-fmt="pdf" class="btn-generate flex-1 inline-flex items-center justify-center gap-2 bg-red-600 hover:bg-red-700 text-white font-semibold px-3 py-2 rounded-lg text-sm cursor-pointer transition-colors">
+                                <i class="ph ph-file-pdf text-base" aria-hidden="true"></i> PDF
+                            </button>
+                            <button type="button" data-fmt="docx" class="btn-generate inline-flex items-center justify-center gap-2 bg-blue-600 hover:bg-blue-700 text-white font-semibold px-3 py-2 rounded-lg text-sm cursor-pointer transition-colors">
+                                <i class="ph ph-file-doc text-base" aria-hidden="true"></i> DOCX
+                            </button>
+                            <button type="button" data-fmt="md" class="btn-generate inline-flex items-center justify-center gap-2 bg-slate-700 hover:bg-slate-800 text-white font-semibold px-3 py-2 rounded-lg text-sm cursor-pointer transition-colors">
+                                <i class="ph ph-markdown-logo text-base" aria-hidden="true"></i> MD
+                            </button>
+                        </div>
+                    </form>
+                    <p id="g-status" class="text-xs text-slate-500 mt-3 hidden"></p>
+                </div>
+
             </div>
         </main>
     </div>
@@ -282,6 +325,84 @@
   });
 
   loadData();
+
+  // ----- Generación de reportes desde plantilla -----
+  const gPlantilla = document.getElementById('g-plantilla');
+  const gEntidad = document.getElementById('g-entidad');
+  const gId = document.getElementById('g-id');
+  const gStatus = document.getElementById('g-status');
+
+  async function loadPlantillas() {
+    try {
+      const data = await window.SGPLAdmin.authFetch('/admin/plantillas?activa=1');
+      const items = (data.data && data.data.items) || [];
+      if (!items.length) {
+        gPlantilla.innerHTML = '<option value="">— Sin plantillas activas —</option>';
+        return;
+      }
+      gPlantilla.innerHTML = items.map(function (p) {
+        const tag = p.es_predefinida ? ' [oficial]' : '';
+        return '<option value="' + p.id_plantilla + '">' + window.SGPLAdmin.escapeHtml(p.nombre) + tag + '</option>';
+      }).join('');
+    } catch (e) {
+      gPlantilla.innerHTML = '<option value="">Error al cargar</option>';
+    }
+  }
+
+  document.querySelectorAll('.btn-generate').forEach(function (btn) {
+    btn.addEventListener('click', async function () {
+      const idPlantilla = Number(gPlantilla.value);
+      const entidad = gEntidad.value;
+      const idEntidad = Number(gId.value);
+      const formato = btn.dataset.fmt;
+      if (!idPlantilla || !idEntidad) {
+        gStatus.textContent = 'Selecciona una plantilla y captura el ID de la entidad.';
+        gStatus.className = 'text-xs text-red-600 mt-3';
+        gStatus.classList.remove('hidden');
+        return;
+      }
+      gStatus.textContent = 'Generando ' + formato.toUpperCase() + '...';
+      gStatus.className = 'text-xs text-slate-500 mt-3';
+      gStatus.classList.remove('hidden');
+      btn.disabled = true;
+      try {
+        const token = localStorage.getItem('sgplopypc_token');
+        const res = await fetch('/api/v1/reportes/generar', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json', 'Authorization': 'Bearer ' + token },
+          body: JSON.stringify({
+            id_plantilla: idPlantilla,
+            entidad: entidad,
+            id_entidad: idEntidad,
+            formato: formato,
+          }),
+        });
+        if (!res.ok) {
+          const err = await res.json().catch(function () { return null; });
+          throw new Error((err && err.message) || ('Error ' + res.status));
+        }
+        const blob = await res.blob();
+        const cd = res.headers.get('Content-Disposition') || '';
+        const m = cd.match(/filename="?([^";]+)"?/);
+        const filename = m ? m[1] : ('reporte_' + Date.now() + '.' + formato);
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = filename;
+        a.click();
+        URL.revokeObjectURL(url);
+        gStatus.textContent = 'Descarga iniciada: ' + filename;
+        gStatus.className = 'text-xs text-emerald-600 mt-3';
+      } catch (e) {
+        gStatus.textContent = 'Error: ' + e.message;
+        gStatus.className = 'text-xs text-red-600 mt-3';
+      } finally {
+        btn.disabled = false;
+      }
+    });
+  });
+
+  loadPlantillas();
 })();
 </script>
 </body>

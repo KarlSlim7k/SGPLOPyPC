@@ -1,14 +1,26 @@
 FROM php:8.2-apache
 
 # Instalar extensiones PHP necesarias en un solo RUN para optimizar capas
+# - libzip-dev, ext zip: requerido por PHPWord para generar DOCX
+# - libpng/jpeg/freetype + gd: para manipular imágenes en PDF/DOCX (logos, firmas)
+# - libxml/dom: requerido por PHPWord
 RUN apt-get update && apt-get install -y --no-install-recommends \
     libzip-dev \
+    libpng-dev \
+    libjpeg-dev \
+    libfreetype6-dev \
+    libxml2-dev \
     default-mysql-client \
     unzip \
     curl \
-    && docker-php-ext-install -j$(nproc) mysqli pdo pdo_mysql \
+    git \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install -j$(nproc) mysqli pdo pdo_mysql zip gd dom xml \
     && apt-get clean \
     && rm -rf /var/lib/apt/lists/*
+
+# Instalar Composer (binario oficial)
+RUN curl -fsSL https://getcomposer.org/installer | php -- --install-dir=/usr/local/bin --filename=composer
 
 # Configurar MPM y habilitar módulos necesarios en un solo paso
 RUN a2dismod mpm_event mpm_worker 2>/dev/null || true \
@@ -21,6 +33,12 @@ RUN sed -i '/<Directory \/var\/www\/>/,/<\/Directory>/ s/AllowOverride None/Allo
 
 # Copiar archivos del proyecto
 COPY . /var/www/html/
+
+# Instalar dependencias de Composer (Dompdf, PHPWord) sin dev y optimizado
+WORKDIR /var/www/html
+RUN if [ -f composer.json ]; then \
+        composer install --no-dev --optimize-autoloader --no-interaction --no-progress; \
+    fi
 
 # Copiar configuración de Apache para el VirtualHost
 COPY docker/apache-site.conf /etc/apache2/sites-available/000-default.conf
