@@ -44,7 +44,11 @@
       <p class="text-slate-500 text-sm mt-2">Este espacio te permite consultar actividad pública y seguimiento de notificaciones de procesos.</p>
     </section>
 
-    <section class="grid md:grid-cols-5 gap-4">
+    <section class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
+      <a href="/frontend/publico/perfil.html" class="bg-white border border-slate-200 rounded-xl p-5 hover:shadow-sm transition-shadow">
+        <p class="text-slate-800 font-semibold">Mi perfil</p>
+        <p class="text-slate-500 text-sm mt-1">Actualiza datos de cuenta y contraseña.</p>
+      </a>
       <a href="/#convocatorias" class="bg-white border border-slate-200 rounded-xl p-5 hover:shadow-sm transition-shadow">
         <p class="text-slate-800 font-semibold">Convocatorias</p>
         <p class="text-slate-500 text-sm mt-1">Revisa convocatorias publicadas.</p>
@@ -134,7 +138,10 @@
     <section class="bg-white border border-slate-200 rounded-2xl overflow-hidden">
       <div class="px-6 py-4 border-b border-slate-100 flex items-center justify-between">
         <h2 class="font-bold text-slate-800">Mis notificaciones</h2>
-        <span id="publico-notif-count" class="text-xs px-2 py-1 rounded-full bg-slate-100 text-slate-600">0</span>
+        <div class="flex items-center gap-2">
+          <a href="/frontend/publico/notificaciones.html" class="text-sm text-primary-700 font-semibold hover:text-primary-800">Ver todas</a>
+          <span id="publico-notif-count" class="text-xs px-2 py-1 rounded-full bg-slate-100 text-slate-600">0</span>
+        </div>
       </div>
       <div id="publico-notificaciones" class="divide-y divide-slate-100">
         <div class="px-6 py-5 text-sm text-slate-500">Cargando notificaciones...</div>
