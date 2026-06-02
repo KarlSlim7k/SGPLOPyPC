@@ -81,10 +81,11 @@ test.describe('Proveedor notificaciones en tiempo real', () => {
   });
 
   test('crear notificación vía API y verificar que badge se actualiza sin recargar', async ({ page, request }) => {
-    const token = await loginToken(request, PROVIDER_EMAIL, PROVIDER_PASSWORD);
+    const providerToken = await loginToken(request, PROVIDER_EMAIL, PROVIDER_PASSWORD);
+    const adminToken = await loginToken(request, ADMIN_EMAIL, ADMIN_PASSWORD);
 
     const meRes = await request.get('/api/v1/me', {
-      headers: { Authorization: `Bearer ${token}` },
+      headers: { Authorization: `Bearer ${providerToken}` },
     });
     const me = await meRes.json();
     const idUsuario = me.data?.id_usuario;
@@ -98,7 +99,7 @@ test.describe('Proveedor notificaciones en tiempo real', () => {
     await page.waitForFunction(() => typeof window.NotifStream !== 'undefined', { timeout: 10000 });
 
     const createRes = await request.post('/api/v1/notificaciones', {
-      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+      headers: { Authorization: `Bearer ${adminToken}`, 'Content-Type': 'application/json' },
       data: {
         id_usuario_destino: idUsuario,
         tipo_notificacion: 'GENERAL',
@@ -111,7 +112,7 @@ test.describe('Proveedor notificaciones en tiempo real', () => {
     await new Promise((r) => setTimeout(r, 1000));
 
     const countAfterRes = await request.get('/api/v1/notificaciones/count', {
-      headers: { Authorization: `Bearer ${token}` },
+      headers: { Authorization: `Bearer ${providerToken}` },
     });
     const countAfter = (await countAfterRes.json()).data.count;
     expect(countAfter).toBeGreaterThanOrEqual(1);
