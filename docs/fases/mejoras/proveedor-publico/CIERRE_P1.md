@@ -1,4 +1,4 @@
-# Cierre de Fases P1 y P2 — Dashboard Proveedor y Perfil/Notificaciones Público
+# Cierre de Fases P1, P2 y P3 — Dashboard Proveedor, Perfil/Notificaciones Público y SSE Proveedor
 
 ---
 
@@ -76,11 +76,56 @@ Se dotó al usuario público de experiencia autogestionada: editar perfil, cambi
 
 ---
 
+## Fase P3 — Integrar notificaciones SSE en proveedor
+
+- **Commit:** 2585ba7ae5081c1239885ad8bbf26f23502fbdb8
+- **Deployment Railway:** 54d1211d-e064-4540-9a37-105e9d1bce82
+- **URL:** https://sgplopypc.up.railway.app
+- **Healthcheck post-deploy:** `/healthz` → 200, `/api/v1/health` → app=ok, db=ok
+- **E2E:** 7 passed / 0 skipped / 0 failed
+
+### Resumen
+
+Se activaron las notificaciones en tiempo real (SSE) en todas las páginas del proveedor usando el módulo SSE existente (`notif-stream.js`).
+
+**Nuevo archivo compartido:**
+- `frontend/shared/notif-badge-toast.js` — Módulo de integración que:
+  - Conecta `NotifStream` con el badge de notificaciones en el navbar
+  - Muestra toast flotante (esquina inferior derecha) al recibir notificación nueva
+  - Toast con auto-desaparece en 5s, click navega al recurso correspondiente
+  - Inyecta CSS de animación slide-in dinámicamente
+
+**Integración en 10 páginas de proveedor:**
+- `centro.html`, `convocatorias.html`, `licitacion.html`, `participaciones.html`, `propuestas.html`, `documentos.html`, `contratos.html`, `contrato.html`, `notificaciones.html`, `perfil.html`
+- Cada página incluye: badge campana en navbar (link a notificaciones.html), scripts SSE, inicialización `SGPLNotifBadge.init()`
+
+**Fallback polling:**
+- Si SSE falla, `notif-stream.js` cae automáticamente a polling cada 30s vía `GET /notificaciones/count`
+- Verificado que el fallback funciona correctamente
+
+**Tests E2E:**
+- `proveedor-notif-realtime.spec.ts` — 7 tests cubriendo:
+  - Disponibilidad de scripts notif-stream.js y notif-badge-toast.js
+  - Badge visible en centro.html
+  - Badge visible en todas las páginas de proveedor
+  - Badge muestra conteo correcto de no leídas
+  - NotifStream se inicializa correctamente
+  - Creación de notificación vía API (admin) y verificación de conteo
+  - Toast container se crea dinámicamente
+
+**Archivos creados:** 2 (1 shared JS + 1 test E2E)  
+**Archivos modificados:** 10 (todas las páginas de proveedor)  
+**Tablas/columnas nuevas:** Ninguna (usa endpoints SSE existentes)
+
+---
+
 ## Notas técnicas transversales
 
-- Ambas fases usan `admin.js` y `public.js` existentes sin modificaciones
+- Las tres fases usan `admin.js` y `public.js` existentes sin modificaciones
 - Diseño responsive con Tailwind CSS y Phosphor Icons
-- Validación de fortaleza de contraseña: mínimo 8 caracteres, mayúscula, número y símbolo
+- Validación de fortaleza de contraseña: mínimo 8 caracteres, mayúscula, número y símbolo (Fase P2)
 - Cache file-based en `storage/cache/proveedor_metricas/` con TTL de 5 minutos (Fase P1)
 - Permisos: proveedor solo accede a sus propias métricas; administrador puede acceder a cualquier proveedor (Fase P1)
 - La query de tendencia usa CTE (MySQL 8) para compatibilidad con `ONLY_FULL_GROUP_BY` (Fase P1)
+- SSE con fallback a polling cada 30s para notificaciones en tiempo real (Fase P3)
+- Toast de notificación con auto-dismiss a 5s y navegación al recurso vinculado (Fase P3)
