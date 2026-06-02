@@ -38,6 +38,10 @@
           <i class="ph ph-folder-open"></i>
           Documentos
         </a>
+        <a href="/frontend/proveedor/notificaciones.html" data-notif-badge class="relative inline-flex items-center gap-2 text-sm font-semibold px-3 py-2 rounded-lg border border-slate-200 hover:bg-slate-50">
+          <i class="ph ph-bell"></i>
+          <span class="notif-badge-count hidden absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">0</span>
+        </a>
         <button data-action="back" class="inline-flex items-center gap-2 text-sm font-semibold px-3 py-2 rounded-lg border border-slate-200 hover:bg-slate-50" aria-label="Regresar">
           <i class="ph ph-arrow-left"></i>
           Atrás
@@ -198,8 +202,11 @@
   </dialog>
 
   <script src="/frontend/shared/admin.js"></script>
+  <script src="/frontend/shared/notif-stream.js"></script>
+  <script src="/frontend/shared/notif-badge-toast.js"></script>
   <script>
     SGPLAdmin.attachLogoutHandlers();
+    SGPLNotifBadge.init();
     SGPLAdmin.attachBackButton();
     let propuestas = [];
     let participaciones = [];
