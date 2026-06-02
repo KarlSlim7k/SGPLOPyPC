@@ -77,17 +77,26 @@ class ProveedorMetricasRepository {
 
     public function getTendencia(int $idProveedor): array {
         $sql = "
+            WITH base AS (
+                SELECT
+                    YEAR(p.fecha_inscripcion) AS anio,
+                    QUARTER(p.fecha_inscripcion) AS trimestre_num,
+                    p.id_participacion,
+                    COALESCE(pr.monto_propuesta, 0) AS monto_propuesta,
+                    p.estatus
+                FROM participacion p
+                LEFT JOIN propuesta pr ON pr.id_participacion = p.id_participacion
+                WHERE p.id_proveedor = :id_proveedor
+                  AND p.fecha_inscripcion >= DATE_SUB(NOW(), INTERVAL 2 YEAR)
+            )
             SELECT
-                CONCAT(YEAR(p.fecha_inscripcion), '-Q', QUARTER(p.fecha_inscripcion)) AS trimestre,
-                COUNT(DISTINCT p.id_participacion) AS participaciones,
-                COALESCE(SUM(pr.monto_propuesta), 0) AS monto_propuesto,
-                COUNT(DISTINCT CASE WHEN p.estatus = 'GANADOR' THEN p.id_participacion END) AS ganadas
-            FROM participacion p
-            LEFT JOIN propuesta pr ON pr.id_participacion = p.id_participacion
-            WHERE p.id_proveedor = :id_proveedor
-              AND p.fecha_inscripcion >= DATE_SUB(NOW(), INTERVAL 2 YEAR)
-            GROUP BY YEAR(p.fecha_inscripcion), QUARTER(p.fecha_inscripcion)
-            ORDER BY YEAR(p.fecha_inscripcion), QUARTER(p.fecha_inscripcion)";
+                CONCAT(anio, '-Q', trimestre_num) AS trimestre,
+                COUNT(DISTINCT id_participacion) AS participaciones,
+                COALESCE(SUM(monto_propuesta), 0) AS monto_propuesto,
+                COUNT(DISTINCT CASE WHEN estatus = 'GANADOR' THEN id_participacion END) AS ganadas
+            FROM base
+            GROUP BY anio, trimestre_num
+            ORDER BY anio, trimestre_num";
         $stmt = $this->db->prepare($sql);
         $stmt->execute(['id_proveedor' => $idProveedor]);
         return $stmt->fetchAll(PDO::FETCH_ASSOC) ?: [];
