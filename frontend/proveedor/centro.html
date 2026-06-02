@@ -18,6 +18,7 @@
     }
   </script>
   <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
 </head>
 <body class="bg-slate-50 text-slate-900 font-sans antialiased">
   <nav class="bg-white border-b border-slate-200 sticky top-0 z-40">
@@ -52,6 +53,82 @@
       <div id="estatus-banner" data-testid="estatus-banner" class="hidden mt-4"></div>
     </section>
 
+    <section id="dashboard-kpis" class="space-y-6">
+      <div class="grid md:grid-cols-2 lg:grid-cols-4 gap-4">
+        <div class="bg-white border border-slate-200 rounded-xl p-5">
+          <div class="flex items-center justify-between">
+            <p class="text-sm text-slate-600">Participaciones</p>
+            <i class="ph ph-users text-2xl text-blue-500"></i>
+          </div>
+          <p id="kpi-participaciones" class="text-3xl font-bold text-slate-900 mt-2">0</p>
+          <p class="text-xs text-slate-500 mt-1">Total de inscripciones</p>
+        </div>
+        <div class="bg-white border border-slate-200 rounded-xl p-5">
+          <div class="flex items-center justify-between">
+            <p class="text-sm text-slate-600">Tasa de ganancia</p>
+            <i class="ph ph-trophy text-2xl text-emerald-500"></i>
+          </div>
+          <p id="kpi-tasa" class="text-3xl font-bold text-slate-900 mt-2">0%</p>
+          <p class="text-xs text-slate-500 mt-1">Propuestas ganadas</p>
+        </div>
+        <div class="bg-white border border-slate-200 rounded-xl p-5">
+          <div class="flex items-center justify-between">
+            <p class="text-sm text-slate-600">Monto adjudicado</p>
+            <i class="ph ph-currency-circle-dollar text-2xl text-amber-500"></i>
+          </div>
+          <p id="kpi-monto" class="text-3xl font-bold text-slate-900 mt-2">$0</p>
+          <p class="text-xs text-slate-500 mt-1">Total contratado</p>
+        </div>
+        <div class="bg-white border border-slate-200 rounded-xl p-5">
+          <div class="flex items-center justify-between">
+            <p class="text-sm text-slate-600">Contratos vigentes</p>
+            <i class="ph ph-file-text text-2xl text-purple-500"></i>
+          </div>
+          <p id="kpi-contratos" class="text-3xl font-bold text-slate-900 mt-2">0</p>
+          <p class="text-xs text-slate-500 mt-1">Activos actualmente</p>
+        </div>
+      </div>
+
+      <div class="grid md:grid-cols-2 gap-6">
+        <div class="bg-white border border-slate-200 rounded-xl p-6">
+          <h3 class="font-semibold text-slate-800 mb-4">Participaciones por mes</h3>
+          <div class="h-64">
+            <canvas id="chart-participaciones-mes"></canvas>
+          </div>
+        </div>
+        <div class="bg-white border border-slate-200 rounded-xl p-6">
+          <h3 class="font-semibold text-slate-800 mb-4">Distribución por tipo</h3>
+          <div class="h-64 flex items-center justify-center">
+            <canvas id="chart-distribucion-tipo"></canvas>
+          </div>
+        </div>
+      </div>
+
+      <div class="bg-white border border-slate-200 rounded-xl overflow-hidden">
+        <div class="px-6 py-4 border-b border-slate-100">
+          <h3 class="font-semibold text-slate-800">Últimas participaciones</h3>
+        </div>
+        <div id="ultimas-participaciones" class="overflow-x-auto">
+          <table class="w-full text-sm">
+            <thead class="bg-slate-50 border-b border-slate-200">
+              <tr>
+                <th class="px-6 py-3 text-left font-semibold text-slate-700">Licitación</th>
+                <th class="px-6 py-3 text-left font-semibold text-slate-700">Proyecto</th>
+                <th class="px-6 py-3 text-left font-semibold text-slate-700">Estatus</th>
+                <th class="px-6 py-3 text-right font-semibold text-slate-700">Monto propuesta</th>
+                <th class="px-6 py-3 text-left font-semibold text-slate-700">Fecha inscripción</th>
+              </tr>
+            </thead>
+            <tbody id="ultimas-participaciones-body" class="divide-y divide-slate-100">
+              <tr>
+                <td colspan="5" class="px-6 py-8 text-center text-slate-500">Cargando...</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
     <section class="grid md:grid-cols-2 lg:grid-cols-3 gap-4">
       <a href="/frontend/proveedor/perfil.html" class="bg-white border border-slate-200 rounded-xl p-5 hover:shadow-sm transition-shadow">
         <p class="text-slate-800 font-semibold">Mi perfil</p>
@@ -75,10 +152,6 @@
         <p class="text-slate-800 font-semibold">Documentos</p>
         <p class="text-slate-500 text-sm mt-1">Carga y consulta documentos legales o de propuesta.</p>
       </a>
-      <a href="/evaluacion.php" class="bg-white border border-slate-200 rounded-xl p-5 hover:shadow-sm transition-shadow">
-        <p class="text-slate-800 font-semibold">Evaluación pública</p>
-        <p class="text-slate-500 text-sm mt-1">Consulta procesos en fase de evaluación.</p>
-      </a>
       <a href="/frontend/proveedor/contratos.html" class="bg-white border border-slate-200 rounded-xl p-5 hover:shadow-sm transition-shadow">
         <p class="text-slate-800 font-semibold">Mis contratos</p>
         <p class="text-slate-500 text-sm mt-1">Consulta contratos adjudicados a tu empresa.</p>
@@ -86,6 +159,10 @@
       <a href="/frontend/proveedor/notificaciones.html" class="bg-white border border-slate-200 rounded-xl p-5 hover:shadow-sm transition-shadow">
         <p class="text-slate-800 font-semibold">Mis notificaciones</p>
         <p class="text-slate-500 text-sm mt-1">Revisa avisos y acciones pendientes.</p>
+      </a>
+      <a href="/evaluacion.php" class="bg-white border border-slate-200 rounded-xl p-5 hover:shadow-sm transition-shadow">
+        <p class="text-slate-800 font-semibold">Evaluación pública</p>
+        <p class="text-slate-500 text-sm mt-1">Consulta procesos en fase de evaluación.</p>
       </a>
       <a href="/requisitos.php" class="bg-white border border-slate-200 rounded-xl p-5 hover:shadow-sm transition-shadow">
         <p class="text-slate-800 font-semibold">Requisitos</p>
@@ -142,6 +219,106 @@
         });
       }
 
+      function renderKPIs(metricas) {
+        document.getElementById('kpi-participaciones').textContent = metricas.total_participaciones || 0;
+        document.getElementById('kpi-tasa').textContent = (metricas.tasa_ganancia || 0).toFixed(1) + '%';
+        document.getElementById('kpi-monto').textContent = SGPLAdmin.formatCurrency(metricas.monto_total_adjudicado || 0);
+        document.getElementById('kpi-contratos').textContent = metricas.contratos_vigentes || 0;
+      }
+
+      function renderChartParticipacionesMes(data) {
+        const ctx = document.getElementById('chart-participaciones-mes');
+        if (!ctx || !data || !data.length) return;
+        new Chart(ctx, {
+          type: 'bar',
+          data: {
+            labels: data.map(d => d.mes),
+            datasets: [{
+              label: 'Participaciones',
+              data: data.map(d => d.count),
+              backgroundColor: 'rgba(59, 130, 246, 0.7)',
+              borderColor: 'rgba(59, 130, 246, 1)',
+              borderWidth: 1,
+              borderRadius: 6,
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { display: false } },
+            scales: {
+              y: { beginAtZero: true, ticks: { stepSize: 1 } }
+            }
+          }
+        });
+      }
+
+      function renderChartDistribucionTipo(data) {
+        const ctx = document.getElementById('chart-distribucion-tipo');
+        if (!ctx || !data || Object.keys(data).length === 0) return;
+        const labels = Object.keys(data);
+        const values = Object.values(data);
+        new Chart(ctx, {
+          type: 'doughnut',
+          data: {
+            labels: labels,
+            datasets: [{
+              data: values,
+              backgroundColor: [
+                'rgba(59, 130, 246, 0.8)',
+                'rgba(16, 185, 129, 0.8)',
+                'rgba(245, 158, 11, 0.8)',
+              ],
+              borderWidth: 0,
+            }]
+          },
+          options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+              legend: { position: 'bottom', labels: { padding: 15, font: { size: 11 } } }
+            }
+          }
+        });
+      }
+
+      function renderUltimasParticipaciones(items) {
+        const tbody = document.getElementById('ultimas-participaciones-body');
+        if (!tbody) return;
+        if (!items || !items.length) {
+          tbody.innerHTML = '<tr><td colspan="5" class="px-6 py-8 text-center text-slate-500">Sin participaciones registradas.</td></tr>';
+          return;
+        }
+        tbody.innerHTML = items.map(function (item) {
+          const estatusClass = item.participacion_estatus === 'GANADOR'
+            ? 'bg-emerald-100 text-emerald-700'
+            : item.participacion_estatus === 'NO_GANADOR'
+            ? 'bg-red-100 text-red-700'
+            : 'bg-blue-100 text-blue-700';
+          return '<tr class="hover:bg-slate-50">'
+            + '<td class="px-6 py-4 font-medium text-slate-900">' + SGPLAdmin.escapeHtml(item.numero_licitacion || '') + '</td>'
+            + '<td class="px-6 py-4 text-slate-600 max-w-xs truncate">' + SGPLAdmin.escapeHtml(item.descripcion_proyecto || '') + '</td>'
+            + '<td class="px-6 py-4"><span class="inline-flex px-2 py-1 rounded-full text-xs font-semibold ' + estatusClass + '">' + SGPLAdmin.escapeHtml(item.participacion_estatus || '') + '</span></td>'
+            + '<td class="px-6 py-4 text-right text-slate-700">' + (item.monto_propuesta ? SGPLAdmin.formatCurrency(item.monto_propuesta) : '-') + '</td>'
+            + '<td class="px-6 py-4 text-slate-500">' + SGPLAdmin.formatDate(item.fecha_inscripcion) + '</td>'
+            + '</tr>';
+        }).join('');
+      }
+
+      async function cargarMetricas(idProveedor) {
+        try {
+          const resp = await SGPLAdmin.authFetch('/proveedores/' + idProveedor + '/metricas', { method: 'GET' });
+          const metricas = resp && resp.data;
+          if (!metricas) return;
+          renderKPIs(metricas);
+          renderChartParticipacionesMes(metricas.participaciones_por_mes);
+          renderChartDistribucionTipo(metricas.distribucion_por_tipo);
+          renderUltimasParticipaciones(metricas.ultimas_participaciones);
+        } catch (err) {
+          console.error('Error cargando métricas:', err);
+        }
+      }
+
       try {
         const [meResp, notifResp] = await Promise.all([
           SGPLAdmin.authFetch('/me', { method: 'GET' }),
@@ -163,16 +340,20 @@
         const container = document.getElementById('proveedor-notificaciones');
         if (!notificaciones.length) {
           container.innerHTML = '<div class="px-6 py-5 text-sm text-slate-500">Sin notificaciones por ahora.</div>';
-          return;
+        } else {
+          container.innerHTML = notificaciones.slice(0, 20).map(function (item) {
+            return '<div class="px-6 py-4">'
+              + '<p class="font-semibold text-sm text-slate-800">' + SGPLAdmin.escapeHtml(item.titulo || 'Notificación') + '</p>'
+              + '<p class="text-sm text-slate-600 mt-1">' + SGPLAdmin.escapeHtml(item.mensaje || '') + '</p>'
+              + '<p class="text-xs text-slate-400 mt-2">' + SGPLAdmin.formatDateTime(item.fecha_envio) + '</p>'
+              + '</div>';
+          }).join('');
         }
 
-        container.innerHTML = notificaciones.slice(0, 20).map(function (item) {
-          return '<div class="px-6 py-4">'
-            + '<p class="font-semibold text-sm text-slate-800">' + SGPLAdmin.escapeHtml(item.titulo || 'Notificación') + '</p>'
-            + '<p class="text-sm text-slate-600 mt-1">' + SGPLAdmin.escapeHtml(item.mensaje || '') + '</p>'
-            + '<p class="text-xs text-slate-400 mt-2">' + SGPLAdmin.formatDateTime(item.fecha_envio) + '</p>'
-            + '</div>';
-        }).join('');
+        const idProveedor = me && me.id_proveedor;
+        if (idProveedor) {
+          await cargarMetricas(idProveedor);
+        }
       } catch (error) {
         applyEstatusUi(null);
         document.getElementById('proveedor-notificaciones').innerHTML = '<div class="px-6 py-5 text-sm text-red-600">No se pudieron cargar las notificaciones.</div>';

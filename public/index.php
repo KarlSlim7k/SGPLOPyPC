@@ -57,6 +57,7 @@ require_once __DIR__ . '/../app/controllers/MetricasController.php';
 require_once __DIR__ . '/../app/controllers/NotificacionStreamController.php';
 require_once __DIR__ . '/../app/controllers/EfirmaController.php';
 require_once __DIR__ . '/../app/controllers/ReputacionController.php';
+require_once __DIR__ . '/../app/controllers/ProveedorMetricasController.php';
 require_once __DIR__ . '/../app/routes/PublicRouteTable.php';
 
 // Middlewares
@@ -331,6 +332,14 @@ try {
         case preg_match('#^/proveedores/(\d+)/reputacion$#', $route, $m) && $requestMethod === 'GET':
             AuthMiddleware::handle();
             (new ReputacionController())->getReputacion((int) $m[1]);
+            break;
+
+        case preg_match('#^/proveedores/(\d+)/metricas$#', $route, $m) && $requestMethod === 'GET':
+            (new ProveedorMetricasController())->metricas((int) $m[1]);
+            break;
+
+        case preg_match('#^/proveedores/(\d+)/metricas/tendencia$#', $route, $m) && $requestMethod === 'GET':
+            (new ProveedorMetricasController())->tendencia((int) $m[1]);
             break;
 
         case $route === '/admin/dashboard' && $requestMethod === 'GET':

@@ -142,6 +142,63 @@ Lista proveedores.
 ### GET /api/v1/proveedores/{id}
 Obtiene un proveedor.
 
+### GET /api/v1/proveedores/{id}/metricas
+Métricas del proveedor (KPIs de actividad).
+
+**Headers:** `Authorization: Bearer <token>`
+
+**Response 200:**
+```json
+{
+  "success": true,
+  "message": "Métricas del proveedor",
+  "data": {
+    "total_participaciones": 12,
+    "total_propuestas": 8,
+    "total_ganadas": 3,
+    "tasa_ganancia": 37.5,
+    "monto_total_propuesto": 4500000,
+    "monto_total_adjudicado": 1200000,
+    "contratos_vigentes": 2,
+    "participaciones_por_mes": [{"mes": "2026-01", "count": 3}],
+    "distribucion_por_tipo": {"LICITACION_PUBLICA": 5, "INVITACION_RESTRINGIDA": 3},
+    "ultimas_participaciones": [
+      {
+        "id_participacion": 1,
+        "numero_licitacion": "LO-001-2026",
+        "descripcion_proyecto": "Obra pública",
+        "participacion_estatus": "GANADOR",
+        "monto_propuesta": 950000,
+        "fecha_inscripcion": "2026-03-15"
+      }
+    ]
+  }
+}
+```
+
+**Cache:** respuesta cacheada 5 minutos (file-based, namespace `proveedor_metricas`).
+
+### GET /api/v1/proveedores/{id}/metricas/tendencia
+Serie trimestral de participaciones y montos (últimos 2 años).
+
+**Headers:** `Authorization: Bearer <token>`
+
+**Response 200:**
+```json
+{
+  "success": true,
+  "message": "Tendencia del proveedor",
+  "data": [
+    {
+      "trimestre": "2025-Q3",
+      "participaciones": 4,
+      "monto_propuesto": 2500000,
+      "ganadas": 1
+    }
+  ]
+}
+```
+
 ### POST /api/v1/proveedores
 Registra un proveedor.
 
