@@ -28,8 +28,8 @@ test.describe('Transversales calidad', () => {
 
     for (const p of pagesToCheck) {
       const token = p.role === 'publico' ? publicToken : providerToken;
+      await page.addInitScript((t) => { localStorage.setItem('sgplopypc_token', t); }, token);
       await page.goto(p.url);
-      await page.evaluate((t) => { localStorage.setItem('sgplopypc_token', t); }, token);
       await page.reload();
 
       const html = await page.content();
@@ -43,9 +43,8 @@ test.describe('Transversales calidad', () => {
       data: { email: PUBLIC_EMAIL, password: PUBLIC_PASSWORD },
     })).json().then(r => r.data?.token);
 
+    await page.addInitScript((t) => { localStorage.setItem('sgplopypc_token', t); }, token);
     await page.goto('/frontend/publico/centro.html');
-    await page.evaluate((t) => { localStorage.setItem('sgplopypc_token', t); }, token);
-    await page.reload();
 
     const html = await page.content();
     expect(html).toContain('error-handler.js');
@@ -56,9 +55,8 @@ test.describe('Transversales calidad', () => {
       data: { email: PUBLIC_EMAIL, password: PUBLIC_PASSWORD },
     })).json().then(r => r.data?.token);
 
+    await page.addInitScript((t) => { localStorage.setItem('sgplopypc_token', t); }, token);
     await page.goto('/frontend/publico/favoritos.html');
-    await page.evaluate((t) => { localStorage.setItem('sgplopypc_token', t); }, token);
-    await page.reload();
 
     // Verificar que la página carga sin errores (lista o empty state)
     await expect(page.locator('#favoritos-lista, #favoritos-empty')).toBeVisible({ timeout: 15000 });
@@ -72,14 +70,11 @@ test.describe('Transversales calidad', () => {
       data: { email: PUBLIC_EMAIL, password: PUBLIC_PASSWORD },
     })).json().then(r => r.data?.token);
 
+    await page.addInitScript((t) => { localStorage.setItem('sgplopypc_token', t); }, token);
     await page.goto('/frontend/publico/centro.html');
-    await page.evaluate((t) => { localStorage.setItem('sgplopypc_token', t); }, token);
-    await page.reload();
     await page.waitForLoadState('networkidle');
 
     await page.goto('/frontend/publico/datos-abiertos.html');
-    await page.evaluate((t) => { localStorage.setItem('sgplopypc_token', t); }, token);
-    await page.reload();
     await page.waitForLoadState('networkidle');
 
     const jsErrors = errors.filter(e => !e.includes('ResizeObserver') && !e.includes('gstatic'));
