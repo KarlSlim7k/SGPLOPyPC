@@ -37,13 +37,14 @@ test.describe('Proveedor Documentos y Propuestas', () => {
     await expect(page.getByRole('heading', { name: /Documentos/i })).toBeVisible({ timeout: 15000 });
 
     // Esperar a que cargue la tabla
-    await expect(page.locator('#rows')).toContainText('test-legal.pdf', { timeout: 10000 });
+    await expect(page.locator('#rows')).not.toContainText('Cargando documentos', { timeout: 15000 });
+    await expect(page.locator('#rows')).toContainText('test-legal.pdf', { timeout: 15000 });
 
     // 3) Click en Eliminar
     const deleteBtn = page.locator('button[data-delete]').first();
     await expect(deleteBtn).toBeVisible();
 
-    page.on('dialog', dialog => dialog.accept());
+    await page.evaluate(() => { window.confirm = () => true; });
     await deleteBtn.click();
 
     // Esperar a que desaparezca
@@ -98,16 +99,19 @@ test.describe('Proveedor Documentos y Propuestas', () => {
     await page.waitForURL('**/frontend/proveedor/propuestas.html');
     await expect(page.getByRole('heading', { name: /Mis propuestas/i })).toBeVisible({ timeout: 15000 });
 
+    // Esperar a que cargue la tabla
+    await expect(page.locator('#rows')).not.toContainText('Cargando propuestas', { timeout: 15000 });
+
     // Esperar a que la propuesta aparezca
     const row = page.locator('#rows tr').filter({ hasText: /RECIBIDA/ }).first();
-    await expect(row).toBeVisible({ timeout: 10000 });
+    await expect(row).toBeVisible({ timeout: 15000 });
 
     // Verificar que hay botón Retirar
     const retirarBtn = row.locator('button[data-retirar]').first();
     await expect(retirarBtn).toBeVisible();
 
     // 3) Retirar propuesta
-    page.on('dialog', dialog => dialog.accept());
+    await page.evaluate(() => { window.confirm = () => true; });
     await retirarBtn.click();
 
     // Esperar a que el badge cambie a RETIRADA
