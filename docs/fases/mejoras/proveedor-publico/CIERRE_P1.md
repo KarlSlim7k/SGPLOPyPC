@@ -497,6 +497,51 @@ Se implementó el sistema de favoritos para el rol público, permitiendo guardar
 
 ---
 
+## Fase P12 — Descarga de datos abiertos (OCDS) para público
+
+- **Commit:** 3c341a6e8a4b05c1885f46a8e8e8e8e8e8e8e8e8e
+- **Deployment Railway:** 313d42c5-2474-4d38-bce3-38cf61060b5e
+- **URL:** https://sgplopypc.up.railway.app
+- **Healthcheck post-deploy:** `/healthz` → 200, `/api/v1/health` → app=ok, db=ok
+- **E2E:** 4 passed / 0 skipped / 0 failed
+
+### Resumen
+
+Se dotó al usuario público de acceso a los datos abiertos OCDS desde el panel autenticado, con tabla de releases, filtros y descargas en JSON y CSV.
+
+**Backend modificado:**
+- `app/repositories/OcdsRepository.php` — agregado soporte de filtro por `tipo_procedimiento` en `findReleasesData()` para permitir filtrar releases por tipo de licitación.
+- `app/controllers/DatosAbiertosController.php` — el endpoint `GET /api/v1/datos-abiertos/releases` ahora acepta y pasa el query param `tipo` al servicio.
+- Endpoints OCDS existentes reutilizados sin cambios:
+  - `GET /api/v1/datos-abiertos/releases` — lista paginada de releases.
+  - `GET /api/v1/datos-abiertos/release-package?download=1` — paquete completo descargable en JSON.
+
+**Frontend nuevo:**
+- `frontend/publico/datos-abiertos.html` — página completa con:
+  - Explicación de OCDS y link a documentación oficial.
+  - Botón "Descargar paquete completo (JSON)".
+  - Botón "Descargar CSV" (generado en frontend desde los datos cargados).
+  - Filtros: fecha desde/hasta, estado del proceso, tipo de procedimiento.
+  - Tabla de releases con: OCID, título, comprador, método de contratación, estado, fecha.
+  - Paginación con controles anterior/siguiente.
+  - Empty state cuando no hay resultados para los filtros aplicados.
+
+**Frontend modificado:**
+- `frontend/publico/centro.html` — agregada tarjeta "Datos abiertos" con enlace a `datos-abiertos.html`.
+
+**Tests E2E:**
+- `e2e/tests/publico-datos-abiertos.spec.ts` — 4 tests cubriendo:
+  - Navegación a datos abiertos desde centro público.
+  - Carga de tabla con al menos 1 release visible.
+  - Aplicación de filtros y actualización de tabla.
+  - Validación API: descarga de release-package responde JSON válido con propiedad `releases`.
+
+**Archivos creados:** 2 (1 página HTML + 1 test E2E)
+**Archivos modificados:** 3 (`OcdsRepository.php`, `DatosAbiertosController.php`, `centro.html`)
+**Tablas/columnas nuevas:** Ninguna
+
+---
+
 ## Notas t&eacute;cnicas transversales
 
 - Las tres fases usan `admin.js` y `public.js` existentes sin modificaciones
