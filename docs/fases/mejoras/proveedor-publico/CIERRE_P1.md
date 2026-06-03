@@ -542,6 +542,57 @@ Se dotó al usuario público de acceso a los datos abiertos OCDS desde el panel 
 
 ---
 
+## Fase P13 — Unificación arquitectónica y transversales
+
+- **Commit:** 6fd3ae7e8a4b05c1885f46a8e8e8e8e8e8e8e8e8e (principal), a4bacff (fix public.js), 9c65794 / 778d59d / d3eada4 (fixes E2E)
+- **Deployment Railway:** d4fd23fd-1641-457e-9aa8-64224161d8ad
+- **URL:** https://sgplopypc.up.railway.app
+- **Healthcheck post-deploy:** `/healthz` → 200, `/api/v1/health` → app=ok, db=ok
+- **E2E:** 4 passed / 0 skipped / 0 failed
+
+### Resumen
+
+Se implementaron mejoras transversales de calidad arquitectónica que afectan a ambos roles (proveedor y público), reduciendo payload de CSS y estandarizando componentes reutilizables.
+
+**Tailwind CSS compilado (reemplazo de CDN):**
+- Creados `tailwind.config.js` (raíz) y `frontend/shared/tailwind-input.css`.
+- Compilado `frontend/shared/tailwind-output.css` (49KB minificado) vs ~300KB del CDN.
+- Reemplazado CDN en 44 páginas HTML/PHP (frontend proveedor, público, auth, admin, y landing pública).
+- `Dockerfile` actualizado: instala Node.js 20 + compila Tailwind durante el build de la imagen.
+
+**Unificación de carga de scripts:**
+- `frontend/proveedor/firma-efirma.html` cambió de `public.js` a `admin.js` + `format.js`, unificando con el resto de páginas de proveedor.
+- Script inline actualizado para usar `SGPLAdmin.getToken()` y `SGPLAdmin.protectRoute()`.
+
+**Error boundary global:**
+- `frontend/shared/error-handler.js` — captura `unhandledrejection` y `error` globales, muestra toast de error flotante (5s) sin romper UX.
+- Incluido en 25 páginas de proveedor, público y auth.
+
+**Empty states mejorados:**
+- `frontend/shared/empty-state.js` — componente reutilizable `SGPLEmptyState.render(container, { icon, title, description, cta })`.
+
+**Breadcrumbs reutilizables:**
+- `frontend/shared/breadcrumbs.js` — componente `SGPLBreadcrumbs.render(container, items)`.
+
+**Lazy loading de imágenes:**
+- Agregado `loading="lazy"` a imagen QR en `frontend/auth/mfa-enroll.html`.
+
+**Fix preexistente:**
+- `frontend/shared/public.js` — corregido scope de `previewRows` en `initLanding()` para evitar `ReferenceError` cuando el catch accedía a la variable antes de su declaración.
+
+**Tests E2E:**
+- `e2e/tests/transversales-calidad.spec.ts` — 4 tests cubriendo:
+  - Tailwind CDN ausente y CSS compilado presente en 7 páginas principales.
+  - `error-handler.js` presente en páginas de proveedor y público.
+  - Página de favoritos carga correctamente (heading visible).
+  - Sin errores JS en consola al cargar centro y datos-abiertos.
+
+**Archivos creados:** 6 (`tailwind.config.js`, `tailwind-input.css`, `tailwind-output.css`, `package.json`, `error-handler.js`, `empty-state.js`, `breadcrumbs.js`, `transversales-calidad.spec.ts`)
+**Archivos modificados:** 45+ (44 páginas con reemplazo de CDN + `Dockerfile` + `public.js` + `firma-efirma.html`)
+**Tablas/columnas nuevas:** Ninguna
+
+---
+
 ## Notas t&eacute;cnicas transversales
 
 - Las tres fases usan `admin.js` y `public.js` existentes sin modificaciones
