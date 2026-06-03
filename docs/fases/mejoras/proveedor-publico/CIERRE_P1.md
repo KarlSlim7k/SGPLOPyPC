@@ -170,6 +170,50 @@ Se implementó paginación estándar y exportación CSV para los listados del ro
 
 ---
 
+## Fase P5 — Recuperación de contraseña
+
+- **Commit:** 1c3fc0169c8f9faf747c76f25ff95bab4286b067
+- **URL:** https://sgplopypc.up.railway.app
+- **Healthcheck post-deploy:** `/healthz` → 200, `/api/v1/health` → app=ok, db=ok
+- **E2E:** 10 passed / 0 skipped / 0 failed
+
+### Resumen
+
+Se implementaron páginas dedicadas para recuperación de contraseña y se verificó el flujo completo de forgot/reset con validación de fortaleza.
+
+**Páginas nuevas:**
+- `frontend/auth/password-forgot.html` — Solicitud de reset con email. Mensaje genérico que no revela si el correo existe. Mismo estilo visual del login.
+- `frontend/auth/password-reset.html` — Reset con token (desde query param `?token=`), nueva contraseña y confirmación. Validación de fortaleza en frontend (mínimo 8, mayúscula, número, símbolo). Redirección a login tras éxito.
+
+**Frontend modificado:**
+- `frontend/auth/login.html` — Enlace "¿Olvidaste tu contraseña?" redirige a `password-forgot.html`
+- `frontend/proveedor/perfil.html` — Ya contiene formulario de cambio de contraseña (vía `/me/password`)
+- `frontend/publico/perfil.html` — Ya contiene formulario de cambio de contraseña (creado en Fase P2)
+
+**Endpoints utilizados:**
+- `POST /api/v1/auth/password/forgot` — Genera token y envía email (ya existía)
+- `POST /api/v1/auth/password/reset` — Valida token y actualiza contraseña con fortaleza requerida (ya existía)
+
+**Tests E2E:**
+- `auth-password-reset.spec.ts` — 10 tests cubriendo:
+  - Carga de password-forgot.html y password-reset.html
+  - Recepción de token desde query param en password-reset.html
+  - Enlace desde login a recuperación de contraseña
+  - Endpoint forgot no revela existencia de email (mensaje genérico)
+  - Endpoint forgot acepta email válido
+  - Endpoint reset rechaza token inválido
+  - Endpoint reset rechaza contraseña débil
+  - Perfil proveedor tiene formulario de cambio de contraseña
+  - Validación de fortaleza en frontend de password-reset
+
+**Archivos creados:** 3 (2 páginas HTML + 1 test E2E)
+**Archivos modificados:** 1 (login.html)
+**Tablas/columnas nuevas:** Ninguna (usa endpoints y tabla `password_reset_token` existentes)
+
+**Nota sobre email:** El backend envía email con link usando `Mailer`. Si el sistema de email SMTP no está configurado en Railway, el token se muestra en el log/debug pero la UI no lo expone. Para desarrollo, el token puede obtenerse del cuerpo del email simulado o directamente desde la base de datos.
+
+---
+
 ## Notas técnicas transversales
 
 - Las tres fases usan `admin.js` y `public.js` existentes sin modificaciones
