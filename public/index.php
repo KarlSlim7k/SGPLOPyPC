@@ -58,6 +58,7 @@ require_once __DIR__ . '/../app/controllers/NotificacionStreamController.php';
 require_once __DIR__ . '/../app/controllers/EfirmaController.php';
 require_once __DIR__ . '/../app/controllers/ReputacionController.php';
 require_once __DIR__ . '/../app/controllers/ProveedorMetricasController.php';
+require_once __DIR__ . '/../app/controllers/TicketSoporteController.php';
 require_once __DIR__ . '/../app/routes/PublicRouteTable.php';
 
 // Middlewares
@@ -705,6 +706,33 @@ try {
             AuthMiddleware::handle();
             RoleMiddleware::handle('ADMINISTRADOR');
             (new SupportTicketController())->changeEstado((int) $m[1]);
+            break;
+
+        // Tickets de soporte autenticados (proveedor)
+        case $route === '/tickets' && $requestMethod === 'POST':
+            AuthMiddleware::handle();
+            (new TicketSoporteController())->create();
+            break;
+
+        case $route === '/tickets/mios' && $requestMethod === 'GET':
+            AuthMiddleware::handle();
+            (new TicketSoporteController())->listMios();
+            break;
+
+        case preg_match('#^/tickets/(\d+)$#', $route, $m) && $requestMethod === 'GET':
+            AuthMiddleware::handle();
+            (new TicketSoporteController())->get((int) $m[1]);
+            break;
+
+        case preg_match('#^/tickets/(\d+)/respuestas$#', $route, $m) && $requestMethod === 'POST':
+            AuthMiddleware::handle();
+            (new TicketSoporteController())->addRespuesta((int) $m[1]);
+            break;
+
+        case preg_match('#^/tickets/(\d+)/estado$#', $route, $m) && $requestMethod === 'PATCH':
+            AuthMiddleware::handle();
+            RoleMiddleware::handle('ADMINISTRADOR');
+            (new TicketSoporteController())->changeEstado((int) $m[1]);
             break;
 
         // Aclaraciones

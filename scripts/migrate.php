@@ -15,6 +15,7 @@ $schemaMigrations = [
     '009_fase4_integridad_indices.sql',
     '010_cleanup_e2e_data.sql',
     '011_fix_demo_presentacion.sql',
+    '018_soporte_tickets_proveedor.sql',
 ];
 
 if (getenv('RUN_SEED_MIGRATIONS') === '1') {
