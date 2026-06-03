@@ -86,15 +86,32 @@ class ReputacionService {
     }
 
     /**
-     * Devuelve el perfil de reputación de un proveedor: score + historial de evaluaciones.
+     * Devuelve el perfil de reputación de un proveedor: score + historial de evaluaciones + desglose.
      */
     public function getReputacion(int $idProveedor): array {
         $score = $this->repo->findScoreProveedor($idProveedor);
         $historial = $this->repo->findByProveedor($idProveedor, 20);
+        $desglose = $this->repo->findDesgloseByProveedor($idProveedor);
+
+        $evaluaciones = array_map(function (array $e) {
+            return [
+                'id_eval' => (int) $e['id_evaluacion'],
+                'id_contrato' => (int) $e['id_contrato'],
+                'contrato_numero' => $e['numero_contrato'],
+                'puntualidad' => (int) $e['puntualidad'],
+                'calidad' => (int) $e['calidad'],
+                'comunicacion' => (int) $e['comunicacion'],
+                'cumplimiento_alcance' => (int) $e['cumplimiento_alcance'],
+                'comentarios' => $e['comentarios'],
+                'fecha_evaluacion' => $e['fecha_evaluacion'],
+            ];
+        }, $historial);
 
         return [
             'id_proveedor' => $idProveedor,
             'score_reputacion' => $score['score_reputacion'] !== null
+                ? (float) $score['score_reputacion'] : null,
+            'score' => $score['score_reputacion'] !== null
                 ? (float) $score['score_reputacion'] : null,
             'total_evaluaciones' => (int) $score['total_evaluaciones'],
             'nivel' => $this->nivelReputacion($score['score_reputacion']),
@@ -114,6 +131,13 @@ class ReputacionService {
                     'fecha_evaluacion' => $e['fecha_evaluacion'],
                 ];
             }, $historial),
+            'evaluaciones' => $evaluaciones,
+            'desglose' => [
+                'puntualidad_promedio' => $desglose['puntualidad_promedio'] !== null ? (float) $desglose['puntualidad_promedio'] : null,
+                'calidad_promedio' => $desglose['calidad_promedio'] !== null ? (float) $desglose['calidad_promedio'] : null,
+                'comunicacion_promedio' => $desglose['comunicacion_promedio'] !== null ? (float) $desglose['comunicacion_promedio'] : null,
+                'cumplimiento_alcance_promedio' => $desglose['cumplimiento_alcance_promedio'] !== null ? (float) $desglose['cumplimiento_alcance_promedio'] : null,
+            ],
         ];
     }
 

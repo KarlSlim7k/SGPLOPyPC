@@ -75,6 +75,26 @@ class ReputacionRepository {
         $stmt->execute(['id' => $idProveedor, 'id2' => $idProveedor, 'id3' => $idProveedor]);
     }
 
+    public function findDesgloseByProveedor(int $idProveedor): array {
+        $stmt = $this->db->prepare(
+            'SELECT
+                ROUND(AVG(puntualidad), 2) AS puntualidad_promedio,
+                ROUND(AVG(calidad), 2) AS calidad_promedio,
+                ROUND(AVG(comunicacion), 2) AS comunicacion_promedio,
+                ROUND(AVG(cumplimiento_alcance), 2) AS cumplimiento_alcance_promedio
+             FROM proveedor_evaluacion_postcontrato
+             WHERE id_proveedor = :id'
+        );
+        $stmt->execute(['id' => $idProveedor]);
+        $row = $stmt->fetch(PDO::FETCH_ASSOC);
+        return $row ?: [
+            'puntualidad_promedio' => null,
+            'calidad_promedio' => null,
+            'comunicacion_promedio' => null,
+            'cumplimiento_alcance_promedio' => null,
+        ];
+    }
+
     public function findScoreProveedor(int $idProveedor): array {
         $stmt = $this->db->prepare(
             'SELECT score_reputacion, total_evaluaciones FROM proveedor WHERE id_proveedor = :id LIMIT 1'

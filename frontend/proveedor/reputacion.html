@@ -1,0 +1,294 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mi Reputaci&oacute;n — SGPLOPyPC</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] },
+          colors: { primary: { 500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8' } }
+        }
+      }
+    }
+  </script>
+  <script src="https://unpkg.com/@phosphor-icons/web"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+</head>
+<body class="bg-slate-50 text-slate-900 font-sans antialiased">
+  <nav class="bg-white border-b border-slate-200 sticky top-0 z-40">
+    <div class="max-w-6xl mx-auto px-4 py-3 flex items-center justify-between">
+      <a href="/frontend/proveedor/centro.html" class="flex items-center gap-3">
+        <div class="w-9 h-9 rounded-lg bg-primary-700 text-white flex items-center justify-center font-bold text-sm">SG</div>
+        <div>
+          <p class="font-bold text-sm">SGPLOPyPC</p>
+          <p class="text-xs text-slate-500">Mi reputaci&oacute;n</p>
+        </div>
+      </a>
+      <div class="flex items-center gap-2">
+        <a href="/frontend/proveedor/convocatorias.html" class="hidden sm:inline-flex items-center gap-2 text-sm font-semibold px-3 py-2 rounded-lg border border-slate-200 hover:bg-slate-50">
+          <i class="ph ph-megaphone"></i>
+          Convocatorias
+        </a>
+        <a href="/frontend/proveedor/centro.html" class="inline-flex items-center gap-2 text-sm font-semibold px-3 py-2 rounded-lg border border-slate-200 hover:bg-slate-50">
+          <i class="ph ph-house"></i>
+          Centro
+        </a>
+        <a href="/frontend/proveedor/notificaciones.html" data-notif-badge class="relative inline-flex items-center gap-2 text-sm font-semibold px-3 py-2 rounded-lg border border-slate-200 hover:bg-slate-50">
+          <i class="ph ph-bell"></i>
+          <span class="notif-badge-count hidden absolute -top-1 -right-1 bg-red-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">0</span>
+        </a>
+        <button data-action="back" class="inline-flex items-center gap-2 text-sm font-semibold px-3 py-2 rounded-lg border border-slate-200 hover:bg-slate-50" aria-label="Regresar">
+          <i class="ph ph-arrow-left"></i>
+          Atr&aacute;s
+        </button>
+        <button data-action="logout" class="inline-flex items-center gap-2 text-sm font-semibold px-3 py-2 rounded-lg border border-slate-200 hover:bg-slate-50">
+          <i class="ph ph-sign-out"></i>
+          Cerrar sesi&oacute;n
+        </button>
+      </div>
+    </div>
+  </nav>
+
+  <main class="max-w-6xl mx-auto px-4 py-8 space-y-6">
+    <section class="bg-white border border-slate-200 rounded-2xl p-6">
+      <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+        <div>
+          <p class="text-xs uppercase tracking-wide text-primary-700 font-semibold">Rol Proveedor</p>
+          <h1 class="text-2xl font-bold mt-1">Mi reputaci&oacute;n</h1>
+          <p class="text-slate-500 text-sm mt-2">Historial de evaluaciones post-contrato y desglose de criterios.</p>
+        </div>
+        <a href="/frontend/proveedor/perfil.html" class="inline-flex items-center gap-2 text-sm font-semibold px-4 py-2 rounded-lg border border-slate-200 hover:bg-slate-50">
+          <i class="ph ph-arrow-left"></i>
+          Volver al perfil
+        </a>
+      </div>
+    </section>
+
+    <div class="grid lg:grid-cols-[1fr_1fr] gap-6">
+      <!-- Score card -->
+      <section id="score-card" class="bg-white border border-slate-200 rounded-2xl p-6 hidden">
+        <div class="flex flex-col items-center justify-center text-center">
+          <div id="score-icon" class="w-20 h-20 rounded-full flex items-center justify-center mb-4">
+            <i class="ph-fill ph-star text-4xl text-white"></i>
+          </div>
+          <h2 id="score-valor" class="text-5xl font-extrabold tracking-tight">&mdash;</h2>
+          <p class="text-sm text-slate-500 mt-1">de 5.00</p>
+          <div id="score-nivel" class="mt-3 inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border">
+            &mdash;
+          </div>
+          <p id="score-total" class="text-sm text-slate-500 mt-3">&mdash;</p>
+        </div>
+      </section>
+
+      <!-- Empty state -->
+      <section id="score-empty" class="bg-white border border-slate-200 rounded-2xl p-6 hidden">
+        <div class="flex flex-col items-center justify-center text-center py-8">
+          <i class="ph ph-star text-5xl text-slate-300 mb-4"></i>
+          <h2 class="text-lg font-bold text-slate-700">Sin evaluaciones a&uacute;n</h2>
+          <p class="text-sm text-slate-500 mt-2 max-w-sm">Tu score de reputaci&oacute;n se generar&aacute; cuando un administrador eval&uacute;e un contrato concluido.</p>
+        </div>
+      </section>
+
+      <!-- Radar chart -->
+      <section id="radar-section" class="bg-white border border-slate-200 rounded-2xl p-6 hidden">
+        <h2 class="font-bold text-lg mb-4">Desglose por criterio</h2>
+        <div class="w-full max-w-md mx-auto">
+          <canvas id="radar-chart" height="240"></canvas>
+        </div>
+      </section>
+    </div>
+
+    <!-- Evaluations table -->
+    <section class="bg-white border border-slate-200 rounded-2xl p-6">
+      <h2 class="font-bold text-lg mb-4">Historial de evaluaciones</h2>
+      <div id="evaluaciones-empty" class="hidden py-8 text-center">
+        <i class="ph ph-clipboard-text text-4xl text-slate-300 mb-3"></i>
+        <p class="text-sm text-slate-500">No hay evaluaciones registradas.</p>
+      </div>
+      <div class="overflow-x-auto">
+        <table id="evaluaciones-table" class="min-w-full text-sm hidden">
+          <thead class="bg-slate-50 text-slate-600 font-semibold">
+            <tr>
+              <th class="px-4 py-3 text-left">Contrato</th>
+              <th class="px-4 py-3 text-center">Puntualidad</th>
+              <th class="px-4 py-3 text-center">Calidad</th>
+              <th class="px-4 py-3 text-center">Comunicaci&oacute;n</th>
+              <th class="px-4 py-3 text-center">Cumplimiento</th>
+              <th class="px-4 py-3 text-left">Comentarios</th>
+              <th class="px-4 py-3 text-left">Fecha</th>
+            </tr>
+          </thead>
+          <tbody id="evaluaciones-body" class="divide-y divide-slate-100"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Explanation -->
+    <section class="bg-white border border-slate-200 rounded-2xl p-6">
+      <h2 class="font-bold text-lg mb-3">¿C&oacute;mo se calcula tu reputaci&oacute;n?</h2>
+      <p class="text-sm text-slate-600 leading-relaxed">
+        Despu&eacute;s de que un contrato concluye, un administrador eval&uacute;a el desempe&ntilde;o del proveedor en cuatro criterios (1–5 estrellas):
+        <strong>puntualidad</strong>, <strong>calidad</strong>, <strong>comunicaci&oacute;n</strong> y <strong>cumplimiento de alcance</strong>.
+        El score general es el promedio aritm&eacute;tico de todos los promedios individuales acumulados.
+        Entre m&aacute;s evaluaciones tengas, m&aacute;s representativo ser&aacute; tu score.
+      </p>
+      <div class="mt-4 flex flex-wrap gap-3 text-xs font-medium">
+        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-emerald-50 text-emerald-700 border border-emerald-200"><i class="ph-fill ph-star"></i> Excelente (&ge; 4.5)</span>
+        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-blue-50 text-blue-700 border border-blue-200"><i class="ph-fill ph-star"></i> Bueno (&ge; 3.5)</span>
+        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-amber-50 text-amber-700 border border-amber-200"><i class="ph-fill ph-star"></i> Regular (&ge; 2.5)</span>
+        <span class="inline-flex items-center gap-1 px-2.5 py-1 rounded-full bg-red-50 text-red-700 border border-red-200"><i class="ph-fill ph-star"></i> Deficiente (&lt; 2.5)</span>
+      </div>
+    </section>
+  </main>
+
+  <script src="/frontend/shared/admin.js"></script>
+  <script src="/frontend/shared/notif-stream.js"></script>
+  <script src="/frontend/shared/notif-badge-toast.js"></script>
+  <script>
+    SGPLAdmin.attachLogoutHandlers();
+    SGPLNotifBadge.init();
+    SGPLAdmin.attachBackButton();
+
+    function renderStars(value) {
+      let html = '<span class="inline-flex gap-0.5">';
+      for (let i = 1; i <= 5; i++) {
+        if (i <= value) {
+          html += '<i class="ph-fill ph-star text-amber-400"></i>';
+        } else {
+          html += '<i class="ph-fill ph-star text-slate-200"></i>';
+        }
+      }
+      html += '</span>';
+      return html;
+    }
+
+    function nivelClass(nivel) {
+      switch (nivel) {
+        case 'excelente': return { bg: 'bg-emerald-50', text: 'text-emerald-700', border: 'border-emerald-200', icon: 'bg-emerald-500' };
+        case 'bueno': return { bg: 'bg-blue-50', text: 'text-blue-700', border: 'border-blue-200', icon: 'bg-blue-500' };
+        case 'regular': return { bg: 'bg-amber-50', text: 'text-amber-700', border: 'border-amber-200', icon: 'bg-amber-500' };
+        default: return { bg: 'bg-red-50', text: 'text-red-700', border: 'border-red-200', icon: 'bg-red-500' };
+      }
+    }
+
+    let radarChartInstance = null;
+
+    async function loadReputacion() {
+      const meResp = await SGPLAdmin.authFetch('/me', { method: 'GET' });
+      const me = (meResp && meResp.data) || null;
+      if (!me || me.rol !== 'PROVEEDOR') {
+        window.location.href = '/';
+        return;
+      }
+
+      const idProv = me.id_proveedor || me.id;
+      const repResp = await SGPLAdmin.authFetch('/proveedores/' + idProv + '/reputacion');
+      const data = (repResp && repResp.data) || null;
+      if (!data) return;
+
+      const score = data.score_reputacion;
+      const total = data.total_evaluaciones;
+      const nivel = data.nivel;
+      const evaluaciones = data.evaluaciones || [];
+      const desglose = data.desglose || {};
+
+      if (score === null || score === undefined || total === 0) {
+        document.getElementById('score-empty').classList.remove('hidden');
+        document.getElementById('radar-section').classList.add('hidden');
+        document.getElementById('evaluaciones-empty').classList.remove('hidden');
+        return;
+      }
+
+      // Score card
+      const card = document.getElementById('score-card');
+      card.classList.remove('hidden');
+      const nc = nivelClass(nivel);
+      document.getElementById('score-icon').className = 'w-20 h-20 rounded-full flex items-center justify-center mb-4 ' + nc.icon;
+      document.getElementById('score-valor').textContent = score.toFixed(2);
+      const nivelBadge = document.getElementById('score-nivel');
+      nivelBadge.className = 'mt-3 inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-semibold border ' + nc.bg + ' ' + nc.text + ' ' + nc.border;
+      nivelBadge.innerHTML = '<i class="ph-fill ph-star"></i> ' + (nivel.charAt(0).toUpperCase() + nivel.slice(1));
+      document.getElementById('score-total').textContent = total + (total === 1 ? ' evaluaci&oacute;n' : ' evaluaciones');
+
+      // Radar chart
+      const radarSection = document.getElementById('radar-section');
+      radarSection.classList.remove('hidden');
+      const ctx = document.getElementById('radar-chart').getContext('2d');
+      if (radarChartInstance) {
+        radarChartInstance.destroy();
+      }
+      radarChartInstance = new Chart(ctx, {
+        type: 'radar',
+        data: {
+          labels: ['Puntualidad', 'Calidad', 'Comunicaci&oacute;n', 'Cumplimiento'],
+          datasets: [{
+            label: 'Promedio',
+            data: [
+              desglose.puntualidad_promedio || 0,
+              desglose.calidad_promedio || 0,
+              desglose.comunicacion_promedio || 0,
+              desglose.cumplimiento_alcance_promedio || 0,
+            ],
+            backgroundColor: 'rgba(59, 130, 246, 0.2)',
+            borderColor: 'rgba(37, 99, 235, 1)',
+            pointBackgroundColor: 'rgba(37, 99, 235, 1)',
+            pointBorderColor: '#fff',
+            pointHoverBackgroundColor: '#fff',
+            pointHoverBorderColor: 'rgba(37, 99, 235, 1)',
+          }]
+        },
+        options: {
+          responsive: true,
+          scales: {
+            r: {
+              min: 0,
+              max: 5,
+              ticks: { stepSize: 1, backdropColor: 'transparent' },
+              pointLabels: { font: { size: 12, family: 'Plus Jakarta Sans' } }
+            }
+          },
+          plugins: {
+            legend: { display: false }
+          }
+        }
+      });
+
+      // Evaluations table
+      if (evaluaciones.length === 0) {
+        document.getElementById('evaluaciones-empty').classList.remove('hidden');
+        document.getElementById('evaluaciones-table').classList.add('hidden');
+      } else {
+        document.getElementById('evaluaciones-empty').classList.add('hidden');
+        document.getElementById('evaluaciones-table').classList.remove('hidden');
+        const tbody = document.getElementById('evaluaciones-body');
+        tbody.innerHTML = evaluaciones.map(function (e) {
+          return '<tr class="hover:bg-slate-50">'
+            + '<td class="px-4 py-3 font-medium text-slate-700">' + (e.contrato_numero || '&mdash;') + '</td>'
+            + '<td class="px-4 py-3 text-center">' + renderStars(e.puntualidad) + '</td>'
+            + '<td class="px-4 py-3 text-center">' + renderStars(e.calidad) + '</td>'
+            + '<td class="px-4 py-3 text-center">' + renderStars(e.comunicacion) + '</td>'
+            + '<td class="px-4 py-3 text-center">' + renderStars(e.cumplimiento_alcance) + '</td>'
+            + '<td class="px-4 py-3 text-slate-600 max-w-xs truncate" title="' + (e.comentarios || '').replace(/"/g, '&quot;') + '">' + (e.comentarios || '&mdash;') + '</td>'
+            + '<td class="px-4 py-3 text-slate-500 whitespace-nowrap">' + (e.fecha_evaluacion ? new Date(e.fecha_evaluacion).toLocaleDateString('es-MX') : '&mdash;') + '</td>'
+            + '</tr>';
+        }).join('');
+      }
+    }
+
+    (async function init() {
+      if (!SGPLAdmin.protectRoute()) return;
+      try {
+        await loadReputacion();
+      } catch (error) {
+        console.error('Error cargando reputaci&oacute;n:', error);
+      }
+    })();
+  </script>
+</body>
+</html>
