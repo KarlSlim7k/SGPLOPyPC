@@ -214,6 +214,47 @@ Se implementaron páginas dedicadas para recuperación de contraseña y se verif
 
 ---
 
+## Fase P6 — Gestión MFA para proveedor
+
+- **Commit:** 25957ff9ae3621f76f1cef5cc3f806169778644c
+- **URL:** https://sgplopypc.up.railway.app
+- **Healthcheck post-deploy:** `/healthz` → 200, `/api/v1/health` → app=ok, db=ok
+- **E2E:** 6 passed / 0 skipped / 0 failed
+
+### Resumen
+
+Se implementó la gestión completa de autenticación multifactor (MFA/2FA) para el rol proveedor, integrando el backend existente con la interfaz de perfil y el flujo de login.
+
+**Backend modificado:**
+- `app/repositories/UserRepository.php` — agregado `mfa_enabled` al SELECT de `findById()` para que el perfil pueda mostrar el estado actual de MFA.
+
+**Frontend modificado:**
+- `frontend/proveedor/perfil.html` — nueva sección "Seguridad adicional (2FA)" con:
+  - Estado actual (activado/desactivado) con badge visual.
+  - Botón "Activar 2FA" que navega a `frontend/auth/mfa-enroll.html`.
+  - Formulario de desactivación que requiere contraseña actual + código TOTP de 6 dígitos.
+  - Integración con endpoint `POST /api/v1/me/mfa/disable`.
+- `frontend/auth/login.html` — modificado para detectar `requires_mfa: true` en la respuesta de login y redirigir a `mfa-challenge.html#mfa_token=<token>`.
+
+**Páginas reutilizadas (ya existentes):**
+- `frontend/auth/mfa-enroll.html` — enrollment con QR (`qrious`), confirmación de código y códigos de respaldo.
+- `frontend/auth/mfa-challenge.html` — challenge de código TOTP + soporte para códigos de respaldo.
+
+**Tests E2E:**
+- `e2e/tests/proveedor-mfa.spec.ts` — 6 tests cubriendo:
+  - Navegación a perfil y visibilidad de sección MFA.
+  - Enlace "Activar 2FA" redirige a mfa-enroll.html.
+  - Verificación de QR visible en mfa-enroll.html.
+  - Formulario de desactivación visible cuando MFA está activo.
+  - Login con MFA redirige a challenge.
+  - Navegación directa a challenge.html con hash de token.
+
+**Archivos creados:** 1 (test E2E)  
+**Archivos modificados:** 3 (`UserRepository.php`, `perfil.html`, `login.html`)  
+**Tablas/columnas nuevas:** Ninguna (usa endpoints y columna `mfa_secret` existentes)
+
+---
+
 ## Notas técnicas transversales
 
 - Las tres fases usan `admin.js` y `public.js` existentes sin modificaciones
