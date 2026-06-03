@@ -60,9 +60,14 @@
         </div>
         <span id="estatus" class="inline-flex items-center px-3 py-1 rounded-full text-xs font-semibold border bg-slate-100 text-slate-700 border-slate-200">N/A</span>
         <span id="firma-badge" class="hidden inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold border"></span>
-        <button id="firmar-btn" class="hidden bg-primary-600 hover:bg-primary-700 text-white font-semibold px-4 py-2 rounded-lg text-sm">
-          <i class="ph ph-pen-nib"></i> Firmar contrato
-        </button>
+        <div class="flex flex-col sm:flex-row items-start sm:items-center gap-2">
+          <button id="firmar-btn" class="hidden bg-primary-600 hover:bg-primary-700 text-white font-semibold px-4 py-2 rounded-lg text-sm">
+            <i class="ph ph-pen-nib"></i> Firmar contrato
+          </button>
+          <a id="efirma-link" href="#" class="hidden inline-flex items-center gap-2 text-sm font-semibold px-4 py-2 rounded-lg border border-indigo-200 text-indigo-700 hover:bg-indigo-50">
+            <i class="ph ph-seal"></i> Firmar con e.firma
+          </a>
+        </div>
       </div>
       <p id="flash" class="hidden mt-4 text-sm rounded-lg px-3 py-2"></p>
     </section>
@@ -194,16 +199,32 @@
       // Firma del proveedor
       const firmaBadge = document.getElementById('firma-badge');
       const firmarBtn = document.getElementById('firmar-btn');
-      if (contrato.fecha_firma_proveedor) {
+      const efirmaLink = document.getElementById('efirma-link');
+      if (contrato.efirma_firma_b64 || contrato.efirma_fecha) {
+        // Firmado con e.firma
         firmaBadge.className = 'inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold border bg-emerald-50 text-emerald-700 border-emerald-200';
-        firmaBadge.innerHTML = '<i class="ph ph-seal-check"></i> Firmado ' + SGPLAdmin.formatDate(contrato.fecha_firma_proveedor);
+        firmaBadge.innerHTML = '<i class="ph ph-seal-check"></i> Firmado con e.firma ' + SGPLAdmin.formatDate(contrato.efirma_fecha);
         firmaBadge.classList.remove('hidden');
         firmarBtn.classList.add('hidden');
+        if (efirmaLink) efirmaLink.classList.add('hidden');
+      } else if (contrato.fecha_firma_proveedor) {
+        // Firmado simple (sin e.firma)
+        firmaBadge.className = 'inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold border bg-blue-50 text-blue-700 border-blue-200';
+        firmaBadge.innerHTML = '<i class="ph ph-check-circle"></i> Firmado ' + SGPLAdmin.formatDate(contrato.fecha_firma_proveedor);
+        firmaBadge.classList.remove('hidden');
+        firmarBtn.classList.add('hidden');
+        if (efirmaLink) efirmaLink.classList.add('hidden');
       } else if (contrato.estatus === 'EN_FORMALIZACION') {
         firmarBtn.classList.remove('hidden');
         firmaBadge.className = 'inline-flex items-center gap-1 px-3 py-1 rounded-full text-xs font-semibold border bg-amber-50 text-amber-700 border-amber-200';
         firmaBadge.innerHTML = '<i class="ph ph-clock"></i> Pendiente de firma';
         firmaBadge.classList.remove('hidden');
+        if (efirmaLink) {
+          efirmaLink.href = '/frontend/proveedor/firma-efirma.html?id=' + String(contrato.id_contrato);
+          efirmaLink.classList.remove('hidden');
+        }
+      } else {
+        if (efirmaLink) efirmaLink.classList.add('hidden');
       }
 
       document.getElementById('general').innerHTML =

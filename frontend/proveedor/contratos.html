@@ -216,9 +216,11 @@
             + '<td class="px-4 py-3 text-slate-600">' + SGPLAdmin.formatDate(item.fecha_adjudicacion) + '</td>'
             + '<td class="px-4 py-3 text-slate-600">' + vigencia + '</td>'
             + '<td class="px-4 py-3">'
-            + (item.fecha_firma_proveedor
-              ? '<span class="inline-flex items-center gap-1 text-xs text-emerald-700"><i class="ph ph-seal-check"></i>' + SGPLAdmin.formatDate(item.fecha_firma_proveedor) + '</span>'
-              : (item.estatus === 'EN_FORMALIZACION' ? '<span class="text-xs text-amber-600"><i class="ph ph-clock"></i> Pendiente</span>' : '<span class="text-xs text-slate-400">N/A</span>'))
+            + (item.efirma_firma_b64 || item.efirma_fecha
+              ? '<span class="inline-flex items-center gap-1 text-xs text-emerald-700" title="Firmado con e.firma el ' + SGPLAdmin.formatDate(item.efirma_fecha) + '"><i class="ph ph-seal-check text-emerald-600"></i>' + SGPLAdmin.formatDate(item.efirma_fecha) + '</span>'
+              : (item.fecha_firma_proveedor
+                ? '<span class="inline-flex items-center gap-1 text-xs text-blue-700"><i class="ph ph-check-circle"></i>' + SGPLAdmin.formatDate(item.fecha_firma_proveedor) + '</span>'
+                : (item.estatus === 'EN_FORMALIZACION' ? '<span class="text-xs text-amber-600"><i class="ph ph-clock"></i> Pendiente</span>' : '<span class="text-xs text-slate-400">N/A</span>')))
             + '</td>'
             + '<td class="px-4 py-3 text-right"><a class="inline-flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold border border-slate-200 hover:bg-slate-50" href="/frontend/proveedor/contrato.html?id=' + String(item.id_contrato) + '"><i class="ph ph-eye"></i>Ver detalle</a></td>'
             + '</tr>';

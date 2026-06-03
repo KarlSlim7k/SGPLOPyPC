@@ -74,6 +74,7 @@ class ContratoRepository {
 
         $sql = 'SELECT c.id_contrato, c.id_licitacion, c.numero_contrato, c.monto_contrato, '
              . 'c.fecha_adjudicacion, c.fecha_inicio, c.fecha_fin, c.estatus, c.fecha_creacion, c.fecha_firma_proveedor, '
+             . 'c.efirma_rfc, c.efirma_titular, c.efirma_serial, c.efirma_fecha, c.efirma_firma_b64, '
              . 'li.numero_licitacion, li.descripcion_proyecto, li.estado_proceso, d.nombre AS dependencia_nombre '
              . 'FROM contrato c '
              . 'JOIN licitacion li ON c.id_licitacion = li.id_licitacion '

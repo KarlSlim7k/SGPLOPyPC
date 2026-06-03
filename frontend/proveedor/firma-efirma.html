@@ -44,11 +44,14 @@
         <div class="w-12 h-12 rounded-xl bg-indigo-50 text-indigo-600 flex items-center justify-center shrink-0" aria-hidden="true">
           <i class="ph ph-seal text-2xl"></i>
         </div>
-        <div>
+        <div class="flex-1">
           <h1 class="text-xl font-bold text-slate-900">Firma electrónica avanzada (e.firma)</h1>
           <p class="text-sm text-slate-500 mt-1">Firma tu contrato con tu e.firma del SAT. Los archivos se procesan en el servidor y <strong>nunca se almacenan</strong>.</p>
           <p id="contrato-info" class="text-sm font-semibold text-slate-700 mt-2">Cargando contrato...</p>
         </div>
+        <a id="btn-volver-contrato" href="/frontend/proveedor/contratos.html" class="hidden inline-flex items-center gap-2 text-sm font-semibold px-3 py-2 rounded-lg border border-slate-200 hover:bg-slate-50">
+          <i class="ph ph-arrow-left"></i> Volver al contrato
+        </a>
       </div>
     </div>
 
@@ -131,12 +134,19 @@
   var token = localStorage.getItem(TOKEN_KEY);
   if (!token) { window.location.href = '/frontend/auth/login.html'; return; }
 
-  // Obtener id_contrato de la URL: ?id=N
+  // Obtener id_contrato de la URL: ?id=N o ?id_contrato=N
   var params = new URLSearchParams(window.location.search);
-  var idContrato = params.get('id');
+  var idContrato = params.get('id_contrato') || params.get('id');
   if (!idContrato || isNaN(Number(idContrato))) {
     document.getElementById('contrato-info').textContent = 'ID de contrato no especificado.';
     return;
+  }
+
+  // Mostrar botón volver al contrato
+  var volverBtn = document.getElementById('btn-volver-contrato');
+  if (volverBtn) {
+    volverBtn.href = '/frontend/proveedor/contrato.html?id=' + encodeURIComponent(idContrato);
+    volverBtn.classList.remove('hidden');
   }
 
   // Cargar info del contrato
