@@ -49,6 +49,13 @@
         <p class="text-slate-800 font-semibold">Mi perfil</p>
         <p class="text-slate-500 text-sm mt-1">Actualiza datos de cuenta y contraseña.</p>
       </a>
+      <a href="/frontend/publico/favoritos.html" class="bg-white border border-slate-200 rounded-xl p-5 hover:shadow-sm transition-shadow">
+        <div class="flex items-center justify-between">
+          <p class="text-slate-800 font-semibold">Mis favoritos</p>
+          <span id="publico-fav-count" class="text-xs px-2 py-1 rounded-full bg-amber-100 text-amber-700 font-semibold">0</span>
+        </div>
+        <p class="text-slate-500 text-sm mt-1">Licitaciones marcadas para seguimiento.</p>
+      </a>
       <a href="/#convocatorias" class="bg-white border border-slate-200 rounded-xl p-5 hover:shadow-sm transition-shadow">
         <p class="text-slate-800 font-semibold">Convocatorias</p>
         <p class="text-slate-500 text-sm mt-1">Revisa convocatorias publicadas.</p>
@@ -64,10 +71,6 @@
       <a href="/historial.php" class="bg-white border border-slate-200 rounded-xl p-5 hover:shadow-sm transition-shadow">
         <p class="text-slate-800 font-semibold">Historial</p>
         <p class="text-slate-500 text-sm mt-1">Consulta procesos concluidos.</p>
-      </a>
-      <a href="/resultados.php" class="bg-white border border-slate-200 rounded-xl p-5 hover:shadow-sm transition-shadow">
-        <p class="text-slate-800 font-semibold">Resultados</p>
-        <p class="text-slate-500 text-sm mt-1">Revisa fallos publicados.</p>
       </a>
     </section>
 
@@ -189,9 +192,10 @@
       bienvenida.textContent = 'Bienvenido, ' + (user.nombre || 'Usuario Público');
 
       try {
-        const [meResp, notifResp, statsResp, convResp] = await Promise.all([
+        const [meResp, notifResp, favResp, statsResp, convResp] = await Promise.all([
           SGPLAdmin.authFetch('/me', { method: 'GET' }),
           SGPLAdmin.authFetch('/notificaciones/mias', { method: 'GET' }),
+          SGPLAdmin.authFetch('/favoritos/count', { method: 'GET' }).catch(function () { return null; }),
           SGPLPublic.fetchJson('/api/v1/public/estadisticas'),
           SGPLPublic.fetchJson('/api/v1/public/convocatorias?limit=3&sort=fecha_creacion&order=DESC'),
         ]);
@@ -209,6 +213,8 @@
 
         const notificaciones = (notifResp && notifResp.data) || [];
         document.getElementById('publico-notif-count').textContent = String(notificaciones.length);
+        const favCount = (favResp && favResp.data && favResp.data.total) || 0;
+        document.getElementById('publico-fav-count').textContent = String(favCount);
         document.getElementById('publico-stat-activas').textContent = String((statsResp && statsResp.licitaciones_activas) || 0);
         document.getElementById('publico-stat-contratos').textContent = String((statsResp && statsResp.contratos_adjudicados) || 0);
         document.getElementById('publico-stat-monto').textContent = SGPLPublic.formatCurrency((statsResp && statsResp.monto_total_contratado) || 0);

@@ -86,6 +86,71 @@
     </main>
 
     <script src="/frontend/shared/format.js"></script>
+    <script src="/frontend/shared/admin.js"></script>
     <script src="/frontend/shared/public.js"></script>
+    <script>
+    (function () {
+      const user = SGPLAdmin.getUser();
+      const token = SGPLAdmin.getToken();
+      const isPublico = user && user.rol === 'PUBLICO';
+
+      // Botón de favorito en la sección del título
+      const tituloSection = document.getElementById('convocatoria-titulo');
+      if (tituloSection && isPublico && token) {
+        const urlParams = new URLSearchParams(window.location.search);
+        const idLicitacion = urlParams.get('id');
+        if (idLicitacion) {
+          const favBtn = document.createElement('button');
+          favBtn.id = 'fav-btn';
+          favBtn.className = 'inline-flex items-center gap-1 text-sm font-semibold px-3 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 ml-2';
+          favBtn.innerHTML = '<i class="ph ph-star"></i> <span>Guardar</span>';
+          favBtn.style.display = 'none';
+
+          tituloSection.parentNode.insertBefore(favBtn, tituloSection.nextSibling);
+
+          async function checkFavorito() {
+            try {
+              const resp = await SGPLAdmin.authFetch('/favoritos/' + encodeURIComponent(idLicitacion) + '/check', { method: 'GET' });
+              const esFav = resp && resp.data && resp.data.es_favorito;
+              updateFavButton(esFav);
+              favBtn.style.display = '';
+            } catch (e) {
+              // Silencioso: si falla, no mostrar botón
+            }
+          }
+
+          function updateFavButton(esFav) {
+            if (esFav) {
+              favBtn.innerHTML = '<i class="ph ph-star-fill text-amber-500"></i> <span class="text-amber-700">Guardada</span>';
+              favBtn.className = 'inline-flex items-center gap-1 text-sm font-semibold px-3 py-1.5 rounded-lg border border-amber-200 bg-amber-50 hover:bg-amber-100 ml-2';
+            } else {
+              favBtn.innerHTML = '<i class="ph ph-star"></i> <span>Guardar</span>';
+              favBtn.className = 'inline-flex items-center gap-1 text-sm font-semibold px-3 py-1.5 rounded-lg border border-slate-200 hover:bg-slate-50 ml-2';
+            }
+          }
+
+          favBtn.addEventListener('click', async function () {
+            try {
+              const currentText = favBtn.querySelector('span').textContent;
+              if (currentText === 'Guardada') {
+                await SGPLAdmin.authFetch('/favoritos/' + encodeURIComponent(idLicitacion), { method: 'DELETE' });
+                updateFavButton(false);
+              } else {
+                await SGPLAdmin.authFetch('/favoritos', {
+                  method: 'POST',
+                  body: JSON.stringify({ id_licitacion: parseInt(idLicitacion, 10) }),
+                });
+                updateFavButton(true);
+              }
+            } catch (e) {
+              alert('No se pudo actualizar favorito: ' + (e.message || 'Error'));
+            }
+          });
+
+          checkFavorito();
+        }
+      }
+    })();
+    </script>
 </body>
 </html>

@@ -59,6 +59,7 @@ require_once __DIR__ . '/../app/controllers/EfirmaController.php';
 require_once __DIR__ . '/../app/controllers/ReputacionController.php';
 require_once __DIR__ . '/../app/controllers/ProveedorMetricasController.php';
 require_once __DIR__ . '/../app/controllers/TicketSoporteController.php';
+require_once __DIR__ . '/../app/controllers/LicitacionFavoritoController.php';
 require_once __DIR__ . '/../app/routes/PublicRouteTable.php';
 
 // Middlewares
@@ -760,6 +761,32 @@ try {
         case preg_match('#^/aclaraciones/(\d+)/respuesta$#', $route, $m) && $requestMethod === 'PATCH':
             AuthMiddleware::handle();
             (new AclaracionController())->responder((int) $m[1]);
+            break;
+
+        // Favoritos de licitaciones (público)
+        case $route === '/favoritos' && $requestMethod === 'POST':
+            AuthMiddleware::handle();
+            (new LicitacionFavoritoController())->agregar();
+            break;
+
+        case $route === '/favoritos' && $requestMethod === 'GET':
+            AuthMiddleware::handle();
+            (new LicitacionFavoritoController())->listar();
+            break;
+
+        case $route === '/favoritos/count' && $requestMethod === 'GET':
+            AuthMiddleware::handle();
+            (new LicitacionFavoritoController())->contar();
+            break;
+
+        case preg_match('#^/favoritos/(\d+)$#', $route, $m) && $requestMethod === 'DELETE':
+            AuthMiddleware::handle();
+            (new LicitacionFavoritoController())->quitar((int) $m[1]);
+            break;
+
+        case preg_match('#^/favoritos/(\d+)/check$#', $route, $m) && $requestMethod === 'GET':
+            AuthMiddleware::handle();
+            (new LicitacionFavoritoController())->esFavorito((int) $m[1]);
             break;
 
             default:
