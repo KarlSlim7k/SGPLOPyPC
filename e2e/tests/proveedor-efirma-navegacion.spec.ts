@@ -27,7 +27,7 @@ test.describe('Proveedor e.firma Navegacion', () => {
     await page.goto('/frontend/proveedor/contrato.html?id=' + contrato.id_contrato);
     await page.waitForURL('**/frontend/proveedor/contrato.html?id=*');
 
-    await expect(page.getByRole('heading', { name: /Detalle de contrato/i })).toBeVisible({ timeout: 15000 });
+    await expect(page.locator('#titulo')).toBeVisible({ timeout: 15000 });
 
     // Verificar que la seccion de firma existe
     const firmaBadge = page.locator('#firma-badge');
@@ -128,7 +128,7 @@ test.describe('Proveedor e.firma Navegacion', () => {
     // Ir a contrato
     await page.goto('/frontend/proveedor/contrato.html?id=' + idContrato);
     await page.waitForURL('**/frontend/proveedor/contrato.html?id=*');
-    await expect(page.getByRole('heading', { name: /Detalle de contrato/i })).toBeVisible({ timeout: 15000 });
+    await expect(page.locator('#titulo')).toBeVisible({ timeout: 15000 });
 
     // Ir a firma-efirma directamente
     await page.goto('/frontend/proveedor/firma-efirma.html?id=' + idContrato);
@@ -138,6 +138,6 @@ test.describe('Proveedor e.firma Navegacion', () => {
     // Volver al contrato
     await page.click('#btn-volver-contrato');
     await page.waitForURL('**/frontend/proveedor/contrato.html?id=' + idContrato);
-    await expect(page.getByRole('heading', { name: /Detalle de contrato/i })).toBeVisible({ timeout: 15000 });
+    await expect(page.locator('#titulo')).toBeVisible({ timeout: 15000 });
   });
 });

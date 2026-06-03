@@ -1,6 +1,6 @@
 import { defineConfig, devices } from '@playwright/test';
 
-const baseURL = process.env.E2E_BASE_URL || 'https://sgplopypc-production.up.railway.app';
+const baseURL = process.env.E2E_BASE_URL || 'https://sgplopypc.up.railway.app';
 const browserChannel = process.env.E2E_BROWSER_CHANNEL || '';
 
 const browserUse = browserChannel
