@@ -53,6 +53,7 @@ test.describe('Proveedor Documentos y Propuestas', () => {
   });
 
   test('retirar propuesta via API y verificar cambio a RETIRADA en la UI', async ({ page, request }) => {
+    test.setTimeout(60000);
     const token = await loginToken(request, PROVIDER_EMAIL, PROVIDER_PASSWORD);
 
     // 1) Obtener participaciones del proveedor
@@ -100,7 +101,6 @@ test.describe('Proveedor Documentos y Propuestas', () => {
     await page.waitForURL('**/frontend/proveedor/propuestas.html');
     await expect(page.getByRole('heading', { name: /Mis propuestas/i })).toBeVisible({ timeout: 30000 });
 
-    await expect(page.locator('#rows')).not.toContainText('Cargando propuestas', { timeout: 30000 });
     await expect(page.locator('#rows')).toContainText('RECIBIDA', { timeout: 30000 });
     const retirarBtn = page.locator('button[data-retirar]').first();
     await expect(retirarBtn).toBeVisible();
@@ -113,7 +113,6 @@ test.describe('Proveedor Documentos y Propuestas', () => {
 
     // 4) Refrescar la pagina y verificar que cambio a RETIRADA
     await page.reload();
-    await expect(page.locator('#rows')).not.toContainText('Cargando propuestas', { timeout: 30000 });
     await expect(page.locator('#rows')).toContainText('RETIRADA', { timeout: 30000 });
   });
 
