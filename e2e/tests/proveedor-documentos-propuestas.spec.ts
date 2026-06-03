@@ -4,19 +4,23 @@ import { loginToken, loginUI } from './helpers';
 const PROVIDER_EMAIL = process.env.E2E_PROVIDER_EMAIL || 'proveedor@demo.mx';
 const PROVIDER_PASSWORD = process.env.E2E_PROVIDER_PASSWORD || 'proveedor123';
 
+// Buffer mínimo reconocido como PDF por finfo
+function fakePdfBuffer(): Buffer {
+  return Buffer.from('%PDF-1.4\n1 0 obj\n<<\n/Type /Catalog\n/Pages 2 0 R\n>>\nendobj\n2 0 obj\n<<\n/Type /Pages\n/Kids [3 0 R]\n/Count 1\n>>\nendobj\n3 0 obj\n<<\n/Type /Page\n/Parent 2 0 R\n/MediaBox [0 0 612 792]\n>>\nendobj\nxref\n0 4\n0000000000 65535 f\n0000000009 00000 n\n0000000058 00000 n\n0000000115 00000 n\ntrailer\n<<\n/Size 4\n/Root 1 0 R\n>>\nstartxref\n171\n%%EOF');
+}
+
 test.describe('Proveedor Documentos y Propuestas', () => {
   test('subir documento legal, eliminar y verificar que desaparece', async ({ page, request }) => {
     const token = await loginToken(request, PROVIDER_EMAIL, PROVIDER_PASSWORD);
 
     // 1) Subir documento legal vía API
-    const buffer = Buffer.from('PDF contenido de prueba');
     const uploadRes = await request.post('/api/v1/documentos/upload', {
       headers: { Authorization: `Bearer ${token}` },
       multipart: {
         archivo: {
           name: 'test-legal.pdf',
           mimeType: 'application/pdf',
-          buffer,
+          buffer: fakePdfBuffer(),
         },
         tipo_documento: 'DOC_LEGAL_PROVEEDOR',
       },
@@ -57,24 +61,38 @@ test.describe('Proveedor Documentos y Propuestas', () => {
     const partBody = await partRes.json();
     const participaciones = partBody.data.items || [];
 
-    // Buscar una participación en RECEPCION_PROPUESTAS sin propuesta
+    let idParticipacion: number | null = null;
+
+    // Buscar una participación en RECEPCION_PROPUESTAS sin propuesta para crear una
     const elegible = participaciones.find(
       (p: any) => p.estado_proceso === 'RECEPCION_PROPUESTAS' && !p.id_propuesta
     );
 
-    if (!elegible) {
-      test.skip(true, 'No hay participaciones elegibles para crear propuesta');
-      return;
+    if (elegible) {
+      // Crear propuesta
+      const propRes = await request.post(`/api/v1/participaciones/${elegible.id_participacion}/propuesta`, {
+        headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
+        data: { monto_propuesta: 123456.78, descripcion_tecnica: 'Propuesta de prueba E2E' },
+      });
+      expect(propRes.ok()).toBeTruthy();
+      idParticipacion = elegible.id_participacion;
+    } else {
+      // Si ya hay propuesta RECIBIDA, usarla directamente
+      const propRes = await request.get('/api/v1/propuestas/mias?page=1&limit=100', {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      expect(propRes.ok()).toBeTruthy();
+      const propBody = await propRes.json();
+      const propuestas = propBody.data.items || [];
+      const recibida = propuestas.find((p: any) => p.estatus === 'RECIBIDA' && p.estado_proceso === 'RECEPCION_PROPUESTAS');
+      if (!recibida) {
+        test.skip(true, 'No hay propuestas ni participaciones elegibles para este test');
+        return;
+      }
+      idParticipacion = recibida.id_participacion;
     }
 
-    // 2) Enviar propuesta vía API
-    const propRes = await request.post(`/api/v1/participaciones/${elegible.id_participacion}/propuesta`, {
-      headers: { Authorization: `Bearer ${token}`, 'Content-Type': 'application/json' },
-      data: { monto_propuesta: 123456.78, descripcion_tecnica: 'Propuesta de prueba E2E' },
-    });
-    expect(propRes.ok()).toBeTruthy();
-
-    // 3) Ir a propuestas.html
+    // 2) Ir a propuestas.html
     await loginUI(page, PROVIDER_EMAIL, PROVIDER_PASSWORD, '**/frontend/proveedor/centro.html');
     await page.goto('/frontend/proveedor/propuestas.html');
     await page.waitForURL('**/frontend/proveedor/propuestas.html');
@@ -88,7 +106,7 @@ test.describe('Proveedor Documentos y Propuestas', () => {
     const retirarBtn = row.locator('button[data-retirar]').first();
     await expect(retirarBtn).toBeVisible();
 
-    // 4) Retirar propuesta
+    // 3) Retirar propuesta
     page.on('dialog', dialog => dialog.accept());
     await retirarBtn.click();
 
