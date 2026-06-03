@@ -456,7 +456,7 @@
       document.getElementById('detail-dialog').close();
     });
 
-    document.getElementById('rows').addEventListener('click', function (e) {
+    document.getElementById('rows').addEventListener('click', async function (e) {
       const editBtn = e.target.closest('button[data-edit]');
       if (editBtn) {
         document.getElementById('edit-id-participacion').value = editBtn.getAttribute('data-edit');
