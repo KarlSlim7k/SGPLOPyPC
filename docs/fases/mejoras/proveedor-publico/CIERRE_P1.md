@@ -352,6 +352,56 @@ Se implement&oacute; un sistema de tickets de soporte autenticados para el rol p
 
 ---
 
+## Fase P9 — Eliminaci&oacute;n de documentos y retiro de propuestas
+
+- **Commit:** 19b1f0c7242c447fd4cf248f9a29b4ed03cef6aa
+- **URL:** https://sgplopypc.up.railway.app
+- **Healthcheck post-deploy:** `/healthz` &rarr; 200, `/api/v1/health` &rarr; app=ok, db=ok
+- **E2E:** 4 passed / 1 skipped / 0 failed
+
+### Resumen
+
+Se implement&oacute; la capacidad de eliminar documentos propios y retirar propuestas para el rol proveedor, con validaciones de negocio robustas.
+
+**Backend modificado:**
+- `app/repositories/DocumentoRepository.php` — agregado m&eacute;todo `delete(int $id)` para eliminar documento de la BD.
+- `app/services/DocumentoService.php` — nuevo m&eacute;todo `delete()` con validaciones:
+  - Solo propietario o admin puede eliminar.
+  - No eliminar si el documento est&aacute; vinculado a una propuesta con estatus `EN_REVISION`, `ACEPTADA` o `RECHAZADA` (error 409).
+  - Elimina archivo f&iacute;sico de `storage/`.
+  - Registra `auditLog('documento_eliminado', ...)`.
+- `app/services/ParticipacionService.php` — nuevo m&eacute;todo `retirarPropuesta()` que:
+  - Valida que la propuesta est&eacute; en estatus `RECIBIDA`.
+  - Valida que el proceso est&eacute; en `RECEPCION_PROPUESTAS`.
+  - Cambia el estatus de la propuesta a `RETIRADA`.
+  - Registra `auditLog('propuesta_retirada', ...)`.
+- `app/controllers/DocumentoController.php` — nuevo m&eacute;todo `delete()` con respuesta API est&aacute;ndar.
+- `app/controllers/ParticipacionController.php` — nuevo m&eacute;todo `retirarPropuesta()`.
+- `public/index.php` — agregadas rutas:
+  - `DELETE /api/v1/documentos/{id}`
+  - `POST /api/v1/participaciones/{id}/retirar-propuesta`
+
+**Esquema BD modificado:**
+- `database/migrations/019_propuesta_estatus_retirada.sql` — agrega `RETIRADA` al enum `estatus` de la tabla `propuesta`.
+- `scripts/migrate.php` — agregada migraci&oacute;n 019 al array de migraciones de esquema.
+
+**Frontend modificado:**
+- `frontend/proveedor/documentos.html` — agregado bot&oacute;n "Eliminar" (rojo) en cada fila de la tabla, con confirmaci&oacute;n `confirm()` y recarga de lista tras &eacute;xito.
+- `frontend/proveedor/propuestas.html` — agregado bot&oacute;n "Retirar" en propuestas con estatus `RECIBIDA` y proceso `RECEPCION_PROPUESTAS`, con confirmaci&oacute;n y recarga de lista tras &eacute;xito.
+
+**Tests E2E:**
+- `e2e/tests/proveedor-documentos-propuestas.spec.ts` — 4 tests cubriendo:
+  - Subir documento legal, eliminar v&iacute;a API y verificar que desaparece de la UI.
+  - Crear propuesta, retirar v&iacute;a API y verificar cambio a `RETIRADA` en la UI.
+  - Intentar eliminar documento vinculado a propuesta evaluada &rarr; verificar error 409 (skipped si no hay propuestas evaluadas en demo).
+  - Verificaci&oacute;n de botones "Eliminar" y "Retirar" visibles en sus respectivas p&aacute;ginas.
+
+**Archivos creados:** 2 (1 migraci&oacute;n + 1 test E2E)  
+**Archivos modificados:** 6 (`DocumentoRepository.php`, `DocumentoService.php`, `DocumentoController.php`, `ParticipacionService.php`, `ParticipacionController.php`, `public/index.php`, `documentos.html`, `propuestas.html`, `scripts/migrate.php`)  
+**Tablas/columnas nuevas:** Ninguna (modificaci&oacute;n de enum `propuesta.estatus`)
+
+---
+
 ## Notas t&eacute;cnicas transversales
 
 - Las tres fases usan `admin.js` y `public.js` existentes sin modificaciones
