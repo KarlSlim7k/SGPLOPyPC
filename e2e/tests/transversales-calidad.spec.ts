@@ -76,7 +76,9 @@ test.describe('Transversales calidad', () => {
     await page.goto('/frontend/publico/favoritos.html');
 
     // Verificar que la página carga sin errores (lista o empty state)
-    await expect(page.locator('#favoritos-lista, #favoritos-empty')).toBeVisible({ timeout: 15000 });
+    const lista = page.locator('#favoritos-lista');
+    const empty = page.locator('#favoritos-empty');
+    await expect(lista.or(empty)).toBeVisible({ timeout: 15000 });
   });
 
   test('no hay errores de JS en consola al cargar páginas principales', async ({ page, request }) => {
