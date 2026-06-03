@@ -133,6 +133,20 @@ class ParticipacionController {
         jsonResponse(true, 'Inscripción retirada exitosamente', null, null, 200);
     }
 
+    public function retirarPropuesta(int $idParticipacion): never {
+        AuthMiddleware::handle();
+        $user = AuthMiddleware::getAuthenticatedUser();
+        if ($user['rol'] !== 'PROVEEDOR') {
+            jsonResponse(false, 'Solo los proveedores pueden retirar propuestas.', null, null, 403);
+        }
+        $result = $this->service->retirarPropuesta($idParticipacion, (int) $user['id_usuario']);
+        if (!$result['ok']) {
+            $status = $result['status'] ?? 422;
+            jsonResponse(false, 'No se pudo retirar la propuesta', null, $result['errors'], $status);
+        }
+        jsonResponse(true, 'Propuesta retirada exitosamente', null, null, 200);
+    }
+
     public function editarPropuesta(int $idParticipacion): never {
         AuthMiddleware::handle();
         $user = AuthMiddleware::getAuthenticatedUser();

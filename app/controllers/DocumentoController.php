@@ -71,4 +71,15 @@ class DocumentoController {
         readfile($doc['path']);
         exit;
     }
+
+    public function delete(int $id): never {
+        AuthMiddleware::handle();
+        $user = AuthMiddleware::getAuthenticatedUser();
+        $result = $this->service->delete($id, (int) $user['id_usuario'], $user['rol']);
+        if (!$result['ok']) {
+            $status = $result['status'] ?? 422;
+            jsonResponse(false, 'No se pudo eliminar el documento.', null, $result['errors'], $status);
+        }
+        jsonResponse(true, 'Documento eliminado exitosamente.', null, null, 200);
+    }
 }

@@ -463,6 +463,12 @@ try {
             (new ParticipacionController())->retirar((int) $m[1]);
             break;
 
+        case preg_match('#^/participaciones/(\d+)/retirar-propuesta$#', $route, $m) && $requestMethod === 'POST':
+            AuthMiddleware::handle();
+            RoleMiddleware::handle('PROVEEDOR');
+            (new ParticipacionController())->retirarPropuesta((int) $m[1]);
+            break;
+
         case preg_match('#^/propuestas/(\d+)$#', $route, $m) && $requestMethod === 'GET':
             AuthMiddleware::handle();
             (new ParticipacionController())->getPropuesta((int) $m[1]);
@@ -511,6 +517,11 @@ try {
         case preg_match('#^/documentos/(\d+)$#', $route, $m) && $requestMethod === 'GET':
             AuthMiddleware::handle();
             (new DocumentoController())->get((int) $m[1]);
+            break;
+
+        case preg_match('#^/documentos/(\d+)$#', $route, $m) && $requestMethod === 'DELETE':
+            AuthMiddleware::handle();
+            (new DocumentoController())->delete((int) $m[1]);
             break;
 
         case preg_match('#^/documentos/(\d+)/download$#', $route, $m) && $requestMethod === 'GET':

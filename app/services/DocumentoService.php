@@ -212,6 +212,56 @@ class DocumentoService {
         ];
     }
 
+    public function delete(int $id, int $idUsuario, string $rol): array {
+        $doc = $this->repo->findById($id);
+        if (!$doc) {
+            return ['ok' => false, 'errors' => ['Documento no encontrado.'], 'status' => 404];
+        }
+
+        // Permisos: solo el propietario o admin puede eliminar
+        if ($rol !== 'ADMINISTRADOR') {
+            $proveedor = $this->provRepo->findByUsuario($idUsuario);
+            if (!$proveedor) {
+                return ['ok' => false, 'errors' => ['No tienes permiso para eliminar este documento.'], 'status' => 403];
+            }
+            $isOwner = false;
+            if (!empty($doc['id_proveedor']) && (int) $doc['id_proveedor'] === (int) $proveedor['id_proveedor']) {
+                $isOwner = true;
+            }
+            if (!empty($doc['id_propuesta'])) {
+                $prop = $this->propRepo->findById((int) $doc['id_propuesta']);
+                if ($prop) {
+                    $part = $this->partRepo->findById((int) $prop['id_participacion']);
+                    if ($part && (int) $part['id_proveedor'] === (int) $proveedor['id_proveedor']) {
+                        $isOwner = true;
+                    }
+                }
+            }
+            if (!$isOwner) {
+                return ['ok' => false, 'errors' => ['No tienes permiso para eliminar este documento.'], 'status' => 403];
+            }
+        }
+
+        // Validación: no eliminar si está vinculado a propuesta evaluada
+        if (!empty($doc['id_propuesta'])) {
+            $prop = $this->propRepo->findById((int) $doc['id_propuesta']);
+            if ($prop && in_array($prop['estatus'], ['EN_REVISION', 'ACEPTADA', 'RECHAZADA'], true)) {
+                return ['ok' => false, 'errors' => ['No se puede eliminar un documento vinculado a una propuesta en evaluación o ya resuelta.'], 'status' => 409];
+            }
+        }
+
+        // Eliminar archivo físico
+        $absolutePath = realpath(__DIR__ . '/../../' . $doc['ruta_almacenamiento']);
+        $storageBase = realpath(__DIR__ . '/../../storage');
+        if ($absolutePath && $storageBase && str_starts_with($absolutePath, $storageBase) && is_file($absolutePath)) {
+            unlink($absolutePath);
+        }
+
+        $this->repo->delete($id);
+        auditLog($idUsuario, 'documento', $id, 'ELIMINAR', $doc, null);
+        return ['ok' => true];
+    }
+
     private function normalizeProviderUploadContext(array $input, int $idUsuario, string $tipoDoc): array {
         $proveedor = $this->provRepo->findByUsuario($idUsuario);
         if (!$proveedor) {

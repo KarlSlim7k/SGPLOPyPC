@@ -242,7 +242,7 @@
             + '<td class="px-4 py-3 text-slate-600">' + SGPLAdmin.escapeHtml(item.numero_licitacion || 'N/A') + '</td>'
             + '<td class="px-4 py-3 text-slate-600">' + formatSize(item.tamano_bytes) + '</td>'
             + '<td class="px-4 py-3 text-slate-600">' + SGPLAdmin.formatDate(item.fecha_subida) + '</td>'
-            + '<td class="px-4 py-3 text-right"><button data-download="' + String(item.id_documento) + '" data-name="' + SGPLAdmin.escapeHtml(item.nombre_archivo || 'documento') + '" class="px-3 py-2 rounded-lg text-xs font-semibold border border-slate-200 hover:bg-slate-50">Descargar</button></td>'
+            + '<td class="px-4 py-3 text-right"><div class="inline-flex gap-2"><button data-download="' + String(item.id_documento) + '" data-name="' + SGPLAdmin.escapeHtml(item.nombre_archivo || 'documento') + '" class="px-3 py-2 rounded-lg text-xs font-semibold border border-slate-200 hover:bg-slate-50">Descargar</button><button data-delete="' + String(item.id_documento) + '" class="px-3 py-2 rounded-lg text-xs font-semibold border border-red-200 text-red-700 hover:bg-red-50">Eliminar</button></div></td>'
             + '</tr>';
         }).join('');
       } catch (error) {
@@ -291,12 +291,26 @@
     });
 
     document.getElementById('rows').addEventListener('click', async function (e) {
-      const btn = e.target.closest('button[data-download]');
-      if (!btn) return;
-      try {
-        await SGPLAdmin.downloadApiFile('/documentos/' + btn.getAttribute('data-download') + '/download', btn.getAttribute('data-name') || 'documento');
-      } catch (_) {
-        setFlash('No se pudo descargar el documento.', 'error');
+      const btnDownload = e.target.closest('button[data-download]');
+      if (btnDownload) {
+        try {
+          await SGPLAdmin.downloadApiFile('/documentos/' + btnDownload.getAttribute('data-download') + '/download', btnDownload.getAttribute('data-name') || 'documento');
+        } catch (_) {
+          setFlash('No se pudo descargar el documento.', 'error');
+        }
+        return;
+      }
+      const btnDelete = e.target.closest('button[data-delete]');
+      if (btnDelete) {
+        if (!confirm('¿Eliminar este documento permanentemente?')) return;
+        try {
+          await SGPLAdmin.authFetch('/documentos/' + btnDelete.getAttribute('data-delete'), { method: 'DELETE' });
+          setFlash('Documento eliminado correctamente.', 'ok');
+          await loadDocumentos();
+        } catch (error) {
+          const details = Array.isArray(error.errors) && error.errors.length ? ' ' + error.errors[0] : '';
+          setFlash((error.message || 'No se pudo eliminar el documento.') + details, 'error');
+        }
       }
     });
 

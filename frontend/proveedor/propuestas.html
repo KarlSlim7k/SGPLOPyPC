@@ -332,6 +332,7 @@
             + '<td class="px-4 py-3 text-right"><div class="inline-flex gap-2">'
             + '<button data-detail="' + String(item.id_propuesta) + '" class="px-3 py-2 rounded-lg text-xs font-semibold border border-slate-200 hover:bg-slate-50">Ver</button>'
             + (canEdit ? '<button data-edit="' + String(item.id_participacion) + '" data-monto="' + String(item.monto_propuesta) + '" data-desc="' + SGPLAdmin.escapeHtml(item.descripcion_tecnica || '') + '" class="px-3 py-2 rounded-lg text-xs font-semibold border border-primary-200 text-primary-700 hover:bg-primary-50">Editar</button>' : '')
+            + (canEdit ? '<button data-retirar="' + String(item.id_participacion) + '" class="px-3 py-2 rounded-lg text-xs font-semibold border border-red-200 text-red-700 hover:bg-red-50">Retirar</button>' : '')
             + '</div></td>'
             + '</tr>';
         }).join('');
@@ -463,6 +464,17 @@
         document.getElementById('edit-descripcion').value = editBtn.getAttribute('data-desc');
         document.getElementById('edit-flash').textContent = '';
         document.getElementById('edit-dialog').showModal();
+      }
+      const retirarBtn = e.target.closest('button[data-retirar]');
+      if (retirarBtn) {
+        if (!confirm('¿Retirar esta propuesta? La acción no se puede deshacer.')) return;
+        try {
+          await SGPLAdmin.authFetch('/participaciones/' + retirarBtn.getAttribute('data-retirar') + '/retirar-propuesta', { method: 'POST' });
+          setFlash('Propuesta retirada correctamente.', 'ok');
+          await Promise.all([loadParticipaciones(), loadPropuestas(currentPage)]);
+        } catch (error) {
+          setFlash(error.message || 'No se pudo retirar la propuesta.', 'error');
+        }
       }
     });
 

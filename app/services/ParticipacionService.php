@@ -191,6 +191,32 @@ class ParticipacionService {
         return ['ok' => true];
     }
 
+    public function retirarPropuesta(int $idParticipacion, int $idUsuario): array {
+        $participacion = $this->partRepo->findById($idParticipacion);
+        if (!$participacion) {
+            return ['ok' => false, 'errors' => ['Participación no encontrada.'], 'status' => 404];
+        }
+        $proveedor = $this->provRepo->findByUsuario($idUsuario);
+        if (!$proveedor || (int) $proveedor['id_proveedor'] !== (int) $participacion['id_proveedor']) {
+            return ['ok' => false, 'errors' => ['No tienes permiso para retirar esta propuesta.'], 'status' => 403];
+        }
+        $propuesta = $this->propRepo->findByParticipacion($idParticipacion);
+        if (!$propuesta) {
+            return ['ok' => false, 'errors' => ['No existe propuesta para esta participación.'], 'status' => 404];
+        }
+        if ($propuesta['estatus'] !== 'RECIBIDA') {
+            return ['ok' => false, 'errors' => ['Solo se puede retirar una propuesta en estatus RECIBIDA.'], 'status' => 422];
+        }
+        $licitacion = $this->licRepo->findById((int) $participacion['id_licitacion']);
+        if (!$licitacion || $licitacion['estado_proceso'] !== 'RECEPCION_PROPUESTAS') {
+            return ['ok' => false, 'errors' => ['El proceso no está en recepción de propuestas.'], 'status' => 422];
+        }
+        $this->propRepo->updateEstatus((int) $propuesta['id_propuesta'], 'RETIRADA');
+        auditLog($idUsuario, 'propuesta', (int) $propuesta['id_propuesta'], 'RETIRAR',
+            ['estatus' => $propuesta['estatus']], ['estatus' => 'RETIRADA']);
+        return ['ok' => true];
+    }
+
     public function editarPropuesta(int $idParticipacion, array $input, int $idUsuario): array {
         $participacion = $this->partRepo->findById($idParticipacion);
         if (!$participacion) {

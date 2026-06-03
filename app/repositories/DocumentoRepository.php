@@ -20,6 +20,11 @@ class DocumentoRepository {
         return $row ?: null;
     }
 
+    public function delete(int $id): void {
+        $stmt = $this->db->prepare('DELETE FROM documento WHERE id_documento = :id');
+        $stmt->execute(['id' => $id]);
+    }
+
     public function create(array $data): int {
         $stmt = $this->db->prepare(
             'INSERT INTO documento (nombre_archivo, ruta_almacenamiento, tipo_documento, id_licitacion, id_propuesta, id_proveedor, id_contrato, id_evaluacion, version, subido_por, fecha_subida, tamano_bytes) '
