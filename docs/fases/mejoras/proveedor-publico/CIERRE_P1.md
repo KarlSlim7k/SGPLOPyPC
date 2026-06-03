@@ -299,6 +299,59 @@ Se implement&oacute; una p&aacute;gina dedicada al historial de reputaci&oacute;
 
 ---
 
+## Fase P8 — Tickets de soporte desde proveedor
+
+- **Commit:** 931d3fc62be3fa7a12a45a64188a8097b9c5a1c40
+- **URL:** https://sgplopypc.up.railway.app
+- **Healthcheck post-deploy:** `/healthz` &rarr; 200, `/api/v1/health` &rarr; app=ok, db=ok
+- **E2E:** 5 passed / 0 skipped / 0 failed
+
+### Resumen
+
+Se implement&oacute; un sistema de tickets de soporte autenticados para el rol proveedor, permitiendo crear tickets, ver su estado, consultar respuestas del equipo de soporte y responder dentro del hilo.
+
+**Esquema BD nuevo:**
+- `database/migrations/018_soporte_tickets_proveedor.sql` — tablas `ticket_soporte` y `ticket_respuesta` con FK a `usuario`.
+- `scripts/migrate.php` — agregada migraci&oacute;n 018 al array de migraciones de esquema.
+
+**Backend nuevo:**
+- `app/repositories/TicketSoporteRepository.php` — CRUD de tickets y respuestas, resumen por usuario.
+- `app/services/TicketSoporteService.php` — l&oacute;gica de negocio con validaci&oacute;n de prioridades, estados y permisos (propietario o admin).
+- `app/controllers/TicketSoporteController.php` — endpoints:
+  - `POST /api/v1/tickets` — crear ticket (autenticado).
+  - `GET /api/v1/tickets/mios` — listar tickets propios con paginaci&oacute;n y resumen.
+  - `GET /api/v1/tickets/{id}` — detalle del ticket con hilo de respuestas.
+  - `POST /api/v1/tickets/{id}/respuestas` — agregar respuesta (propietario o admin).
+  - `PATCH /api/v1/tickets/{id}/estado` — cambiar estado (solo ADMINISTRADOR).
+
+**Frontend nuevo:**
+- `frontend/proveedor/soporte.html` — p&aacute;gina completa con:
+  - Stats cards (total, abiertos, en proceso, cerrados/resueltos).
+  - Formulario de creaci&oacute;n de ticket (asunto, descripci&oacute;n, prioridad).
+  - Lista de tickets con badge de estado y prioridad, paginaci&oacute;n.
+  - Vista de detalle con hilo de respuestas estilo chat (diferenciado proveedor vs admin).
+  - Formulario de respuesta dentro del ticket.
+  - Navbar con notificaciones SSE.
+
+**Frontend modificado:**
+- `frontend/proveedor/centro.html` — agregada tarjeta "Soporte" en la navegaci&oacute;n.
+- `frontend/proveedor/perfil.html` — agregada secci&oacute;n "&iquest;Necesitas ayuda?" con enlace a soporte.
+- `public/index.php` — agregadas 5 rutas para `TicketSoporteController`.
+
+**Tests E2E:**
+- `e2e/tests/proveedor-soporte.spec.ts` — 5 tests cubriendo:
+  - Carga de soporte.html y visibilidad del formulario nuevo ticket.
+  - Creaci&oacute;n de ticket y verificaci&oacute;n de aparici&oacute;n en la lista.
+  - Apertura de ticket, agregado de respuesta y verificaci&oacute;n en el hilo.
+  - Navegaci&oacute;n desde centro proveedor mediante tarjeta "Soporte".
+  - Validaci&oacute;n de API: estructura de creaci&oacute;n, listado, detalle y respuestas.
+
+**Archivos creados:** 5 (3 backend + 1 p&aacute;gina HTML + 1 test E2E + 1 migraci&oacute;n)  
+**Archivos modificados:** 4 (`public/index.php`, `centro.html`, `perfil.html`, `scripts/migrate.php`)  
+**Tablas/columnas nuevas:** `ticket_soporte`, `ticket_respuesta`
+
+---
+
 ## Notas t&eacute;cnicas transversales
 
 - Las tres fases usan `admin.js` y `public.js` existentes sin modificaciones
