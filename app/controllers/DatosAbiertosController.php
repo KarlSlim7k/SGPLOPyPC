@@ -35,6 +35,9 @@ class DatosAbiertosController {
         if (!empty($_GET['estado']) && in_array((string) $_GET['estado'], OcdsRepository::ESTADOS_PUBLICOS, true)) {
             $filters['estado'] = (string) $_GET['estado'];
         }
+        if (!empty($_GET['tipo'])) {
+            $filters['tipo'] = (string) $_GET['tipo'];
+        }
 
         $result = $this->service->listReleases($filters, $page, $limit);
         $this->setOcdsHeaders();

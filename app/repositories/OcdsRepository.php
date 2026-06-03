@@ -53,6 +53,11 @@ class OcdsRepository {
             }
         }
 
+        if (!empty($filters['tipo'])) {
+            $where[] = 'l.tipo_procedimiento = :tipo';
+            $params['tipo'] = $filters['tipo'];
+        }
+
         $whereSql = 'WHERE ' . implode(' AND ', $where);
         $offset = max(0, ($page - 1) * $limit);
 
