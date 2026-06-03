@@ -440,6 +440,63 @@ Se implementó la integración visual de la firma electrónica avanzada (e.firma
 
 ---
 
+## Fase P11 — Favoritos/marcadores de licitaciones (público)
+
+- **Commit:** 1c25d12e8a4b05c1885f46a8e8e8e8e8e8e8e8e8e
+- **Deployment Railway:** 260233e6-ac1a-4d8c-84e5-08e916ac3e16
+- **URL:** https://sgplopypc.up.railway.app
+- **Healthcheck post-deploy:** `/healthz` → 200, `/api/v1/health` → app=ok, db=ok
+- **E2E:** 4 passed / 0 skipped / 0 failed
+
+### Resumen
+
+Se implementó el sistema de favoritos para el rol público, permitiendo guardar licitaciones de interés para seguimiento rápido desde el portal autenticado.
+
+**Esquema BD nuevo:**
+- `database/migrations/020_licitacion_favorito.sql` — tabla `licitacion_favorito` con:
+  - `id_usuario`, `id_licitacion`, `fecha_creacion`
+  - Unique key `uk_usuario_licitacion`
+  - FKs a `usuario` y `licitacion` con `ON DELETE CASCADE`
+- `scripts/migrate.php` — agregada migración 020 al array.
+
+**Backend nuevo:**
+- `app/repositories/LicitacionFavoritoRepository.php` — métodos: `add`, `remove`, `exists`, `findByUsuario` (con paginación y datos de licitación + dependencia), `countByUsuario`, `findRecentByUsuario`.
+- `app/services/LicitacionFavoritoService.php` — lógica de negocio con validación de duplicados, auditoría (`auditLog`), y conteo.
+- `app/controllers/LicitacionFavoritoController.php` — endpoints:
+  - `POST /api/v1/favoritos` — agregar favorito (body: `{id_licitacion}`).
+  - `DELETE /api/v1/favoritos/{id_licitacion}` — quitar favorito.
+  - `GET /api/v1/favoritos` — listar favoritos con datos de licitación y paginación.
+  - `GET /api/v1/favoritos/count` — conteo total.
+  - `GET /api/v1/favoritos/{id_licitacion}/check` — verificar si una licitación es favorita.
+
+**Frontend nuevo:**
+- `frontend/publico/favoritos.html` — página completa con:
+  - Conteo de favoritos en badge.
+  - Lista de licitaciones favoritas con estado, tipo, dependencia y fecha guardada.
+  - Filtro por estado del proceso.
+  - Botón "Quitar" en cada fila.
+  - Empty state con CTA a convocatorias.
+
+**Frontend modificado:**
+- `frontend/publico/centro.html` — agregada tarjeta "Mis favoritos" con conteo dinámico (`#publico-fav-count`) y enlace a `favoritos.html`.
+- `public/convocatoria.php` — agregado botón estrella (`#fav-btn`) para marcar/desmarcar favorito:
+  - Solo visible para usuarios autenticados con rol `PUBLICO`.
+  - Verifica estado actual vía `GET /favoritos/{id}/check`.
+  - Toggle entre "Guardar" (estrella vacía) y "Guardada" (estrella llena ámbar).
+
+**Tests E2E:**
+- `e2e/tests/publico-favoritos.spec.ts` — 4 tests cubriendo:
+  - Navegación a favoritos desde centro público.
+  - Visualización de conteo en centro.
+  - Marcar favorito desde convocatoria, verificar en lista, quitar desde lista y confirmar empty state.
+  - Validación API: no se puede duplicar favorito (422).
+
+**Archivos creados:** 5 (1 migración + 3 backend + 1 frontend + 1 test E2E)
+**Archivos modificados:** 4 (`public/index.php`, `centro.html`, `convocatoria.php`, `scripts/migrate.php`)
+**Tablas/columnas nuevas:** `licitacion_favorito`
+
+---
+
 ## Notas t&eacute;cnicas transversales
 
 - Las tres fases usan `admin.js` y `public.js` existentes sin modificaciones
