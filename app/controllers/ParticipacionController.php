@@ -172,4 +172,75 @@ class ParticipacionController {
 
         jsonResponse(true, 'Mis propuestas', $result['data'], null, 200);
     }
+
+    public function exportParticipacionesCsv(): never {
+        AuthMiddleware::handle();
+        $user = AuthMiddleware::getAuthenticatedUser();
+        if ($user['rol'] !== 'PROVEEDOR') {
+            jsonResponse(false, 'Solo los proveedores pueden exportar sus participaciones.', null, null, 403);
+        }
+
+        $result = $this->service->listMias((int) $user['id_usuario'], 1, 10000, null, null);
+        if (!$result['ok']) {
+            jsonResponse(false, 'No se pudieron cargar las participaciones', null, $result['errors'], 422);
+        }
+
+        $items = $result['data']['items'] ?? [];
+        $this->outputCsv('participaciones', $items);
+    }
+
+    public function exportPropuestasCsv(): never {
+        AuthMiddleware::handle();
+        $user = AuthMiddleware::getAuthenticatedUser();
+        if ($user['rol'] !== 'PROVEEDOR') {
+            jsonResponse(false, 'Solo los proveedores pueden exportar sus propuestas.', null, null, 403);
+        }
+
+        $result = $this->service->listPropuestasMias((int) $user['id_usuario'], 1, 10000, null, null);
+        if (!$result['ok']) {
+            jsonResponse(false, 'No se pudieron cargar las propuestas', null, $result['errors'], 422);
+        }
+
+        $items = $result['data']['items'] ?? [];
+        $this->outputCsv('propuestas', $items);
+    }
+
+    private function outputCsv(string $tipo, array $items): never {
+        $filename = $tipo . '_' . date('Y-m-d_His') . '.csv';
+        header('Content-Type: text/csv; charset=utf-8');
+        header('Content-Disposition: attachment; filename="' . $filename . '"');
+
+        $output = fopen('php://output', 'w');
+        fprintf($output, chr(0xEF) . chr(0xBB) . chr(0xBF));
+
+        if ($tipo === 'participaciones') {
+            fputcsv($output, ['Licitación', 'Descripción', 'Dependencia', 'Estado Proceso', 'Estatus', 'Monto Propuesta', 'Fecha Inscripción']);
+            foreach ($items as $item) {
+                fputcsv($output, [
+                    $item['numero_licitacion'] ?? '',
+                    $item['descripcion_proyecto'] ?? '',
+                    $item['dependencia_nombre'] ?? '',
+                    $item['estado_proceso'] ?? '',
+                    $item['estatus'] ?? '',
+                    $item['monto_propuesta'] ?? '0',
+                    $item['fecha_inscripcion'] ?? '',
+                ]);
+            }
+        } else {
+            fputcsv($output, ['Licitación', 'Descripción', 'Dependencia', 'Estatus Propuesta', 'Monto Propuesta', 'Fecha Envío']);
+            foreach ($items as $item) {
+                fputcsv($output, [
+                    $item['numero_licitacion'] ?? '',
+                    $item['descripcion_proyecto'] ?? '',
+                    $item['dependencia_nombre'] ?? '',
+                    $item['estatus_propuesta'] ?? '',
+                    $item['monto_propuesta'] ?? '0',
+                    $item['fecha_envio'] ?? '',
+                ]);
+            }
+        }
+
+        fclose($output);
+        exit;
+    }
 }

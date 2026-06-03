@@ -79,8 +79,9 @@ class ParticipacionRepository {
         }
         $countStmt->execute();
         $total = (int) $countStmt->fetchColumn();
+        $totalPages = (int) ceil($total / $limit);
 
-        return ['items' => $items, 'total' => $total, 'page' => $page, 'limit' => $limit];
+        return ['items' => $items, 'total' => $total, 'page' => $page, 'per_page' => $limit, 'total_pages' => $totalPages];
     }
 
     public function findByProveedorForPortal(
@@ -139,8 +140,9 @@ class ParticipacionRepository {
         }
         $countStmt->execute();
         $total = (int) $countStmt->fetchColumn();
+        $totalPages = (int) ceil($total / $limit);
 
-        return ['items' => $items, 'total' => $total, 'page' => $page, 'limit' => $limit];
+        return ['items' => $items, 'total' => $total, 'page' => $page, 'per_page' => $limit, 'total_pages' => $totalPages];
     }
 
     public function findByProveedorAndLicitacion(int $idProveedor, int $idLicitacion): ?array {
@@ -312,8 +314,9 @@ class PropuestaRepository {
         }
         $countStmt->execute();
         $total = (int) $countStmt->fetchColumn();
+        $totalPages = (int) ceil($total / $limit);
 
-        return ['items' => $items, 'total' => $total, 'page' => $page, 'limit' => $limit];
+        return ['items' => $items, 'total' => $total, 'page' => $page, 'per_page' => $limit, 'total_pages' => $totalPages];
     }
 
     public function updateEstatus(int $id, string $estatus): void {

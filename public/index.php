@@ -477,6 +477,18 @@ try {
             (new ParticipacionController())->listPropuestas();
             break;
 
+        case $route === '/participaciones/mias/export.csv' && $requestMethod === 'GET':
+            AuthMiddleware::handle();
+            RoleMiddleware::handle('PROVEEDOR');
+            (new ParticipacionController())->exportParticipacionesCsv();
+            break;
+
+        case $route === '/propuestas/mias/export.csv' && $requestMethod === 'GET':
+            AuthMiddleware::handle();
+            RoleMiddleware::handle('PROVEEDOR');
+            (new ParticipacionController())->exportPropuestasCsv();
+            break;
+
         // Documentos
         case $route === '/documentos/mios' && $requestMethod === 'GET':
             AuthMiddleware::handle();
@@ -540,6 +552,12 @@ try {
             AuthMiddleware::handle();
             RoleMiddleware::handle('PROVEEDOR');
             (new ContratoController())->listMios();
+            break;
+
+        case $route === '/contratos/mios/export.csv' && $requestMethod === 'GET':
+            AuthMiddleware::handle();
+            RoleMiddleware::handle('PROVEEDOR');
+            (new ContratoController())->exportContratosCsv();
             break;
 
         case $route === '/contratos' && $requestMethod === 'POST':

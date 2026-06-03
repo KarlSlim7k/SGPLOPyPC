@@ -90,19 +90,26 @@
     </section>
 
     <section class="bg-white border border-slate-200 rounded-2xl p-4 md:p-5">
-      <form id="filters-form" class="grid md:grid-cols-3 gap-3">
-        <input id="f-q" type="search" placeholder="Buscar por contrato, licitación o dependencia..." class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500">
-        <select id="f-estatus" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary-500">
-          <option value="">Todos los estatus</option>
-          <option value="EN_FORMALIZACION">EN_FORMALIZACION</option>
-          <option value="VIGENTE">VIGENTE</option>
-          <option value="EN_EJECUCION">EN_EJECUCION</option>
-          <option value="CONCLUIDO">CONCLUIDO</option>
-          <option value="RESCINDIDO">RESCINDIDO</option>
-        </select>
-        <button type="submit" class="w-full bg-primary-600 hover:bg-primary-700 text-white font-semibold px-3 py-2 rounded-lg text-sm">
-          Aplicar filtros
-        </button>
+      <form id="filters-form" class="grid md:grid-cols-[1fr_auto] gap-3">
+        <div class="grid md:grid-cols-2 gap-3">
+          <input id="f-q" type="search" placeholder="Buscar por contrato, licitación o dependencia..." class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-primary-500">
+          <select id="f-estatus" class="w-full px-3 py-2 border border-slate-300 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-primary-500">
+            <option value="">Todos los estatus</option>
+            <option value="EN_FORMALIZACION">EN_FORMALIZACION</option>
+            <option value="VIGENTE">VIGENTE</option>
+            <option value="EN_EJECUCION">EN_EJECUCION</option>
+            <option value="CONCLUIDO">CONCLUIDO</option>
+            <option value="RESCINDIDO">RESCINDIDO</option>
+          </select>
+        </div>
+        <div class="flex gap-2">
+          <button type="submit" class="bg-primary-600 hover:bg-primary-700 text-white font-semibold px-4 py-2 rounded-lg text-sm">
+            Filtrar
+          </button>
+          <button type="button" id="btn-export-csv" class="bg-slate-600 hover:bg-slate-700 text-white font-semibold px-4 py-2 rounded-lg text-sm">
+            <i class="ph ph-download-simple"></i> Exportar CSV
+          </button>
+        </div>
       </form>
     </section>
 
@@ -131,10 +138,12 @@
           </tbody>
         </table>
       </div>
+      <div id="pagination-container" class="px-5 py-4 border-t border-slate-100"></div>
     </section>
   </main>
 
   <script src="/frontend/shared/admin.js"></script>
+  <script src="/frontend/shared/pagination.js"></script>
   <script src="/frontend/shared/notif-stream.js"></script>
   <script src="/frontend/shared/notif-badge-toast.js"></script>
   <script>
@@ -168,26 +177,31 @@
       document.getElementById('stat-monto').textContent = SGPLAdmin.formatCurrency(monto);
     }
 
-    async function loadContratos() {
+    let currentPage = 1;
+    const perPage = 20;
+
+    async function loadContratos(page) {
+      currentPage = page || 1;
       const rows = document.getElementById('rows');
       const summary = document.getElementById('summary');
       rows.innerHTML = '<tr><td colspan="9" class="px-4 py-8 text-center text-slate-500">Cargando contratos...</td></tr>';
 
       try {
-        const params = new URLSearchParams({ page: '1', limit: '100' });
+        const params = new URLSearchParams({ page: String(currentPage), per_page: String(perPage) });
         const q = document.getElementById('f-q').value.trim();
         const estatus = document.getElementById('f-estatus').value;
         if (q) params.set('q', q);
         if (estatus) params.set('estatus', estatus);
 
         const response = await SGPLAdmin.authFetch('/contratos/mios?' + params.toString(), { method: 'GET' });
-        const payload = (response && response.data) || { items: [], total: 0 };
+        const payload = (response && response.data) || { items: [], total: 0, page: 1, per_page: perPage, total_pages: 1 };
         const items = payload.items || [];
         updateStats(items, payload.total || items.length);
         summary.textContent = 'Mostrando ' + items.length + ' de ' + (payload.total || items.length);
 
         if (!items.length) {
           rows.innerHTML = '<tr><td colspan="9" class="px-4 py-8 text-center text-slate-500">Sin contratos para los filtros seleccionados.</td></tr>';
+          document.getElementById('pagination-container').innerHTML = '';
           return;
         }
 
@@ -209,6 +223,12 @@
             + '<td class="px-4 py-3 text-right"><a class="inline-flex items-center gap-2 px-3 py-2 rounded-lg text-xs font-semibold border border-slate-200 hover:bg-slate-50" href="/frontend/proveedor/contrato.html?id=' + String(item.id_contrato) + '"><i class="ph ph-eye"></i>Ver detalle</a></td>'
             + '</tr>';
         }).join('');
+
+        SGPLPagination.render(document.getElementById('pagination-container'), {
+          page: payload.page || currentPage,
+          total_pages: payload.total_pages || 1,
+          onPageChange: loadContratos
+        });
       } catch (error) {
         summary.textContent = 'Error al cargar';
         rows.innerHTML = '<tr><td colspan="9" class="px-4 py-8 text-center text-red-600">No se pudieron cargar los contratos.</td></tr>';
@@ -217,7 +237,11 @@
 
     document.getElementById('filters-form').addEventListener('submit', function (e) {
       e.preventDefault();
-      loadContratos();
+      loadContratos(1);
+    });
+
+    document.getElementById('btn-export-csv').addEventListener('click', function () {
+      SGPLAdmin.downloadApiFile('/contratos/mios/export.csv', 'contratos.csv');
     });
 
     (async function init() {
@@ -244,7 +268,7 @@
         return;
       }
 
-      loadContratos();
+      loadContratos(1);
     })();
   </script>
 </body>

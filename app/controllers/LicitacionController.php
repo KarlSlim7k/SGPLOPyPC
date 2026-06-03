@@ -18,11 +18,13 @@ class LicitacionController {
         $estado = $_GET['estado'] ?? null;
         $tipo = $_GET['tipo'] ?? null;
         $dependencia = isset($_GET['dependencia']) ? (int) $_GET['dependencia'] : null;
+        $page = isset($_GET['page']) ? (int) $_GET['page'] : 1;
+        $limit = isset($_GET['limit']) ? (int) $_GET['limit'] : 20;
         $estadosPermitidos = null;
         if ($user['rol'] === 'PROVEEDOR') {
             $estadosPermitidos = ['PUBLICADA','EN_ACLARACIONES','RECEPCION_PROPUESTAS','EN_EVALUACION','ADJUDICADA','DESIERTA'];
         }
-        $data = $this->service->list($estado, $tipo, $dependencia, $estadosPermitidos);
+        $data = $this->service->list($estado, $tipo, $dependencia, $estadosPermitidos, $page, $limit);
         jsonResponse(true, 'Listado de licitaciones', $data, null, 200);
     }
 

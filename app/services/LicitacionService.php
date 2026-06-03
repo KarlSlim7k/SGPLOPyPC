@@ -22,8 +22,10 @@ class LicitacionService {
         $this->fechaRepo = new FechaProcesoRepository();
     }
 
-    public function list(?string $estado, ?string $tipo, ?int $dependencia, ?array $estadosPermitidos = null): array {
-        return $this->repo->findAll($estado, $tipo, $dependencia, $estadosPermitidos);
+    public function list(?string $estado, ?string $tipo, ?int $dependencia, ?array $estadosPermitidos = null, int $page = 1, int $limit = 100): array {
+        $page = max(1, $page);
+        $limit = min(100, max(1, $limit));
+        return $this->repo->findAll($estado, $tipo, $dependencia, $estadosPermitidos, $page, $limit);
     }
 
     public function get(int $id): ?array {

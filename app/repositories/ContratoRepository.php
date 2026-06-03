@@ -100,8 +100,9 @@ class ContratoRepository {
         }
         $countStmt->execute();
         $total = (int) $countStmt->fetchColumn();
+        $totalPages = (int) ceil($total / $limit);
 
-        return ['items' => $items, 'total' => $total, 'page' => $page, 'limit' => $limit];
+        return ['items' => $items, 'total' => $total, 'page' => $page, 'per_page' => $limit, 'total_pages' => $totalPages];
     }
 
     public function findDocumentosByContratoForProveedor(int $idContrato, int $idProveedor): array {

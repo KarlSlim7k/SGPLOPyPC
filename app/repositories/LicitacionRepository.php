@@ -10,7 +10,7 @@ class LicitacionRepository {
         $this->db = getDbConnection();
     }
 
-    public function findAll(?string $estado = null, ?string $tipo = null, ?int $dependencia = null, ?array $estadosPermitidos = null): array {
+    public function findAll(?string $estado = null, ?string $tipo = null, ?int $dependencia = null, ?array $estadosPermitidos = null, int $page = 1, int $limit = 100): array {
         $where = [];
         $params = [];
         if ($estadosPermitidos !== null && !empty($estadosPermitidos)) {
@@ -33,6 +33,19 @@ class LicitacionRepository {
             $where[] = 'l.id_dependencia = :dependencia';
             $params['dependencia'] = $dependencia;
         }
+        
+        $whereSql = !empty($where) ? ' WHERE ' . implode(' AND ', $where) : '';
+        
+        $countSql = 'SELECT COUNT(*) FROM licitacion l' . $whereSql;
+        $countStmt = $this->db->prepare($countSql);
+        foreach ($params as $k => $v) {
+            $countStmt->bindValue(':' . $k, $v);
+        }
+        $countStmt->execute();
+        $total = (int) $countStmt->fetchColumn();
+        
+        $offset = ($page - 1) * $limit;
+        
         $sql = 'SELECT l.*, d.nombre AS dependencia_nombre, u.nombre AS responsable_nombre, '
              . 'fp_publicacion.fecha_programada AS fecha_publicacion_convocatoria, '
              . 'fp_junta.fecha_programada AS fecha_junta_aclaraciones, '
@@ -48,14 +61,21 @@ class LicitacionRepository {
              . "LEFT JOIN fecha_proceso fp_recepcion ON fp_recepcion.id_licitacion = l.id_licitacion AND fp_recepcion.tipo_fecha = 'RECEPCION_PROPUESTAS' "
              . "LEFT JOIN fecha_proceso fp_apertura ON fp_apertura.id_licitacion = l.id_licitacion AND fp_apertura.tipo_fecha = 'APERTURA_PROPUESTAS' "
              . "LEFT JOIN fecha_proceso fp_fallo ON fp_fallo.id_licitacion = l.id_licitacion AND fp_fallo.tipo_fecha = 'FALLO_ADJUDICACION' "
-             . 'LEFT JOIN contrato c ON c.id_licitacion = l.id_licitacion';
-        if (!empty($where)) {
-            $sql .= ' WHERE ' . implode(' AND ', $where);
-        }
-        $sql .= ' ORDER BY l.fecha_creacion DESC';
+             . 'LEFT JOIN contrato c ON c.id_licitacion = l.id_licitacion'
+             . $whereSql
+             . ' ORDER BY l.fecha_creacion DESC LIMIT :limit OFFSET :offset';
         $stmt = $this->db->prepare($sql);
-        $stmt->execute($params);
-        return $stmt->fetchAll(PDO::FETCH_ASSOC);
+        foreach ($params as $k => $v) {
+            $stmt->bindValue(':' . $k, $v);
+        }
+        $stmt->bindValue(':limit', $limit, PDO::PARAM_INT);
+        $stmt->bindValue(':offset', $offset, PDO::PARAM_INT);
+        $stmt->execute();
+        $items = $stmt->fetchAll(PDO::FETCH_ASSOC);
+        
+        $totalPages = (int) ceil($total / $limit);
+        
+        return ['items' => $items, 'total' => $total, 'page' => $page, 'per_page' => $limit, 'total_pages' => $totalPages];
     }
 
     public function findById(int $id): ?array {

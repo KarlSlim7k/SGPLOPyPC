@@ -122,4 +122,47 @@ class ContratoController {
         }
         jsonResponse(true, 'Contrato firmado exitosamente', null, null, 200);
     }
+
+    public function exportContratosCsv(): never {
+        AuthMiddleware::handle();
+        $user = AuthMiddleware::getAuthenticatedUser();
+        if ($user['rol'] !== 'PROVEEDOR') {
+            jsonResponse(false, 'Solo los proveedores pueden exportar sus contratos.', null, null, 403);
+        }
+
+        $result = $this->service->listMios((int) $user['id_usuario'], 1, 10000, null, null, null);
+        if (!$result['ok']) {
+            jsonResponse(false, 'No se pudieron cargar los contratos', null, $result['errors'], 422);
+        }
+
+        $items = $result['data']['items'] ?? [];
+        $this->outputCsv('contratos', $items);
+    }
+
+    private function outputCsv(string $tipo, array $items): never {
+        $filename = $tipo . '_' . date('Y-m-d_His') . '.csv';
+        header('Content-Type: text/csv; charset=utf-8');
+        header('Content-Disposition: attachment; filename="' . $filename . '"');
+
+        $output = fopen('php://output', 'w');
+        fprintf($output, chr(0xEF) . chr(0xBB) . chr(0xBF));
+
+        fputcsv($output, ['Número Contrato', 'Licitación', 'Descripción', 'Dependencia', 'Monto Contrato', 'Estatus', 'Fecha Adjudicación', 'Fecha Inicio', 'Fecha Fin']);
+        foreach ($items as $item) {
+            fputcsv($output, [
+                $item['numero_contrato'] ?? '',
+                $item['numero_licitacion'] ?? '',
+                $item['descripcion_proyecto'] ?? '',
+                $item['dependencia_nombre'] ?? '',
+                $item['monto_contrato'] ?? '0',
+                $item['estatus'] ?? '',
+                $item['fecha_adjudicacion'] ?? '',
+                $item['fecha_inicio'] ?? '',
+                $item['fecha_fin'] ?? '',
+            ]);
+        }
+
+        fclose($output);
+        exit;
+    }
 }
