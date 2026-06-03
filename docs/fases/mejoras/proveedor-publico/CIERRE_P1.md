@@ -119,6 +119,57 @@ Se activaron las notificaciones en tiempo real (SSE) en todas las páginas del p
 
 ---
 
+## Fase P4 — Paginación y exportación CSV para proveedor
+
+- **Commit:** 3669120217795decee8eb6c189b43fc5a440d6d8
+- **Deployment Railway:** d13e198c-2933-446f-a890-1bf9c0a8f0a4
+- **URL:** https://sgplopypc.up.railway.app
+- **Healthcheck post-deploy:** `/healthz` → 200, `/api/v1/health` → app=ok, db=ok
+- **E2E:** 10 passed / 0 skipped / 0 failed
+
+### Resumen
+
+Se implementó paginación estándar y exportación CSV para los listados del rol proveedor, resolviendo la limitación de cargar todos los registros a la vez.
+
+**Paginación backend:**
+- Parámetros estándar: `page` (default 1), `per_page` (default 20, max 100)
+- Respuesta incluye: `{ items, total, page, per_page, total_pages }`
+- Endpoints modificados:
+  - `GET /api/v1/participaciones/mias`
+  - `GET /api/v1/propuestas/mias`
+  - `GET /api/v1/contratos/mios`
+  - `GET /api/v1/licitaciones` (admin + proveedor)
+
+**Componente de paginación reutilizable:**
+- `frontend/shared/pagination.js` — función `SGPLPagination.render(container, { page, total_pages, onPageChange })`
+- UI: botones « Anterior, números de página, Siguiente »
+- Integrado en `participaciones.html`, `propuestas.html`, `contratos.html`
+
+**Exportación CSV:**
+- `GET /api/v1/participaciones/mias/export.csv` — exporta todas las participaciones del proveedor
+- `GET /api/v1/propuestas/mias/export.csv` — exporta todas las propuestas del proveedor
+- `GET /api/v1/contratos/mios/export.csv` — exporta todos los contratos del proveedor
+- Headers: `Content-Type: text/csv; charset=utf-8`, `Content-Disposition: attachment`
+- Incluye BOM UTF-8 para compatibilidad con Excel
+
+**Frontend:**
+- `participaciones.html` — paginación + botón "Exportar CSV" + filtros refactorizados
+- `propuestas.html` — paginación + botón "Exportar CSV"
+- `contratos.html` — paginación + botón "Exportar CSV"
+
+**Tests E2E:**
+- `proveedor-paginacion-export.spec.ts` — 10 tests cubriendo:
+  - Metadata de paginación en endpoints de participaciones, contratos y propuestas
+  - Renderizado de controles de paginación en participaciones.html y contratos.html
+  - Visibilidad de botones "Exportar CSV" en participaciones y contratos
+  - Descarga y validación de archivos CSV para participaciones, contratos y propuestas
+
+**Archivos creados:** 2 (`frontend/shared/pagination.js`, `e2e/tests/proveedor-paginacion-export.spec.ts`)
+**Archivos modificados:** 12 (4 repositories, 2 services, 3 controllers, 3 frontends, 1 routing)
+**Tablas/columnas nuevas:** Ninguna
+
+---
+
 ## Notas técnicas transversales
 
 - Las tres fases usan `admin.js` y `public.js` existentes sin modificaciones
