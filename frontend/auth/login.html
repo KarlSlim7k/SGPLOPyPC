@@ -353,7 +353,24 @@
 
                 const payload = await response.json();
 
-                if (!response.ok || !payload.success || !payload.data?.token) {
+                if (!response.ok || !payload.success) {
+                    const message = payload?.errors?.[0] || payload?.message || 'No se pudo iniciar sesión.';
+                    handleLoginError(message);
+                    return;
+                }
+
+                // MFA challenge required
+                if (payload.data?.requires_mfa) {
+                    const mfaToken = payload.data?.mfa_token;
+                    if (mfaToken) {
+                        window.location.href = '/frontend/auth/mfa-challenge.html#mfa_token=' + encodeURIComponent(mfaToken);
+                    } else {
+                        handleLoginError('Error al iniciar verificación MFA.');
+                    }
+                    return;
+                }
+
+                if (!payload.data?.token) {
                     const message = payload?.errors?.[0] || payload?.message || 'No se pudo iniciar sesión.';
                     handleLoginError(message);
                     return;

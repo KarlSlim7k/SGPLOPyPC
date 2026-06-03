@@ -18,7 +18,7 @@ class UserRepository {
     }
 
     public function findById(int $id): ?array {
-        $stmt = $this->db->prepare('SELECT id_usuario, nombre, email, rol, activo, fecha_registro, ultimo_acceso FROM usuario WHERE id_usuario = :id LIMIT 1');
+        $stmt = $this->db->prepare('SELECT id_usuario, nombre, email, rol, activo, fecha_registro, ultimo_acceso, mfa_enabled FROM usuario WHERE id_usuario = :id LIMIT 1');
         $stmt->execute(['id' => $id]);
         $row = $stmt->fetch(PDO::FETCH_ASSOC);
         return $row ?: null;
