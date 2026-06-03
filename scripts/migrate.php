@@ -18,6 +18,7 @@ $schemaMigrations = [
     '018_soporte_tickets_proveedor.sql',
     '019_propuesta_estatus_retirada.sql',
     '020_licitacion_favorito.sql',
+    '021_seed_usuarios_adicionales.sql',
 ];
 
 if (getenv('RUN_SEED_MIGRATIONS') === '1') {
