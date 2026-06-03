@@ -34,10 +34,22 @@ RUN sed -i '/<Directory \/var\/www\/>/,/<\/Directory>/ s/AllowOverride None/Allo
 # Copiar archivos del proyecto
 COPY . /var/www/html/
 
+# Instalar Node.js para compilar Tailwind CSS
+RUN curl -fsSL https://deb.nodesource.com/setup_20.x | bash - \
+    && apt-get install -y --no-install-recommends nodejs \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
+
 # Instalar dependencias de Composer (Dompdf, PHPWord) sin dev y optimizado
 WORKDIR /var/www/html
 RUN if [ -f composer.json ]; then \
         composer install --no-dev --optimize-autoloader --no-interaction --no-progress; \
+    fi
+
+# Instalar dependencias npm y compilar Tailwind CSS
+RUN if [ -f package.json ]; then \
+        npm install --no-audit --no-fund --no-progress --prefer-offline \
+        && npx tailwindcss -i frontend/shared/tailwind-input.css -o frontend/shared/tailwind-output.css --minify; \
     fi
 
 # Copiar configuración de Apache para el VirtualHost
