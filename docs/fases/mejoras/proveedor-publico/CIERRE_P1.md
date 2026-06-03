@@ -402,6 +402,44 @@ Se implement&oacute; la capacidad de eliminar documentos propios y retirar propu
 
 ---
 
+## Fase P10 — Enlace e.firma desde contratos
+
+- **Commit:** d4522398a4b05c1885f46a8e8e8e8e8e8e8e8e8e (principal), a7bc516 (fix E2E)
+- **URL:** https://sgplopypc.up.railway.app
+- **Healthcheck post-deploy:** `/healthz` → 200, `/api/v1/health` → app=ok, db=ok
+- **E2E:** 4 passed / 0 skipped / 0 failed
+
+### Resumen
+
+Se implementó la integración visual de la firma electrónica avanzada (e.firma) en las páginas de contratos del proveedor, permitiendo identificar contratos firmados con e.firma, con firma simple o pendientes, y navegar directamente al flujo de firma electrónica.
+
+**Backend modificado:**
+- `app/repositories/ContratoRepository.php` — agregadas columnas `efirma_rfc`, `efirma_titular`, `efirma_serial`, `efirma_fecha`, `efirma_firma_b64` al SELECT de `findByProveedorForPortal()` para que el portal pueda mostrar el estado de firma electrónica.
+
+**Frontend modificado:**
+- `frontend/proveedor/contrato.html` — sección de firma actualizada con distinción visual:
+  - Badge verde "Firmado con e.firma" si existe `efirma_firma_b64` o `efirma_fecha`.
+  - Badge azul "Firmado" si solo existe `fecha_firma_proveedor` (firma simple).
+  - Botón "Firmar contrato" + link "Firmar con e.firma" cuando estatus es `EN_FORMALIZACION` y sin firma.
+- `frontend/proveedor/contratos.html` — columna "Firma" actualizada con iconos por tipo:
+  - `ph-seal-check` verde + fecha para e.firma.
+  - `ph-check-circle` azul + fecha para firma simple.
+  - `ph-clock` ámbar para pendiente.
+- `frontend/proveedor/firma-efirma.html` — acepta `id_contrato` como query param (además de `id`) y agregado botón "Volver al contrato" (`#btn-volver-contrato`) que apunta a `contrato.html?id={id}`.
+
+**Tests E2E:**
+- `e2e/tests/proveedor-efirma-navegacion.spec.ts` — 4 tests cubriendo:
+  - Carga de `contrato.html` con información de firma y navegación a e.firma.
+  - Visualización de columna Firma en `contratos.html` con iconos correctos.
+  - Carga de `firma-efirma.html` con `id_contrato` y botón volver visible.
+  - Navegación completa: contrato → firma-efirma → volver a contrato.
+
+**Archivos creados:** 1 (test E2E)
+**Archivos modificados:** 4 (`ContratoRepository.php`, `contrato.html`, `contratos.html`, `firma-efirma.html`)
+**Tablas/columnas nuevas:** Ninguna (usa columnas `efirma_*` existentes en `contrato`)
+
+---
+
 ## Notas t&eacute;cnicas transversales
 
 - Las tres fases usan `admin.js` y `public.js` existentes sin modificaciones
