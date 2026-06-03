@@ -60,8 +60,8 @@ test.describe('Transversales calidad', () => {
     await page.evaluate((t) => { localStorage.setItem('sgplopypc_token', t); }, token);
     await page.reload();
 
-    // Verificar que la página carga sin errores
-    await expect(page.locator('#favoritos-empty')).toBeVisible({ timeout: 15000 });
+    // Verificar que la página carga sin errores (lista o empty state)
+    await expect(page.locator('#favoritos-lista, #favoritos-empty')).toBeVisible({ timeout: 15000 });
   });
 
   test('no hay errores de JS en consola al cargar páginas principales', async ({ page, request }) => {

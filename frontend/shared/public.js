@@ -93,6 +93,8 @@
     const listEl = qs('#landing-convocatorias-list');
     if (!listEl) return;
 
+    let previewRows = null;
+
     try {
       const [stats, conv] = await Promise.all([
         fetchJson(API_BASE + '/estadisticas'),
@@ -110,7 +112,7 @@
       const pProv = qs('#landing-preview-proveedores');
       const pEval = qs('#landing-preview-evaluacion');
       const pContratos = qs('#landing-preview-contratos');
-      const previewRows = qs('#landing-preview-rows');
+      previewRows = qs('#landing-preview-rows');
 
       if (licActivas) licActivas.textContent = String(stats.licitaciones_activas || 0);
       if (provRegs) {
