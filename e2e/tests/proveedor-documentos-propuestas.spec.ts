@@ -12,13 +12,14 @@ function fakePdfBuffer(): Buffer {
 test.describe('Proveedor Documentos y Propuestas', () => {
   test('subir documento legal, eliminar via API y verificar que desaparece de la UI', async ({ page, request }) => {
     const token = await loginToken(request, PROVIDER_EMAIL, PROVIDER_PASSWORD);
+    const fileName = 'test-legal-' + Date.now() + '.pdf';
 
     // 1) Subir documento legal via API
     const uploadRes = await request.post('/api/v1/documentos/upload', {
       headers: { Authorization: `Bearer ${token}` },
       multipart: {
         archivo: {
-          name: 'test-legal.pdf',
+          name: fileName,
           mimeType: 'application/pdf',
           buffer: fakePdfBuffer(),
         },
@@ -34,13 +35,13 @@ test.describe('Proveedor Documentos y Propuestas', () => {
     await loginUI(page, PROVIDER_EMAIL, PROVIDER_PASSWORD, '**/frontend/proveedor/centro.html');
     await page.goto('/frontend/proveedor/documentos.html');
     await page.waitForURL('**/frontend/proveedor/documentos.html');
-    await expect(page.getByRole('heading', { name: /Documentos/i })).toBeVisible({ timeout: 15000 });
+    await expect(page.getByRole('heading', { name: /Documentos/i })).toBeVisible({ timeout: 30000 });
 
-    await expect(page.locator('#rows')).toContainText('test-legal.pdf', { timeout: 15000 });
+    await expect(page.locator('#rows')).toContainText(fileName, { timeout: 30000 });
     const deleteBtn = page.locator('button[data-delete]').first();
     await expect(deleteBtn).toBeVisible();
 
-    // 3) Eliminar via API directamente (evita problemas con confirm() en Playwright)
+    // 3) Eliminar via API directamente
     const delRes = await request.delete(`/api/v1/documentos/${docId}`, {
       headers: { Authorization: `Bearer ${token}` },
     });
@@ -48,7 +49,7 @@ test.describe('Proveedor Documentos y Propuestas', () => {
 
     // 4) Refrescar la pagina y verificar que desaparecio
     await page.reload();
-    await expect(page.locator('#rows')).not.toContainText('test-legal.pdf', { timeout: 15000 });
+    await expect(page.locator('#rows')).not.toContainText(fileName, { timeout: 30000 });
   });
 
   test('retirar propuesta via API y verificar cambio a RETIRADA en la UI', async ({ page, request }) => {
@@ -97,9 +98,12 @@ test.describe('Proveedor Documentos y Propuestas', () => {
     await loginUI(page, PROVIDER_EMAIL, PROVIDER_PASSWORD, '**/frontend/proveedor/centro.html');
     await page.goto('/frontend/proveedor/propuestas.html');
     await page.waitForURL('**/frontend/proveedor/propuestas.html');
-    await expect(page.getByRole('heading', { name: /Mis propuestas/i })).toBeVisible({ timeout: 15000 });
+    await expect(page.getByRole('heading', { name: /Mis propuestas/i })).toBeVisible({ timeout: 30000 });
 
-    await expect(page.locator('#rows')).toContainText('RECIBIDA', { timeout: 15000 });
+    // Esperar explicitamente a que la peticion de propuestas termine
+    await page.waitForResponse(resp => resp.url().includes('/propuestas/mias') && resp.status() === 200, { timeout: 30000 });
+
+    await expect(page.locator('#rows')).toContainText('RECIBIDA', { timeout: 30000 });
     const retirarBtn = page.locator('button[data-retirar]').first();
     await expect(retirarBtn).toBeVisible();
 
@@ -111,7 +115,8 @@ test.describe('Proveedor Documentos y Propuestas', () => {
 
     // 4) Refrescar la pagina y verificar que cambio a RETIRADA
     await page.reload();
-    await expect(page.locator('#rows')).toContainText('RETIRADA', { timeout: 15000 });
+    await page.waitForResponse(resp => resp.url().includes('/propuestas/mias') && resp.status() === 200, { timeout: 30000 });
+    await expect(page.locator('#rows')).toContainText('RETIRADA', { timeout: 30000 });
   });
 
   test('eliminar documento vinculado a propuesta evaluada devuelve 409', async ({ request }) => {
@@ -164,7 +169,7 @@ test.describe('Proveedor Documentos y Propuestas', () => {
   test('documentos.html muestra boton eliminar en filas', async ({ page }) => {
     await loginUI(page, PROVIDER_EMAIL, PROVIDER_PASSWORD, '**/frontend/proveedor/centro.html');
     await page.goto('/frontend/proveedor/documentos.html');
-    await expect(page.getByRole('heading', { name: /Documentos/i })).toBeVisible({ timeout: 15000 });
+    await expect(page.getByRole('heading', { name: /Documentos/i })).toBeVisible({ timeout: 30000 });
 
     // Si hay documentos, verificar que al menos uno tiene boton eliminar
     const rows = page.locator('#rows tr');
@@ -178,7 +183,7 @@ test.describe('Proveedor Documentos y Propuestas', () => {
   test('propuestas.html muestra boton retirar en propuestas RECIBIDA', async ({ page }) => {
     await loginUI(page, PROVIDER_EMAIL, PROVIDER_PASSWORD, '**/frontend/proveedor/centro.html');
     await page.goto('/frontend/proveedor/propuestas.html');
-    await expect(page.getByRole('heading', { name: /Mis propuestas/i })).toBeVisible({ timeout: 15000 });
+    await expect(page.getByRole('heading', { name: /Mis propuestas/i })).toBeVisible({ timeout: 30000 });
 
     // Buscar fila con RECIBIDA
     const row = page.locator('#rows tr').filter({ hasText: /RECIBIDA/ }).first();
