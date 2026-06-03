@@ -255,7 +255,51 @@ Se implementó la gestión completa de autenticación multifactor (MFA/2FA) para
 
 ---
 
-## Notas técnicas transversales
+## Fase P7 — Historial de reputaci&oacute;n
+
+- **Commit:** 8ef4dd90643ee03a383f7eb0b7d999610e9c4559
+- **URL:** https://sgplopypc.up.railway.app
+- **Healthcheck post-deploy:** `/healthz` &rarr; 200, `/api/v1/health` &rarr; app=ok, db=ok
+- **E2E:** 5 passed / 0 skipped / 0 failed
+
+### Resumen
+
+Se implement&oacute; una p&aacute;gina dedicada al historial de reputaci&oacute;n del proveedor, mostrando el desglose por criterio en una gr&aacute;fica radar y una tabla detallada de evaluaciones post-contrato.
+
+**Backend modificado:**
+- `app/repositories/ReputacionRepository.php` — nuevo m&eacute;todo `findDesgloseByProveedor()` que calcula el promedio de cada criterio (puntualidad, calidad, comunicaci&oacute;n, cumplimiento_alcance) sobre todas las evaluaciones del proveedor.
+- `app/services/ReputacionService.php` — `getReputacion()` ahora devuelve:
+  - `score` y `evaluaciones` (alias compatibles con el contrato del documento de fases).
+  - `desglose` con los 4 promedios por criterio.
+  - Campos anteriores (`score_reputacion`, `historial`, `nivel`) se mantienen para retrocompatibilidad.
+
+**Frontend nuevo:**
+- `frontend/proveedor/reputacion.html` — p&aacute;gina completa con:
+  - Tarjeta de score general con estrella grande, valor num&eacute;rico, nivel (excelente/bueno/regular/deficiente) y conteo de evaluaciones.
+  - Gr&aacute;fica radar (Chart.js) con los 4 criterios promedio, escala 0&ndash;5.
+  - Tabla de evaluaciones con: n&uacute;mero de contrato, estrellas por criterio, comentarios y fecha.
+  - Secci&oacute;n explicativa del c&aacute;lculo del score y leyenda de niveles.
+  - Estados vac&iacute;os cuando no hay evaluaciones.
+  - Navbar conectado a notificaciones SSE (`notif-stream.js` + `notif-badge-toast.js`).
+
+**Frontend modificado:**
+- `frontend/proveedor/perfil.html` — agregado enlace "Ver historial completo" junto al badge de reputaci&oacute;n.
+
+**Tests E2E:**
+- `e2e/tests/proveedor-reputacion-detalle.spec.ts` — 5 tests cubriendo:
+  - Carga de `reputacion.html` con score visible y badge de nivel.
+  - Renderizado de gr&aacute;fica radar (canvas presente).
+  - Tabla de evaluaciones con al menos 1 fila.
+  - Navegaci&oacute;n desde perfil mediante enlace "Ver historial completo".
+  - Validaci&oacute;n de API: `desglose` y `evaluaciones` presentes en la respuesta.
+
+**Archivos creados:** 2 (1 p&aacute;gina HTML + 1 test E2E)  
+**Archivos modificados:** 3 (`ReputacionRepository.php`, `ReputacionService.php`, `perfil.html`)  
+**Tablas/columnas nuevas:** Ninguna (usa tabla `proveedor_evaluacion_postcontrato` existente)
+
+---
+
+## Notas t&eacute;cnicas transversales
 
 - Las tres fases usan `admin.js` y `public.js` existentes sin modificaciones
 - Diseño responsive con Tailwind CSS y Phosphor Icons
