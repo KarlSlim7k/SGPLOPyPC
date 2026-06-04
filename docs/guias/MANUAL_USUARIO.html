@@ -1,0 +1,546 @@
+<!DOCTYPE html><html><head>
+      <title>MANUAL_USUARIO</title>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+      
+      <link rel="stylesheet" href="file:////home/karoldelgado/.antigravity/extensions/shd101wyy.markdown-preview-enhanced-0.8.27/crossnote/dependencies/katex/katex.min.css">
+      
+      
+      
+      
+      
+      
+      
+      <style>
+      code[class*=language-],pre[class*=language-]{color:#333;background:0 0;font-family:Consolas,"Liberation Mono",Menlo,Courier,monospace;text-align:left;white-space:pre;word-spacing:normal;word-break:normal;word-wrap:normal;line-height:1.4;-moz-tab-size:8;-o-tab-size:8;tab-size:8;-webkit-hyphens:none;-moz-hyphens:none;-ms-hyphens:none;hyphens:none}pre[class*=language-]{padding:.8em;overflow:auto;border-radius:3px;background:#f5f5f5}:not(pre)>code[class*=language-]{padding:.1em;border-radius:.3em;white-space:normal;background:#f5f5f5}.token.blockquote,.token.comment{color:#969896}.token.cdata{color:#183691}.token.doctype,.token.macro.property,.token.punctuation,.token.variable{color:#333}.token.builtin,.token.important,.token.keyword,.token.operator,.token.rule{color:#a71d5d}.token.attr-value,.token.regex,.token.string,.token.url{color:#183691}.token.atrule,.token.boolean,.token.code,.token.command,.token.constant,.token.entity,.token.number,.token.property,.token.symbol{color:#0086b3}.token.prolog,.token.selector,.token.tag{color:#63a35c}.token.attr-name,.token.class,.token.class-name,.token.function,.token.id,.token.namespace,.token.pseudo-class,.token.pseudo-element,.token.url-reference .token.variable{color:#795da3}.token.entity{cursor:help}.token.title,.token.title .token.punctuation{font-weight:700;color:#1d3e81}.token.list{color:#ed6a43}.token.inserted{background-color:#eaffea;color:#55a532}.token.deleted{background-color:#ffecec;color:#bd2c00}.token.bold{font-weight:700}.token.italic{font-style:italic}.language-json .token.property{color:#183691}.language-markup .token.tag .token.punctuation{color:#333}.language-css .token.function,code.language-css{color:#0086b3}.language-yaml .token.atrule{color:#63a35c}code.language-yaml{color:#183691}.language-ruby .token.function{color:#333}.language-markdown .token.url{color:#795da3}.language-makefile .token.symbol{color:#795da3}.language-makefile .token.variable{color:#183691}.language-makefile .token.builtin{color:#0086b3}.language-bash .token.keyword{color:#0086b3}pre[data-line]{position:relative;padding:1em 0 1em 3em}pre[data-line] .line-highlight-wrapper{position:absolute;top:0;left:0;background-color:transparent;display:block;width:100%}pre[data-line] .line-highlight{position:absolute;left:0;right:0;padding:inherit 0;margin-top:1em;background:hsla(24,20%,50%,.08);background:linear-gradient(to right,hsla(24,20%,50%,.1) 70%,hsla(24,20%,50%,0));pointer-events:none;line-height:inherit;white-space:pre}pre[data-line] .line-highlight:before,pre[data-line] .line-highlight[data-end]:after{content:attr(data-start);position:absolute;top:.4em;left:.6em;min-width:1em;padding:0 .5em;background-color:hsla(24,20%,50%,.4);color:#f4f1ef;font:bold 65%/1.5 sans-serif;text-align:center;vertical-align:.3em;border-radius:999px;text-shadow:none;box-shadow:0 1px #fff}pre[data-line] .line-highlight[data-end]:after{content:attr(data-end);top:auto;bottom:.4em}html body{font-family:'Helvetica Neue',Helvetica,'Segoe UI',Arial,freesans,sans-serif;font-size:16px;line-height:1.6;color:#333;background-color:#fff;overflow:initial;box-sizing:border-box;word-wrap:break-word}html body>:first-child{margin-top:0}html body h1,html body h2,html body h3,html body h4,html body h5,html body h6{line-height:1.2;margin-top:1em;margin-bottom:16px;color:#000}html body h1{font-size:2.25em;font-weight:300;padding-bottom:.3em}html body h2{font-size:1.75em;font-weight:400;padding-bottom:.3em}html body h3{font-size:1.5em;font-weight:500}html body h4{font-size:1.25em;font-weight:600}html body h5{font-size:1.1em;font-weight:600}html body h6{font-size:1em;font-weight:600}html body h1,html body h2,html body h3,html body h4,html body h5{font-weight:600}html body h5{font-size:1em}html body h6{color:#5c5c5c}html body strong{color:#000}html body del{color:#5c5c5c}html body a:not([href]){color:inherit;text-decoration:none}html body a{color:#08c;text-decoration:none}html body a:hover{color:#00a3f5;text-decoration:none}html body img{max-width:100%}html body>p{margin-top:0;margin-bottom:16px;word-wrap:break-word}html body>ol,html body>ul{margin-bottom:16px}html body ol,html body ul{padding-left:2em}html body ol.no-list,html body ul.no-list{padding:0;list-style-type:none}html body ol ol,html body ol ul,html body ul ol,html body ul ul{margin-top:0;margin-bottom:0}html body li{margin-bottom:0}html body li.task-list-item{list-style:none}html body li>p{margin-top:0;margin-bottom:0}html body .task-list-item-checkbox{margin:0 .2em .25em -1.8em;vertical-align:middle}html body .task-list-item-checkbox:hover{cursor:pointer}html body blockquote{margin:16px 0;font-size:inherit;padding:0 15px;color:#5c5c5c;background-color:#f0f0f0;border-left:4px solid #d6d6d6}html body blockquote>:first-child{margin-top:0}html body blockquote>:last-child{margin-bottom:0}html body hr{height:4px;margin:32px 0;background-color:#d6d6d6;border:0 none}html body table{margin:10px 0 15px 0;border-collapse:collapse;border-spacing:0;display:block;width:100%;overflow:auto;word-break:normal;word-break:keep-all}html body table th{font-weight:700;color:#000}html body table td,html body table th{border:1px solid #d6d6d6;padding:6px 13px}html body dl{padding:0}html body dl dt{padding:0;margin-top:16px;font-size:1em;font-style:italic;font-weight:700}html body dl dd{padding:0 16px;margin-bottom:16px}html body code{font-family:Menlo,Monaco,Consolas,'Courier New',monospace;font-size:.85em;color:#000;background-color:#f0f0f0;border-radius:3px;padding:.2em 0}html body code::after,html body code::before{letter-spacing:-.2em;content:'\00a0'}html body pre>code{padding:0;margin:0;word-break:normal;white-space:pre;background:0 0;border:0}html body .highlight{margin-bottom:16px}html body .highlight pre,html body pre{padding:1em;overflow:auto;line-height:1.45;border:#d6d6d6;border-radius:3px}html body .highlight pre{margin-bottom:0;word-break:normal}html body pre code,html body pre tt{display:inline;max-width:initial;padding:0;margin:0;overflow:initial;line-height:inherit;word-wrap:normal;background-color:transparent;border:0}html body pre code:after,html body pre code:before,html body pre tt:after,html body pre tt:before{content:normal}html body blockquote,html body dl,html body ol,html body p,html body pre,html body ul{margin-top:0;margin-bottom:16px}html body kbd{color:#000;border:1px solid #d6d6d6;border-bottom:2px solid #c7c7c7;padding:2px 4px;background-color:#f0f0f0;border-radius:3px}@media print{html body{background-color:#fff}html body h1,html body h2,html body h3,html body h4,html body h5,html body h6{color:#000;page-break-after:avoid}html body blockquote{color:#5c5c5c}html body pre{page-break-inside:avoid}html body table{display:table}html body img{display:block;max-width:100%;max-height:100%}html body code,html body pre{word-wrap:break-word;white-space:pre}}.markdown-preview{width:100%;height:100%;box-sizing:border-box}.markdown-preview ul{list-style:disc}.markdown-preview ul ul{list-style:circle}.markdown-preview ul ul ul{list-style:square}.markdown-preview ol{list-style:decimal}.markdown-preview ol ol,.markdown-preview ul ol{list-style-type:lower-roman}.markdown-preview ol ol ol,.markdown-preview ol ul ol,.markdown-preview ul ol ol,.markdown-preview ul ul ol{list-style-type:lower-alpha}.markdown-preview .newpage,.markdown-preview .pagebreak{page-break-before:always}.markdown-preview pre.line-numbers{position:relative;padding-left:3.8em;counter-reset:linenumber}.markdown-preview pre.line-numbers>code{position:relative}.markdown-preview pre.line-numbers .line-numbers-rows{position:absolute;pointer-events:none;top:1em;font-size:100%;left:0;width:3em;letter-spacing:-1px;border-right:1px solid #999;-webkit-user-select:none;-moz-user-select:none;-ms-user-select:none;user-select:none}.markdown-preview pre.line-numbers .line-numbers-rows>span{pointer-events:none;display:block;counter-increment:linenumber}.markdown-preview pre.line-numbers .line-numbers-rows>span:before{content:counter(linenumber);color:#999;display:block;padding-right:.8em;text-align:right}.markdown-preview .mathjax-exps .MathJax_Display{text-align:center!important}.markdown-preview:not([data-for=preview]) .code-chunk .code-chunk-btn-group{display:none}.markdown-preview:not([data-for=preview]) .code-chunk .status{display:none}.markdown-preview:not([data-for=preview]) .code-chunk .output-div{margin-bottom:16px}.markdown-preview .md-toc{padding:0}.markdown-preview .md-toc .md-toc-details{margin:0;padding:0;border:none}.markdown-preview .md-toc summary.md-toc-link-wrapper{cursor:pointer;list-style-position:outside}.markdown-preview .md-toc summary.md-toc-link-wrapper::marker{font-size:.85em}.markdown-preview .md-toc .md-toc-link-wrapper .md-toc-link{display:inline;padding:.25rem 0}.markdown-preview .md-toc .md-toc-link-wrapper .md-toc-link div,.markdown-preview .md-toc .md-toc-link-wrapper .md-toc-link p{display:inline}.markdown-preview .md-toc .md-toc-link-wrapper.highlighted .md-toc-link{font-weight:800}.markdown-preview .md-toc .md-toc-link-wrapper[data-level='0']{margin-left:12px}.markdown-preview .md-toc .md-toc-link-wrapper[data-level='1']{margin-left:28px}.markdown-preview .md-toc .md-toc-link-wrapper[data-level='2']{margin-left:44px}.markdown-preview .md-toc .md-toc-link-wrapper[data-level='3']{margin-left:60px}.markdown-preview .md-toc .md-toc-link-wrapper[data-level='4']{margin-left:76px}.markdown-preview .md-toc .md-toc-link-wrapper[data-level='5']{margin-left:80px}.markdown-preview a.tag,.markdown-preview a.tag:active,.markdown-preview a.tag:link,.markdown-preview a.tag:visited,.markdown-preview span.tag:not(.token){display:inline-block;background-color:var(--vscode-badge-background,rgba(127,127,127,.18));color:var(--vscode-badge-foreground,currentColor);border-radius:2em;font-size:.85em;font-weight:500;padding:.05em .55em;line-height:1.5;white-space:nowrap;text-decoration:none;text-shadow:none;box-shadow:none;transition:background-color .12s ease,opacity .12s ease}.markdown-preview a.tag{cursor:pointer}.markdown-preview a.tag:focus,.markdown-preview a.tag:hover{background-color:var(--vscode-badge-background,rgba(127,127,127,.32));color:var(--vscode-badge-foreground,currentColor);opacity:.85;text-decoration:none;outline:0}.markdown-preview .wikilink-embed-content{border-left:3px solid var(--vscode-textBlockQuote-border,rgba(128,128,128,.3));background:var(--vscode-textBlockQuote-background,rgba(128,128,128,.05));margin:.5em 0;padding:.5em .75em;border-radius:0 3px 3px 0}.markdown-preview .wikilink-embed-content.wikilink-embed-error{border-left-color:var(--vscode-errorForeground,#cf222e);color:var(--vscode-errorForeground,#cf222e);font-style:italic;opacity:.8}.markdown-preview .wikilink-embed-content h1:first-child,.markdown-preview .wikilink-embed-content h2:first-child,.markdown-preview .wikilink-embed-content h3:first-child,.markdown-preview .wikilink-embed-content h4:first-child,.markdown-preview .wikilink-embed-content h5:first-child,.markdown-preview .wikilink-embed-content h6:first-child{margin-top:.25em}.markdown-preview .wikilink-embed-content .wikilink-embed-content{margin:.25em 0;padding:.25em .5em}.markdown-preview .block-id{display:none}.scrollbar-style::-webkit-scrollbar{width:8px}.scrollbar-style::-webkit-scrollbar-track{border-radius:10px;background-color:transparent}.scrollbar-style::-webkit-scrollbar-thumb{border-radius:5px;background-color:rgba(150,150,150,.66);border:4px solid rgba(150,150,150,.66);background-clip:content-box}html body[for=html-export]:not([data-presentation-mode]){position:relative;width:100%;height:100%;top:0;left:0;margin:0;padding:0;overflow:auto}html body[for=html-export]:not([data-presentation-mode]) .markdown-preview{position:relative;top:0;min-height:100vh}@media screen and (min-width:914px){html body[for=html-export]:not([data-presentation-mode]) .markdown-preview{padding:2em calc(50% - 457px + 2em)}}@media screen and (max-width:914px){html body[for=html-export]:not([data-presentation-mode]) .markdown-preview{padding:2em}}@media screen and (max-width:450px){html body[for=html-export]:not([data-presentation-mode]) .markdown-preview{font-size:14px!important;padding:1em}}@media print{html body[for=html-export]:not([data-presentation-mode]) #sidebar-toc-btn{display:none}}html body[for=html-export]:not([data-presentation-mode]) #sidebar-toc-btn{position:fixed;bottom:8px;left:8px;font-size:28px;cursor:pointer;color:inherit;z-index:99;width:32px;text-align:center;opacity:.4}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] #sidebar-toc-btn{opacity:1}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc{position:fixed;top:0;left:0;width:300px;height:100%;padding:32px 0 48px 0;font-size:14px;box-shadow:0 0 4px rgba(150,150,150,.33);box-sizing:border-box;overflow:auto;background-color:inherit}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc::-webkit-scrollbar{width:8px}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc::-webkit-scrollbar-track{border-radius:10px;background-color:transparent}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc::-webkit-scrollbar-thumb{border-radius:5px;background-color:rgba(150,150,150,.66);border:4px solid rgba(150,150,150,.66);background-clip:content-box}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc a{text-decoration:none}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc{padding:0 16px}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-details{margin:0;padding:0;border:none}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper .md-toc-link{display:inline;padding:.25rem 0}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper .md-toc-link div,html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper .md-toc-link p{display:inline}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper.highlighted .md-toc-link{font-weight:800}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper[data-level='0']{padding-left:0}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper[data-level='1']{padding-left:16px}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper[data-level='2']{padding-left:32px}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper[data-level='3']{padding-left:48px}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper[data-level='4']{padding-left:64px}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .md-sidebar-toc .md-toc .md-toc-link-wrapper[data-level='5']{padding-left:80px}html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .markdown-preview{left:300px;width:calc(100% - 300px);padding:2em calc(50% - 457px - 300px / 2);margin:0;box-sizing:border-box}@media screen and (max-width:1274px){html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .markdown-preview{padding:2em}}@media screen and (max-width:450px){html body[for=html-export]:not([data-presentation-mode])[html-show-sidebar-toc] .markdown-preview{width:100%}}html body[for=html-export]:not([data-presentation-mode]):not([html-show-sidebar-toc]) .markdown-preview{left:50%;transform:translateX(-50%)}html body[for=html-export]:not([data-presentation-mode]):not([html-show-sidebar-toc]) .md-sidebar-toc{display:none}
+/* Please visit the URL below for more information: */
+/*   https://shd101wyy.github.io/markdown-preview-enhanced/#/customize-css */
+
+      </style>
+      <script type="text/javascript">
+  document.addEventListener("DOMContentLoaded", function () {
+    // your code here
+  });
+</script>
+    </head>
+    <body for="html-export">
+      <div class="crossnote markdown-preview  ">
+      
+<h1 id="instituto-tecnológico-superior-campus-perote">Instituto Tecnológico Superior Campus Perote </h1>
+<h2 id="ingeniería-informática">Ingeniería Informática </h2>
+<h3 id="desarrollo-de-aplicaciones-web">Desarrollo de Aplicaciones Web </h3>
+<hr>
+<h1 id="manual-de-usuario--sgplopypc">Manual de Usuario | SGPLOPYPC </h1>
+<h2 id="sistema-de-gestión-del-procedimiento-de-licitación-de-obra-pública-y-procesos-de-contratación">Sistema de Gestión del Procedimiento de Licitación de Obra Pública y Procesos de Contratación </h2>
+<hr>
+<p><strong>Elaborado por:</strong></p>
+<ul>
+<li>Karol Nahum Delgado Bernal | 23050014</li>
+<li>Alexis Aburto Mendez | 23050005</li>
+<li>Victor Ricardo Herrera Galindo | 23050008</li>
+<li>Gonzalo Rodriguez Hernandez | 23050010</li>
+<li>Katia Esteban Soto | 23050016</li>
+<li>Jose Antonio Contreras Flores</li>
+</ul>
+<p><strong>Docente:</strong></p>
+<ul>
+<li>Jose Antonio Contreras Flores</li>
+</ul>
+<p><strong>Grupo: 605 - A</strong></p>
+<hr>
+<h2 id="1-introducción">1. Introducción </h2>
+<p>El <strong>Sistema de Gestión del Procedimiento de Licitación de Obra Pública y Procesos de Contratación (SGPLOPyPC)</strong> es una plataforma digital moderna diseñada para optimizar, transparentar y simplificar las etapas de licitación pública gubernamental y los contratos resultantes. Este sistema permite a ciudadanos, proveedores del sector privado y personal administrativo gubernamental colaborar en un entorno centralizado y seguro, garantizando el cumplimiento normativo e impulsando la transparencia pública.</p>
+<hr>
+<h2 id="2-objetivo-del-manual">2. Objetivo del manual </h2>
+<p>Este manual tiene como objetivo guiar de manera clara y secuencial a los usuarios finales en el uso y operación de la plataforma SGPLOPyPC. A través de este documento, los usuarios aprenderán a navegar por la interfaz de acuerdo con su rol asignado, realizar consultas, completar registros, cargar documentos, presentar propuestas, evaluar proyectos y firmar contratos electrónicamente.</p>
+<hr>
+<h2 id="3-público-al-que-va-dirigido">3. Público al que va dirigido </h2>
+<p>El presente manual está orientado a los tres grupos de usuarios principales que interactúan con el sistema:</p>
+<ul>
+<li><strong>Público en General / Ciudadanos:</strong> Personas interesadas en la transparencia de las obras públicas, consulta de convocatorias abiertas, contratos adjudicados y descarga de datos abiertos en formato OCDS.</li>
+<li><strong>Proveedores / Contratistas:</strong> Empresas o personas físicas interesadas en participar en licitaciones de obra pública, enviar propuestas técnicas y económicas, firmar contratos y gestionar sus documentos de acreditación.</li>
+<li><strong>Administradores:</strong> Personal gubernamental responsable del diseño de licitaciones, revisión de propuestas, emisión de dictámenes, adjudicación de obras y configuración global de la plataforma.</li>
+</ul>
+<hr>
+<h2 id="4-requisitos-para-usar-la-plataforma">4. Requisitos para usar la plataforma </h2>
+<p>Para garantizar una experiencia óptima y sin interrupciones, asegúrese de cumplir con los siguientes requisitos básicos:</p>
+<ul>
+<li><strong>Dispositivo:</strong> Computadora de escritorio, laptop o tableta con acceso a internet.</li>
+<li><strong>Navegador Web:</strong> Google Chrome (versión 100 o superior recomendada), Mozilla Firefox, Microsoft Edge o Apple Safari.</li>
+<li><strong>Conexión a Internet:</strong> Conexión estable (mínimo 5 Mbps).</li>
+<li><strong>Documentación para Proveedores:</strong> Clave Única de Registro de Población (CURP), Registro Federal de Contribuyentes (RFC) y archivos de Firma Electrónica Avanzada (e.Firma) si desea firmar contratos digitalmente.</li>
+</ul>
+<hr>
+<h2 id="5-acceso-al-sistema-e-inicio-de-sesión">5. Acceso al sistema e inicio de sesión </h2>
+<p>El sistema cuenta con un portal de acceso seguro unificado para todos los roles.</p>
+<h3 id="51-cómo-entrar-a-la-plataforma">5.1 Cómo entrar a la plataforma </h3>
+<ol>
+<li>Abra su navegador web.</li>
+<li>Ingrese a la dirección oficial del sistema: <a href="https://sgplopypc.up.railway.app/">https://sgplopypc.up.railway.app/</a></li>
+<li>Será recibido por la <strong>Pantalla de Inicio</strong> de la plataforma, que muestra información general del sistema y convocatorias destacadas.</li>
+</ol>
+<p><img src="./imagenes/manual_usuario/landing.png" alt="Pantalla de Inicio o Landing"><br>
+<em>Figura 5.1: Vista principal o Landing Page del sistema, accesible para cualquier usuario.</em></p>
+<h3 id="52-inicio-de-sesión">5.2 Inicio de sesión </h3>
+<p>Para ingresar a su panel privado, realice los siguientes pasos:</p>
+<ol>
+<li>En la parte superior derecha de la pantalla de inicio, haga clic en el botón <strong>"Iniciar Sesión"</strong>.</li>
+<li>Escriba su correo electrónico y contraseña registrados.</li>
+<li>Haga clic en <strong>"Ingresar"</strong>.</li>
+</ol>
+<p><img src="./imagenes/manual_usuario/login.png" alt="Pantalla de Inicio de Sesión"><br>
+<em>Figura 5.2: Formulario de autenticación segura del sistema.</em></p>
+<hr>
+<h2 id="6-descripción-general-por-rol">6. Descripción general por rol </h2>
+<p>La plataforma adapta su interfaz y herramientas disponibles de acuerdo con el perfil del usuario autenticado.</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Permiso / Módulo</th>
+<th style="text-align:center">Público</th>
+<th style="text-align:center">Proveedor</th>
+<th style="text-align:center">Administrador</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left">Consultar Convocatorias Activas</td>
+<td style="text-align:center">Sí</td>
+<td style="text-align:center">Sí</td>
+<td style="text-align:center">Sí</td>
+</tr>
+<tr>
+<td style="text-align:left">Descargar Documentos Públicos</td>
+<td style="text-align:center">Sí</td>
+<td style="text-align:center">Sí</td>
+<td style="text-align:center">Sí</td>
+</tr>
+<tr>
+<td style="text-align:left">Consultar Datos Abiertos (OCDS)</td>
+<td style="text-align:center">Sí</td>
+<td style="text-align:center">Sí</td>
+<td style="text-align:center">Sí</td>
+</tr>
+<tr>
+<td style="text-align:left">Marcar Favoritos</td>
+<td style="text-align:center">Sí</td>
+<td style="text-align:center">Sí</td>
+<td style="text-align:center">No aplica</td>
+</tr>
+<tr>
+<td style="text-align:left">Registrarse como Proveedor</td>
+<td style="text-align:center">Sí</td>
+<td style="text-align:center">No aplica</td>
+<td style="text-align:center">No aplica</td>
+</tr>
+<tr>
+<td style="text-align:left">Participar / Inscribirse en Licitaciones</td>
+<td style="text-align:center">No</td>
+<td style="text-align:center">Sí</td>
+<td style="text-align:center">No</td>
+</tr>
+<tr>
+<td style="text-align:left">Subir Propuestas (Técnica y Económica)</td>
+<td style="text-align:center">No</td>
+<td style="text-align:center">Sí</td>
+<td style="text-align:center">No</td>
+</tr>
+<tr>
+<td style="text-align:left">Gestionar Documentos de Empresa</td>
+<td style="text-align:center">No</td>
+<td style="text-align:center">Sí</td>
+<td style="text-align:center">No</td>
+</tr>
+<tr>
+<td style="text-align:left">Firmar Contratos (e.Firma)</td>
+<td style="text-align:center">No</td>
+<td style="text-align:center">Sí</td>
+<td style="text-align:center">Sí</td>
+</tr>
+<tr>
+<td style="text-align:left">Generar Reportes y Configuración</td>
+<td style="text-align:center">No</td>
+<td style="text-align:center">No</td>
+<td style="text-align:center">Sí</td>
+</tr>
+<tr>
+<td style="text-align:left">Emitir Dictámenes y Adjudicaciones</td>
+<td style="text-align:center">No</td>
+<td style="text-align:center">No</td>
+<td style="text-align:center">Sí</td>
+</tr>
+<tr>
+<td style="text-align:left">Auditar Operaciones</td>
+<td style="text-align:center">No</td>
+<td style="text-align:center">No</td>
+<td style="text-align:center">Sí</td>
+</tr>
+</tbody>
+</table>
+<hr>
+<h2 id="7-guía-de-uso-para-usuario-público">7. Guía de uso para usuario público </h2>
+<p>El usuario con rol <code>PUBLICO</code> representa al ciudadano o a la contraloría social. Su enfoque principal es la consulta transparente y el control ciudadano.</p>
+<h3 id="71-consultar-convocatorias-y-resultados">7.1 Consultar Convocatorias y Resultados </h3>
+<ol>
+<li>Inicie sesión con la cuenta de público (<code>publico@demo.mx</code>).</li>
+<li>Será redirigido al <strong>Centro del Ciudadano</strong>.</li>
+<li>En esta pantalla se presenta un buscador general y filtros dinámicos por dependencia, tipo de licitación y estado.</li>
+</ol>
+<p><img src="./imagenes/manual_usuario/dashboard-publico.png" alt="Panel de Usuario Público"><br>
+<em>Figura 7.1: Centro de control público con indicadores rápidos y barra de búsqueda.</em></p>
+<h3 id="72-datos-abiertos-y-transparencia">7.2 Datos Abiertos y Transparencia </h3>
+<p>El sistema cumple con el estándar internacional OCDS (Open Contracting Data Standard).</p>
+<ol>
+<li>Acceda a la opción <strong>"Datos Abiertos"</strong> en el menú de navegación.</li>
+<li>Podrá visualizar los flujos de contratación en formato estructurado JSON o realizar descargas masivas de paquetes de contratación (<code>release packages</code>) para auditoría pública.</li>
+</ol>
+<p><img src="./imagenes/manual_usuario/datos-abiertos.png" alt="Módulo de Datos Abiertos"><br>
+<em>Figura 7.2: Sección de visualización y descarga de Datos Abiertos (OCDS).</em></p>
+<h3 id="73-guardar-licitaciones-favoritas">7.3 Guardar Licitaciones Favoritas </h3>
+<p>Si existe un proceso de obra pública que desea seguir de cerca:</p>
+<ol>
+<li>Navegue al detalle de la licitación de su interés.</li>
+<li>Haga clic en el botón con forma de estrella <strong>"Guardar en Favoritos"</strong>.</li>
+<li>Puede acceder a estas licitaciones directamente desde la pestaña <strong>"Mis Favoritos"</strong> en su menú lateral.</li>
+</ol>
+<p><img src="./imagenes/manual_usuario/favoritos-publico.png" alt="Módulo de Favoritos Público"><br>
+<em>Figura 7.3: Listado de convocatorias guardadas como favoritas por el ciudadano.</em></p>
+<hr>
+<h2 id="8-guía-de-uso-para-proveedor">8. Guía de uso para proveedor </h2>
+<p>El proveedor (<code>PROVEEDOR</code>) es el actor encargado de competir por las adjudicaciones de obra. Su panel es el más dinámico en cuanto a carga de información.</p>
+<h3 id="81-centro-de-control-del-proveedor">8.1 Centro de Control del Proveedor </h3>
+<p>Al iniciar sesión con su cuenta (<code>proveedor@demo.mx</code>), accederá al panel principal del proveedor. Aquí se muestran las estadísticas de su empresa:</p>
+<ul>
+<li>Participaciones totales.</li>
+<li>Propuestas enviadas y su tasa de éxito.</li>
+<li>Monto total propuesto y adjudicado.</li>
+<li>Contratos vigentes y notificaciones en tiempo real.</li>
+</ul>
+<p><img src="./imagenes/manual_usuario/dashboard-proveedor.png" alt="Dashboard del Proveedor"><br>
+<em>Figura 8.1: Panel de Control del Proveedor con gráficos interactivos y KPIs.</em></p>
+<h3 id="82-consultar-convocatorias">8.2 Consultar Convocatorias </h3>
+<p>Para explorar los concursos de obra pública vigentes:</p>
+<ol>
+<li>Haga clic en <strong>"Licitaciones"</strong> o <strong>"Convocatorias"</strong> en el menú lateral.</li>
+<li>Se desplegará el listado con información como la descripción de la obra, presupuesto base, fechas límite de inscripción y estado actual del proceso.</li>
+</ol>
+<p><img src="./imagenes/manual_usuario/licitaciones-listado.png" alt="Listado de Licitaciones Proveedor"><br>
+<em>Figura 8.2: Vista de convocatorias de licitación disponibles para inscripción.</em></p>
+<h3 id="83-inscribirse-y-ver-el-detalle-de-una-licitación">8.3 Inscribirse y Ver el Detalle de una Licitación </h3>
+<ol>
+<li>En el listado de convocatorias, haga clic en el botón <strong>"Ver Detalle"</strong> o haga clic sobre el título de la licitación.</li>
+<li>Podrá consultar las bases técnicas completas, el calendario detallado de eventos (aclaraciones, presentación de propuestas, fallo) y descargar documentos adjuntos de la convocatoria.</li>
+<li>Si cumple con los requisitos, haga clic en el botón <strong>"Inscribirse en este Proceso"</strong>. Su estado cambiará a "Inscrito".</li>
+</ol>
+<p><img src="./imagenes/manual_usuario/detalle-licitacion.png" alt="Detalle de Licitación Proveedor"><br>
+<em>Figura 8.3: Información detallada de una licitación seleccionada.</em></p>
+<h3 id="84-enviar-y-consultar-participaciones">8.4 Enviar y Consultar Participaciones </h3>
+<p>Una vez inscrito, puede dar seguimiento a sus participaciones en la pestaña <strong>"Mis Participaciones"</strong>:</p>
+<ol>
+<li>Aquí se listan las obras en las que ha manifestado interés formal.</li>
+<li>Desde aquí se gestiona la carga de la documentación legal para acreditar la personalidad de su empresa.</li>
+</ol>
+<p><img src="./imagenes/manual_usuario/participaciones.png" alt="Mis Participaciones"><br>
+<em>Figura 8.4: Lista de licitaciones activas en las que el proveedor se encuentra inscrito.</em></p>
+<h3 id="85-presentar-y-modificar-propuestas">8.5 Presentar y Modificar Propuestas </h3>
+<ol>
+<li>Diríjase a <strong>"Propuestas"</strong> en el menú lateral.</li>
+<li>Seleccione el proceso inscrito para el cual desea subir su propuesta.</li>
+<li>Complete los datos requeridos: propuesta técnica y monto de la propuesta económica.</li>
+<li>Adjunte los archivos PDF correspondientes.</li>
+<li>Haga clic en <strong>"Enviar Propuesta"</strong>.<br>
+<em>Nota: Si el periodo de recepción de propuestas sigue abierto, podrá actualizarla o incluso hacer clic en "Retirar Propuesta" si decide no continuar.</em></li>
+</ol>
+<p><img src="./imagenes/manual_usuario/propuestas.png" alt="Módulo de Propuestas"><br>
+<em>Figura 8.5: Panel de envío de ofertas técnicas y económicas.</em></p>
+<h3 id="86-gestión-de-expediente-digital-documentos">8.6 Gestión de Expediente Digital (Documentos) </h3>
+<p>Para evitar subir repetidamente la misma información en cada licitación, use el repositorio de documentos:</p>
+<ol>
+<li>Vaya a <strong>"Mis Documentos"</strong>.</li>
+<li>Cargue sus archivos recurrentes (Acta Constitutiva, RFC, Opinión de Cumplimiento del SAT, Identificación Oficial, etc.).</li>
+<li>El sistema los almacenará de manera segura en su expediente digital para que los asocie fácilmente a sus propuestas.</li>
+</ol>
+<p><img src="./imagenes/manual_usuario/documentos.png" alt="Módulo de Documentos Proveedor"><br>
+<em>Figura 8.6: Repositorio documental privado del proveedor.</em></p>
+<h3 id="87-firma-y-seguimiento-de-contratos">8.7 Firma y Seguimiento de Contratos </h3>
+<p>Cuando resulta ganador de una adjudicación, el contrato se genera automáticamente en la plataforma:</p>
+<ol>
+<li>Acceda a la pestaña <strong>"Contratos"</strong>.</li>
+<li>Seleccione el contrato pendiente de firma.</li>
+<li>Revise las cláusulas técnicas y financieras del documento integrado.</li>
+<li>Para realizar la firma digital segura: cargue sus llaves públicas/privadas de e.Firma (<code>.cer</code> y <code>.key</code>) junto con su contraseña de clave privada para estampar la firma electrónica oficial.</li>
+</ol>
+<p><img src="./imagenes/manual_usuario/contratos.png" alt="Módulo de Contratos"><br>
+<em>Figura 8.7: Historial de contratos y estatus de formalización.</em></p>
+<h3 id="88-perfil-del-proveedor">8.8 Perfil del Proveedor </h3>
+<ol>
+<li>Ingrese a <strong>"Mi Perfil"</strong> en la barra lateral superior.</li>
+<li>Mantenga actualizados los datos de contacto, RFC, dirección fiscal y representante legal de su empresa para evitar descalificaciones en los procesos.</li>
+</ol>
+<p><img src="./imagenes/manual_usuario/perfil-proveedor.png" alt="Perfil del Proveedor"><br>
+<em>Figura 8.8: Sección de datos generales y perfil legal del contratista.</em></p>
+<h3 id="89-buzón-de-soporte-y-tickets">8.9 Buzón de Soporte y Tickets </h3>
+<p>Si experimenta problemas técnicos o dudas en las bases de licitación:</p>
+<ol>
+<li>Acceda al módulo <strong>"Soporte"</strong>.</li>
+<li>Haga clic en <strong>"Nuevo Ticket"</strong>.</li>
+<li>Seleccione la categoría, describa el problema y envíelo. El personal administrador responderá su ticket directamente en la plataforma.</li>
+</ol>
+<p><img src="./imagenes/manual_usuario/soporte.png" alt="Módulo de Soporte"><br>
+<em>Figura 8.9: Bandeja de mensajes y solicitudes de soporte técnico.</em></p>
+<h3 id="810-centro-de-notificaciones-sse">8.10 Centro de Notificaciones (SSE) </h3>
+<p>La plataforma cuenta con un sistema de notificaciones en tiempo real basado en Server-Sent Events (SSE).</p>
+<ol>
+<li>Al recibir una actualización (ej. un cambio de estado en una licitación, un mensaje de soporte o un nuevo contrato para firmar), un globo numérico aparecerá sobre el icono de campana.</li>
+<li>Al dar clic, podrá visualizar y marcar como leídas las notificaciones urgentes.</li>
+</ol>
+<p><img src="./imagenes/manual_usuario/notificaciones.png" alt="Módulo de Notificaciones"><br>
+<em>Figura 8.10: Historial de avisos y notificaciones en tiempo real.</em></p>
+<hr>
+<h2 id="9-guía-de-uso-para-administrador">9. Guía de uso para administrador </h2>
+<p>El usuario <code>ADMINISTRADOR</code> (<code>admin@sgplopypc.gob.mx</code>) tiene control total de la gestión administrativa y operativa de los procesos de contratación.</p>
+<h3 id="91-dashboard-administrativo">9.1 Dashboard Administrativo </h3>
+<p>Ofrece una perspectiva completa del sistema:</p>
+<ul>
+<li>Indicadores clave sobre montos totales contratados.</li>
+<li>Número de licitaciones organizadas por estado.</li>
+<li>Tiempos de ciclo promedio de contratación.</li>
+<li>Accesos rápidos a los expedientes de proveedores registrados para validación.</li>
+</ul>
+<p><img src="./imagenes/manual_usuario/dashboard-admin.png" alt="Dashboard del Administrador"><br>
+<em>Figura 9.1: Panel de Control del Administrador con gráficos globales e indicadores clave.</em></p>
+<h3 id="92-gestión-y-creación-de-convocatorias">9.2 Gestión y Creación de Convocatorias </h3>
+<ol>
+<li>Diríjase a <strong>"Convocatorias"</strong> y haga clic en <strong>"Crear Convocatoria"</strong>.</li>
+<li>Introduzca el título de la obra, la dependencia solicitante, la descripción técnica detallada, el presupuesto estimado y configure el calendario del proceso (Fechas límite de aclaraciones, propuestas y fallo).</li>
+<li>Guarde como Borrador o publique para que sea visible de inmediato al público y proveedores.</li>
+</ol>
+<p><img src="./imagenes/manual_usuario/convocatorias-admin.png" alt="Módulo de Licitaciones - Administrador"><br>
+<em>Figura 9.2: Gestión y publicación de nuevas licitaciones públicas.</em></p>
+<h3 id="93-evaluaciones-y-adjudicaciones">9.3 Evaluaciones y Adjudicaciones </h3>
+<ol>
+<li>Cuando venza la fecha de entrega de propuestas, ingrese al módulo <strong>"Evaluación"</strong>.</li>
+<li>Revise el expediente técnico y el monto económico de cada propuesta enviada por los proveedores inscritos.</li>
+<li>Capture el puntaje obtenido por cada concursante de acuerdo con la matriz de evaluación y genere el dictamen técnico final.</li>
+<li>El sistema declarará la propuesta ganadora para proceder con el fallo y generar el respectivo contrato de obra.</li>
+</ol>
+<p><img src="./imagenes/manual_usuario/evaluacion-admin.png" alt="Módulo de Evaluación - Administrador"><br>
+<em>Figura 9.3: Interfaz para la calificación y evaluación de ofertas de licitantes.</em></p>
+<hr>
+<h2 id="10-explicación-de-cada-módulo-visible-para-el-usuario">10. Explicación de cada módulo visible para el usuario </h2>
+<h3 id="101-panel-de-inicio--landing">10.1 Panel de Inicio / Landing </h3>
+<p>El punto de entrada del sistema. Permite a los usuarios no autenticados informarse sobre las normativas vigentes, descargar formatos generales y acceder al inicio de sesión o registro de nuevos proveedores.</p>
+<h3 id="102-módulo-de-registro-de-proveedores">10.2 Módulo de Registro de Proveedores </h3>
+<p>Permite a cualquier empresa interesada capturar su nombre/razón social, RFC, correo electrónico y contraseña inicial. Tras su aprobación por parte del administrador, se habilita su acceso como proveedor verificado.</p>
+<h3 id="103-repositorio-documental">10.3 Repositorio Documental </h3>
+<p>Funciona como una nube privada para los proveedores. Organiza la documentación por categorías (Legal, Financiera, Técnica). Cuenta con herramientas de carga de archivos de hasta 10 MB y previsualización de documentos cargados.</p>
+<h3 id="104-módulo-de-contratos-y-firmas">10.4 Módulo de Contratos y Firmas </h3>
+<p>Presenta un visor PDF de los contratos adjudicados. Los firmantes (Administrador y Representante del Proveedor) deben subir sus archivos criptográficos correspondientes a la e.Firma oficial mexicana para dar validez jurídica al acto.</p>
+<h3 id="105-módulo-de-notificaciones-sse">10.5 Módulo de Notificaciones SSE </h3>
+<p>Un hilo persistente de comunicación que avisa instantáneamente sobre cambios de estado sin necesidad de refrescar la pantalla del navegador, lo cual evita pérdidas de fechas límite.</p>
+<h3 id="106-panel-de-control-administrativo-y-configuración">10.6 Panel de Control Administrativo y Configuración </h3>
+<p>Permite la administración de cuentas de usuario, asignación de roles, gestión de dependencias gubernamentales, personalización de plantillas de impresión en PDF/DOCX y auditoría completa del sistema.</p>
+<hr>
+<h2 id="11-procedimientos-paso-a-paso">11. Procedimientos paso a paso </h2>
+<h3 id="111-paso-a-paso-inscribirse-en-una-licitación-proveedor">11.1 Paso a paso: Inscribirse en una Licitación (Proveedor) </h3>
+<ol>
+<li>Inicie sesión en la plataforma como proveedor.</li>
+<li>Vaya al menú <strong>"Convocatorias"</strong> y localice una licitación activa (con estado <code>PUBLICADA</code> o <code>EN_ACLARACIONES</code>).</li>
+<li>Haga clic en <strong>"Ver Detalle"</strong>.</li>
+<li>Revise las bases técnicas y fechas del calendario.</li>
+<li>Si desea competir, haga clic en el botón verde <strong>"Inscribirse en Licitación"</strong>.</li>
+<li>Recibirá una notificación emergente confirmando que su inscripción fue exitosa.</li>
+</ol>
+<h3 id="112-paso-a-paso-cargar-y-presentar-una-propuesta-proveedor">11.2 Paso a paso: Cargar y Presentar una Propuesta (Proveedor) </h3>
+<ol>
+<li>Inicie sesión y navegue al menú <strong>"Propuestas"</strong>.</li>
+<li>Ubique la licitación en la que se inscribió previamente.</li>
+<li>Haga clic en <strong>"Enviar Propuesta"</strong>.</li>
+<li>Complete la información: describa brevemente la solución técnica propuesta e ingrese el precio total neto cotizado para la obra.</li>
+<li>Cargue el archivo PDF de la propuesta técnica.</li>
+<li>Cargue el archivo PDF de la propuesta económica.</li>
+<li>Presione el botón <strong>"Enviar Propuesta"</strong>. El estatus cambiará a <code>ENVIADA</code>.</li>
+</ol>
+<h3 id="113-paso-a-paso-firmar-un-contrato-adjudicado-proveedor">11.3 Paso a paso: Firmar un Contrato Adjudicado (Proveedor) </h3>
+<ol>
+<li>Diríjase a <strong>"Mis Contratos"</strong>.</li>
+<li>Seleccione el contrato asignado que posea el estado <code>EN_PROCESO</code> de firma.</li>
+<li>En la sección inferior de firma electrónica, arrastre o seleccione su certificado de e.Firma (<code>.cer</code>) y su clave privada (<code>.key</code>).</li>
+<li>Introduzca la clave de acceso de su certificado.</li>
+<li>Presione <strong>"Firmar Digitalmente"</strong>. El sistema validará con el SAT los certificados y cambiará el estado del contrato a <code>FIRMADO</code>.</li>
+</ol>
+<h3 id="114-paso-a-paso-crear-y-publicar-una-licitación-administrador">11.4 Paso a paso: Crear y Publicar una Licitación (Administrador) </h3>
+<ol>
+<li>Como Administrador, ingrese a <strong>"Convocatorias"</strong> en su menú de control.</li>
+<li>Haga clic en <strong>"Nueva Convocatoria"</strong>.</li>
+<li>Rellene los campos obligatorios: Código de Licitación, Dependencia Solicitante, Título, Presupuesto Base y Descripción Técnica.</li>
+<li>Asigne las fechas de inicio y cierre de cada etapa en el formulario de calendario.</li>
+<li>Si desea que los proveedores la vean inmediatamente, seleccione el estado <code>PUBLICADA</code> y haga clic en <strong>"Guardar"</strong>.</li>
+</ol>
+<hr>
+<h2 id="12-interpretación-de-estados-mensajes-y-notificaciones">12. Interpretación de estados, mensajes y notificaciones </h2>
+<h3 id="121-estados-de-las-licitaciones">12.1 Estados de las Licitaciones </h3>
+<p>Es fundamental conocer el significado de los estados del proceso para evitar quedar fuera de alguna fase:</p>
+<table>
+<thead>
+<tr>
+<th style="text-align:left">Estado</th>
+<th style="text-align:left">Significado</th>
+<th style="text-align:left">Acciones Permitidas</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td style="text-align:left"><strong>BORRADOR</strong></td>
+<td style="text-align:left">La convocatoria está siendo diseñada por el administrador.</td>
+<td style="text-align:left">Edición de bases por el Administrador. Invisible para proveedores.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>PUBLICADA</strong></td>
+<td style="text-align:left">Convocatoria abierta y visible para el público.</td>
+<td style="text-align:left">Los proveedores pueden consultar detalles e inscribirse.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>EN_ACLARACIONES</strong></td>
+<td style="text-align:left">Periodo para que los proveedores envíen dudas sobre la obra.</td>
+<td style="text-align:left">Envío y respuesta de preguntas de aclaración.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>RECEPCION_PROPUESTAS</strong></td>
+<td style="text-align:left">Fase de recepción de ofertas técnicas y económicas.</td>
+<td style="text-align:left">Los proveedores inscritos cargan sus propuestas de obra.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>EN_EVALUACION</strong></td>
+<td style="text-align:left">La fecha límite concluyó. El comité técnico evalúa las ofertas.</td>
+<td style="text-align:left">El Administrador califica propuestas. No se aceptan nuevos envíos.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>ADJUDICADA</strong></td>
+<td style="text-align:left">Se emitió el fallo a favor de un proveedor ganador.</td>
+<td style="text-align:left">Visualización del acta de fallo. Inicio de generación de contrato.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>DESIERTA</strong></td>
+<td style="text-align:left">Ningún proveedor participó o ninguna oferta cumplió las bases.</td>
+<td style="text-align:left">El proceso concluye sin ganador. Requiere nueva convocatoria.</td>
+</tr>
+<tr>
+<td style="text-align:left"><strong>CANCELADA</strong></td>
+<td style="text-align:left">El proceso fue suspendido definitivamente por la autoridad.</td>
+<td style="text-align:left">Ninguna acción permitida. Archivo del expediente.</td>
+</tr>
+</tbody>
+</table>
+<h3 id="122-estados-de-las-propuestas-de-proveedores">12.2 Estados de las Propuestas de Proveedores </h3>
+<ul>
+<li><strong>ENVIADA:</strong> Su propuesta fue cargada correctamente y está a la espera de la apertura de pliegos.</li>
+<li><strong>EN_EVALUACION:</strong> El comité evaluador está revisando la documentación y asignando puntajes.</li>
+<li><strong>ACEPTADA:</strong> La propuesta técnica y económica cumple con los requisitos del contrato.</li>
+<li><strong>RECHAZADA:</strong> La propuesta no cumplió con las especificaciones técnicas o rebasó el presupuesto máximo.</li>
+<li><strong>RETIRADA:</strong> El proveedor retiró voluntariamente su oferta antes de que concluyera el periodo de recepción.</li>
+</ul>
+<hr>
+<h2 id="13-recomendaciones-de-uso">13. Recomendaciones de uso </h2>
+<ul>
+<li><strong>Respetar los tiempos del calendario:</strong> El sistema cierra automáticamente la recepción de propuestas al llegar al segundo exacto configurado en el calendario. No se pueden otorgar prórrogas manuales una vez vencido el plazo.</li>
+<li><strong>Tamaño y formato de archivos:</strong> Procure que todos los documentos PDF subidos estén debidamente optimizados. El sistema rechaza archivos individuales que superen los <strong>10 MB</strong>.</li>
+<li><strong>Mantener a salvo las llaves de la e.Firma:</strong> Recuerde que la e.Firma tiene el mismo valor legal que una firma autógrafa. Nunca comparta sus archivos <code>.key</code> y contraseñas con terceros no autorizados.</li>
+<li><strong>Cerrar sesión al terminar:</strong> Si utiliza un equipo de uso compartido, haga clic en el botón de cerrar sesión ubicado en la esquina superior derecha para prevenir accesos no autorizados a su cuenta empresarial.</li>
+</ul>
+<hr>
+<h2 id="14-problemas-frecuentes-y-solución-básica">14. Problemas frecuentes y solución básica </h2>
+<h3 id="141-problema-credenciales-inválidas">14.1 Problema: Credenciales Inválidas </h3>
+<ul>
+<li><strong>Causa posible:</strong> Escribió incorrectamente su correo electrónico o su contraseña, o el administrador aún no aprueba su registro.</li>
+<li><strong>Solución:</strong> Verifique el uso de mayúsculas/minúsculas. Si olvidó su acceso, utilice el enlace "Olvidé mi contraseña" en la pantalla de login para recibir un token de restablecimiento.</li>
+</ul>
+<h3 id="142-problema-error-de-carga-al-subir-documento">14.2 Problema: Error de Carga al Subir Documento </h3>
+<ul>
+<li><strong>Causa posible:</strong> El archivo excede el tamaño máximo de 10 MB, o no se encuentra en el formato de extensión permitido (PDF, DOCX, XLSX, JPG, PNG).</li>
+<li><strong>Solución:</strong> Comprima el archivo PDF para reducir su peso y compruebe que la extensión del archivo sea la correcta antes de intentar la carga.</li>
+</ul>
+<h3 id="143-problema-no-puedo-inscribirme-a-una-licitación">14.3 Problema: No puedo inscribirme a una Licitación </h3>
+<ul>
+<li><strong>Causa posible:</strong> El estado de la licitación no es <code>PUBLICADA</code> o <code>EN_ACLARACIONES</code> (por ejemplo, ya cambió a recepción de propuestas o evaluación), o su perfil de proveedor está desactivado por un administrador.</li>
+<li><strong>Solución:</strong> Revise el cronograma de fechas de la licitación. Si la fecha aún es válida, envíe un ticket de soporte para comprobar el estatus legal de su cuenta de proveedor.</li>
+</ul>
+<hr>
+<h2 id="15-glosario-breve">15. Glosario breve </h2>
+<ul>
+<li><strong>Adjudicación:</strong> Acto administrativo mediante el cual se asigna formalmente la ejecución de la obra pública al licitante ganador.</li>
+<li><strong>Bases de Licitación:</strong> Documentos que contienen los requisitos legales, técnicos, económicos y los lineamientos del procedimiento de contratación.</li>
+<li><strong>e.Firma:</strong> Firma electrónica avanzada basada en certificados digitales emitidos por el Servicio de Administración Tributaria (SAT).</li>
+<li><strong>Fallo:</strong> Dictamen oficial en el cual la dependencia convocante declara al proveedor seleccionado para la realización de la obra pública.</li>
+<li><strong>OCDS (Open Contracting Data Standard):</strong> Estándar de datos abiertos que define cómo publicar datos y documentos sobre todas las etapas de la contratación pública.</li>
+<li><strong>SSE (Server-Sent Events):</strong> Tecnología web que permite al servidor enviar notificaciones y actualizaciones de forma instantánea al navegador del usuario sin necesidad de refrescar la pantalla.</li>
+</ul>
+<hr>
+<h2 id="16-anexos-con-capturas-de-pantalla">16. Anexos con capturas de pantalla </h2>
+<p>Esta sección compila de forma consecutiva las capturas de la plataforma tomadas en tiempo real para facilitar su identificación visual:</p>
+<h3 id="anexo-a-pantalla-de-entrada-general-landing-page">Anexo A: Pantalla de Entrada General (Landing Page) </h3>
+<p><img src="./imagenes/manual_usuario/landing.png" alt="Landing Page"><br>
+<em>Vista de bienvenida, búsqueda general y enlaces a la transparencia de convocatorias.</em></p>
+<h3 id="anexo-b-formulario-de-inicio-de-sesión-login">Anexo B: Formulario de Inicio de Sesión (Login) </h3>
+<p><img src="./imagenes/manual_usuario/login.png" alt="Inicio de Sesión"><br>
+<em>Acceso seguro por correo electrónico y credenciales con validación activa.</em></p>
+<h3 id="anexo-c-panel-de-control-del-proveedor-dashboard">Anexo C: Panel de Control del Proveedor (Dashboard) </h3>
+<p><img src="./imagenes/manual_usuario/dashboard-proveedor.png" alt="Dashboard Proveedor"><br>
+<em>Estadísticas, tasas de éxito en licitaciones y listados dinámicos.</em></p>
+<h3 id="anexo-d-listado-de-licitaciones-y-convocatorias">Anexo D: Listado de Licitaciones y Convocatorias </h3>
+<p><img src="./imagenes/manual_usuario/licitaciones-listado.png" alt="Listado de Licitaciones"><br>
+<em>Listado con filtros y buscadores dinámicos para localización de proyectos de obra.</em></p>
+<h3 id="anexo-e-ficha-detallada-de-la-licitación">Anexo E: Ficha Detallada de la Licitación </h3>
+<p><img src="./imagenes/manual_usuario/detalle-licitacion.png" alt="Detalle de Licitación"><br>
+<em>Calendario, bases, documentos oficiales adjuntos y botones de inscripción.</em></p>
+<h3 id="anexo-f-mis-participaciones">Anexo F: Mis Participaciones </h3>
+<p><img src="./imagenes/manual_usuario/participaciones.png" alt="Participaciones Activas"><br>
+<em>Seguimiento del estatus del proveedor dentro de los procesos de licitación en curso.</em></p>
+<h3 id="anexo-g-carga-de-propuesta-técnica-y-económica">Anexo G: Carga de Propuesta Técnica y Económica </h3>
+<p><img src="./imagenes/manual_usuario/propuestas.png" alt="Envío de Propuestas"><br>
+<em>Formulario de montos y carga de archivos en PDF para la evaluación técnica.</em></p>
+<h3 id="anexo-h-expediente-digital-de-documentos">Anexo H: Expediente Digital de Documentos </h3>
+<p><img src="./imagenes/manual_usuario/documentos.png" alt="Expediente de Documentos"><br>
+<em>Nube de almacenamiento para actas, RFC, y acreditaciones legales.</em></p>
+<h3 id="anexo-i-control-de-contratos-adjudicados">Anexo I: Control de Contratos Adjudicados </h3>
+<p><img src="./imagenes/manual_usuario/contratos.png" alt="Sección de Contratos"><br>
+<em>Visualización de contratos en proceso, firmados o ejecutados con firmas estampadas.</em></p>
+<h3 id="anexo-j-mi-perfil-del-proveedor">Anexo J: Mi Perfil del Proveedor </h3>
+<p><img src="./imagenes/manual_usuario/perfil-proveedor.png" alt="Perfil del Proveedor"><br>
+<em>Configuración de datos legales y de contacto del contratista.</em></p>
+<h3 id="anexo-k-centro-de-notificaciones-en-tiempo-real">Anexo K: Centro de Notificaciones en Tiempo Real </h3>
+<p><img src="./imagenes/manual_usuario/notificaciones.png" alt="Bandeja de Notificaciones"><br>
+<em>Historial de avisos y alertas rápidas sobre las licitaciones participantes.</em></p>
+<h3 id="anexo-l-tickets-de-soporte-técnico">Anexo L: Tickets de Soporte Técnico </h3>
+<p><img src="./imagenes/manual_usuario/soporte.png" alt="Soporte Técnico"><br>
+<em>Generación de dudas y aclaraciones operativas directamente con el administrador.</em></p>
+<h3 id="anexo-m-panel-de-control-del-administrador">Anexo M: Panel de Control del Administrador </h3>
+<p><img src="./imagenes/manual_usuario/dashboard-admin.png" alt="Dashboard Administrador"><br>
+<em>Métricas globales de montos mensuales, estado de convocatorias y accesos rápidos.</em></p>
+<h3 id="anexo-n-administración-de-licitaciones-y-convocatorias">Anexo N: Administración de Licitaciones y Convocatorias </h3>
+<p><img src="./imagenes/manual_usuario/convocatorias-admin.png" alt="Gestión de Licitaciones Administrador"><br>
+<em>Pantalla de administración para la publicación y edición de licitaciones oficiales.</em></p>
+<h3 id="anexo-o-calificación-de-ofertas-evaluaciones">Anexo O: Calificación de Ofertas (Evaluaciones) </h3>
+<p><img src="./imagenes/manual_usuario/evaluacion-admin.png" alt="Evaluación de Licitaciones"><br>
+<em>Asignación de puntajes técnicos y formulación de dictámenes por parte del administrador.</em></p>
+<h3 id="anexo-p-panel-del-ciudadano-usuario-público">Anexo P: Panel del Ciudadano (Usuario Público) </h3>
+<p><img src="./imagenes/manual_usuario/dashboard-publico.png" alt="Dashboard Ciudadano"><br>
+<em>Vista simplificada con acceso a contratos públicos y obras de su interés.</em></p>
+<h3 id="anexo-q-portal-de-datos-abiertos-ocds">Anexo Q: Portal de Datos Abiertos (OCDS) </h3>
+<p><img src="./imagenes/manual_usuario/datos-abiertos.png" alt="Datos Abiertos"><br>
+<em>Repositorio de paquetes de información de contrataciones públicas bajo el estándar internacional.</em></p>
+<h3 id="anexo-r-licitaciones-favoritas-ciudadanas">Anexo R: Licitaciones Favoritas Ciudadanas </h3>
+<p><img src="./imagenes/manual_usuario/favoritos-publico.png" alt="Favoritos Ciudadanos"><br>
+<em>Bandeja de seguimiento rápido para proyectos específicos que interesan a la ciudadanía.</em></p>
+
+      </div>
+      
+      
+    
+    
+    
+    
+    
+    
+  
+    </body></html>
