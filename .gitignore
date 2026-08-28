@@ -11,6 +11,8 @@
 *.bak
 database/*.sql.backup
 database/*_backup.sql
+database/DB.sql
+database/DB_datos.sql
 
 # IDE & Editor
 .vscode/
@@ -20,6 +22,9 @@ database/*_backup.sql
 *~
 .project
 .settings/
+
+# Claude Code (local/per-developer, not shared config)
+.claude/settings.local.json
 
 # OS Files
 .DS_Store
