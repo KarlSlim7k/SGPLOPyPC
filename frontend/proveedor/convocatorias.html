@@ -161,7 +161,7 @@
         if (estado) params.set('estado', estado);
 
         const response = await SGPLAdmin.authFetch('/licitaciones?' + params.toString(), { method: 'GET' });
-        const items = (response && response.data) || [];
+        const items = (response && response.data && response.data.items) || [];
 
         summary.textContent = 'Mostrando ' + items.length + ' convocatorias';
 

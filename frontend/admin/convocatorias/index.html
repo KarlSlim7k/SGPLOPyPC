@@ -297,7 +297,7 @@
 
     try {
       const response = await window.SGPLAdmin.authFetch('/licitaciones' + (params.toString() ? '?' + params.toString() : ''));
-      const all = response.data || [];
+      const all = response.data?.items || [];
       const term = (searchInput.value || '').toLowerCase().trim();
       const filtered = term
         ? all.filter(function (r) {

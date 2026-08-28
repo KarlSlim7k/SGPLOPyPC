@@ -162,7 +162,7 @@
 
   async function loadLicitaciones() {
     const res = await window.SGPLAdmin.authFetch('/licitaciones?estado=EN_EVALUACION');
-    licitaciones = res.data || [];
+    licitaciones = res.data?.items || [];
     const alertText = licitaciones.length
       ? 'Hay ' + licitaciones.length + ' licitaciones en evaluación con propuestas listas para dictamen.'
       : 'No hay licitaciones en estado EN_EVALUACION.';

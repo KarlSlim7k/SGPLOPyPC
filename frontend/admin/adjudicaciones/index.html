@@ -350,7 +350,7 @@
         window.SGPLAdmin.authFetch('/licitaciones?estado=ADJUDICADA')
       ]);
       cache = results[0].data || [];
-      const adjudicadas = results[1].data || [];
+      const adjudicadas = results[1].data?.items || [];
       const contratosPorLicitacion = new Set(cache.map(function (item) {
         return String(item.id_licitacion);
       }));

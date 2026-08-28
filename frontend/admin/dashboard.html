@@ -422,7 +422,7 @@
       }).format(new Date());
       welcomeSubtitle.textContent = 'Actualizado al ' + now + '. Datos cargados desde la base de datos.';
 
-      const recientes = (licitaciones.data || []).slice(0, 5);
+      const recientes = (licitaciones.data?.items || []).slice(0, 5);
       tableBody.innerHTML = recientes.length
         ? recientes.map(function (r) {
             return '<tr class="hover:bg-slate-50 transition-colors">'
